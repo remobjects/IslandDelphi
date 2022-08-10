@@ -1,0 +1,179 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <ProjectGuid>{27AFDE68-73A0-4039-A908-06E444FEAF89}</ProjectGuid>
+    <OutputType>StaticLibrary</OutputType>
+    <RootNamespace>RemObjects.Elements.System.Delphi</RootNamespace>
+    <BinaryName>Island.DelphiSupport</BinaryName>
+    <NoDelphi>True</NoDelphi>
+    <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
+    <MergeArchitectures>True</MergeArchitectures>
+    <OutputPathPrefix>$(DelphiSDK)</OutputPathPrefix>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <OutputPath>.\Bin\Debug</OutputPath>
+    <EnableAsserts>True</EnableAsserts>
+    <Optimize>False</Optimize>
+    <GenerateDebugInfo>True</GenerateDebugInfo>
+    <ConditionalDefines>DEBUG;TRACE;</ConditionalDefines>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <OutputPath>.\Bin\Release</OutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Target)' == 'Delphi7.Windows' ">
+    <Mode>Island</Mode>
+    <SubMode>Windows</SubMode>
+    <DelphiSDK>Delphi 7</DelphiSDK>
+    <Architecture>i386</Architecture>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Target)' == 'Delphi.2005.Windows' ">
+    <Mode>Island</Mode>
+    <SubMode>Windows</SubMode>
+    <DelphiSDK>Delphi 2005</DelphiSDK>
+    <Architecture>i386</Architecture>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Target)' == 'Delphi.2006.Windows' ">
+    <Mode>Island</Mode>
+    <SubMode>Windows</SubMode>
+    <DelphiSDK>Delphi 2006</DelphiSDK>
+    <Architecture>i386</Architecture>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Target)' == 'Delphi.2007.Windows' ">
+    <Mode>Island</Mode>
+    <SubMode>Windows</SubMode>
+    <DelphiSDK>Delphi 2007</DelphiSDK>
+    <Architecture>i386</Architecture>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Target)' == 'Delphi.2009.Windows' ">
+    <Mode>Island</Mode>
+    <SubMode>Windows</SubMode>
+    <DelphiSDK>Delphi 2009</DelphiSDK>
+    <Architecture>i386</Architecture>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Target)' == 'Delphi.2010.Windows' ">
+    <Mode>Island</Mode>
+    <SubMode>Windows</SubMode>
+    <DelphiSDK>Delphi 2010</DelphiSDK>
+    <Architecture>i386</Architecture>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Target)' == 'Delphi.XE.Windows' ">
+    <Mode>Island</Mode>
+    <SubMode>Windows</SubMode>
+    <DelphiSDK>Delphi XE</DelphiSDK>
+    <Architecture>i386</Architecture>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Target)' == 'Delphi.XE2.Windows' ">
+    <Mode>Island</Mode>
+    <SubMode>Windows</SubMode>
+    <DelphiSDK>Delphi XE2</DelphiSDK>
+    <Architecture>i386;x86_64</Architecture>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Target)' == 'Delphi.XE3.Windows' ">
+    <Mode>Island</Mode>
+    <SubMode>Windows</SubMode>
+    <DelphiSDK>Delphi XE3</DelphiSDK>
+    <Architecture>i386;x86_64</Architecture>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Target)' == 'Delphi.XE4.Windows' ">
+    <Mode>Island</Mode>
+    <SubMode>Windows</SubMode>
+    <DelphiSDK>Delphi XE4</DelphiSDK>
+    <Architecture>i386;x86_64</Architecture>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Target)' == 'Delphi.XE5.Windows' ">
+    <Mode>Island</Mode>
+    <SubMode>Windows</SubMode>
+    <DelphiSDK>Delphi XE5</DelphiSDK>
+    <Architecture>i386;x86_64</Architecture>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Target)' == 'Delphi.XE6.Windows' ">
+    <Mode>Island</Mode>
+    <SubMode>Windows</SubMode>
+    <DelphiSDK>Delphi XE6</DelphiSDK>
+    <Architecture>i386;x86_64</Architecture>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Target)' == 'Delphi.XE7.Windows' ">
+    <Mode>Island</Mode>
+    <SubMode>Windows</SubMode>
+    <DelphiSDK>Delphi XE7</DelphiSDK>
+    <Architecture>i386;x86_64</Architecture>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Target)' == 'Delphi.XE8.Windows' ">
+    <Mode>Island</Mode>
+    <SubMode>Windows</SubMode>
+    <DelphiSDK>Delphi XE8</DelphiSDK>
+    <Architecture>i386;x86_64</Architecture>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Target)' == 'Delphi.10.0.Windows' ">
+    <Mode>Island</Mode>
+    <SubMode>Windows</SubMode>
+    <DelphiSDK>Delphi 10.0</DelphiSDK>
+    <Architecture>i386;x86_64</Architecture>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Target)' == 'Delphi.10.1.Windows' ">
+    <Mode>Island</Mode>
+    <SubMode>Windows</SubMode>
+    <DelphiSDK>Delphi 10.1</DelphiSDK>
+    <Architecture>i386;x86_64</Architecture>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Target)' == 'Delphi.10.2.Windows' ">
+    <Mode>Island</Mode>
+    <SubMode>Windows</SubMode>
+    <DelphiSDK>Delphi 10.2</DelphiSDK>
+    <Architecture>i386;x86_64</Architecture>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Target)' == 'Delphi.10.2.Linux' ">
+    <Mode>Island</Mode>
+    <SubMode>Linux</SubMode>
+    <DelphiSDK>Delphi 10.2</DelphiSDK>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Target)' == 'Delphi.10.3.Windows' ">
+    <Mode>Island</Mode>
+    <SubMode>Windows</SubMode>
+    <DelphiSDK>Delphi 10.3</DelphiSDK>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Target)' == 'Delphi.10.3.Linux' ">
+    <Mode>Island</Mode>
+    <SubMode>Linux</SubMode>
+    <DelphiSDK>Delphi 10.3</DelphiSDK>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Target)' == 'Delphi.10.3.macOS' ">
+    <Mode>Island</Mode>
+    <SubMode>Darwin</SubMode>
+    <SDK>macOS</SDK>
+    <DelphiSDK>Delphi 10.3</DelphiSDK>
+    <Architecture>x86_64</Architecture>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Target)' == 'Delphi.11.Windows' ">
+    <Mode>Island</Mode>
+    <SubMode>Windows</SubMode>
+    <DelphiSDK>Delphi 11</DelphiSDK>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Target)' == 'Delphi.11.Linux' ">
+    <Mode>Island</Mode>
+    <SubMode>Linux</SubMode>
+    <DelphiSDK>Delphi 11</DelphiSDK>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Target)' == 'Delphi.11.macOS' ">
+    <Mode>Island</Mode>
+    <SubMode>Darwin</SubMode>
+    <SDK>macOS</SDK>
+    <DelphiSDK>Delphi 11</DelphiSDK>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="Island" />
+    <Reference Include="gc" />
+    <Reference Include="Delphi.rtl" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Bridges.Delphi.pas" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.targets" />
+</Project>
