@@ -1,3 +1,4 @@
 Bin
 *.cache
 *.user
+*.bugreport.*

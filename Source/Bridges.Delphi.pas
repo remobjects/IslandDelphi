@@ -1,15 +1,13 @@
 ﻿namespace RemObjects.Elements.System;
 
 type
-  //DUMMY, DONT SHIP
-  Delphi.System.TObject = public Object;
-  Delphi.System.String = public String;
-  Delphi.System.Exception = public Exception;
-  //END DUMMY
+  //TObject = public Delphi.System.TObject;
 
   DelphiObject = public Delphi.System.TObject;
-  DelphiString = public Delphi.System.String;
-  DelphiException = public Delphi.System.Exception;
+  DelphiChar = public {$IF ANSI_STRING}Delphi.System.AnsiChar{$ELSE}Delphi.System.WideChar{$ENDIF};
+  DelphiString = public {$IF ANSI_STRING}Delphi.System.AnsiString{$ELSE}Delphi.System.UnicodeString{$ENDIF};
+  DelphiException = public Delphi.System.SysUtils.Exception;
+  DelphiInterface = public Delphi.System.IUnknown;
 
   RemObjects.Elements.System.Delphi.Object = public DelphiObject;
   RemObjects.Elements.System.Delphi.String = public DelphiString;
