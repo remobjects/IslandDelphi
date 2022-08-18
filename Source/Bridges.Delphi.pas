@@ -19,11 +19,15 @@ type
   end;
 
   //[Delphi]
-  IDelphiGetIslandWrapper = public interface
-    method «$__CreateIslandWrapper»: RemObjects.Elements.System.Object;
-  end;
+  //IDelphiGetIslandWrapper = public interface(DelphiInterface) // E671 Type "IDelphiGetIslandWrapper" has a different class model than "Object" (Delphi vs Island)
 
-  DelphiWrappedIslandObject = public class(DelphiObject)
+                                                              //// why doesnt this work? class mocel seems right?
+
+    //method «$__CreateIslandWrapper»: RemObjects.Elements.System.Object;
+  //end;
+
+  [Delphi]
+  DelphiWrappedIslandObject = public class(DelphiObject, Delphi.System.IComparable)
   public
     constructor(aValue: IslandObject);
     begin
@@ -38,36 +42,36 @@ type
       if aValue is IIslandGetDelphiWrapper then exit IIslandGetDelphiWrapper(aValue).«$__CreateDelphiWrapper»();
       if aValue is IslandWrappedDelphiObject then exit IslandWrappedDelphiObject(aValue).Value;
       if aValue is IslandWrappedDelphiException then exit IslandWrappedDelphiException(aValue).InnerException;
-      if aValue is String then exit DelphiString(String(aValue));
+      //if aValue is String then exit DelphiString(String(aValue)); // Delphi strings aren't objects
       exit new DelphiWrappedIslandObject(aValue);
     end;
 
-    method ToString: DelphiString; override;
+    method ToString: DelphiString; //override;
     begin
       result := Value.ToString() as DelphiString;
     end;
 
-    method GetHashCode: Integer; override;
+    method GetHashCode: Integer; //override;
     begin
       exit Value.GetHashCode;
     end;
 
-    method Equals(aOther: DelphiObject): Boolean; override;
+    method Equals(aOther: DelphiObject): Boolean; //override;
     begin
-      result := Value.Equals(coalesce(DelphiWrappedIslandObject(aOther):Value,
-                                      aOther));
+      if aOther is DelphiWrappedIslandObject then
+        result := Value.Equals(DelphiWrappedIslandObject(aOther):Value);
     end;
 
-    //method compareTo(aOther: DelphiObject): NSComparisonResult;
-    //begin
-      //if Value is not IComparable then
-        //raise new Exception("Island Object does not implement IComparable");
-      //case aOther type of
-        //DelphiWrappedIslandObject: result := (Value as IComparable).CompareTo(DelphiWrappedIslandObject(aOther).Value) as NSComparisonResult;
-        ////DelphiWrappedSwiftObject: result := (Value as IComparable).CompareTo(DelphiWrappedSwiftObject(aOther).Value) as NSComparisonResult;
-        //else result := (Value as IComparable).CompareTo(aOther) as NSComparisonResult;
-      //end;
-    //end;
+    {$HINT wrong sig}
+    method CompareTo(xSelf: Delphi.System.IComparable; aOther: DelphiObject): Integer;
+    begin
+      if Value is not Delphi.System.IComparable then
+        raise new Exception("Island Object does not implement IComparable");
+      case aOther type of
+        DelphiWrappedIslandObject: result := (Value as IComparable).CompareTo(DelphiWrappedIslandObject(aOther).Value);
+        //else result := (Value as IComparable).CompareTo(aOther);
+      end;
+    end;
   end;
 
   IslandWrappedDelphiObject = public class(WrappedObject, IComparable, IEquatable)
@@ -78,14 +82,13 @@ type
       Value := aValue;
     end;
 
-
     property Value: DelphiObject; readonly;
 
     class method FromValue(aValue: DelphiObject): IslandObject;
     begin
       if aValue = nil then exit nil;
-      if aValue is IDelphiGetIslandWrapper then exit IDelphiGetIslandWrapper(aValue).«$__CreateIslandWrapper»();
-      if aValue is DelphiString then exit String(DelphiString(aValue));
+      //if aValue is IDelphiGetIslandWrapper then exit IDelphiGetIslandWrapper(aValue).«$__CreateIslandWrapper»();
+      //if aValue is DelphiString then exit String(DelphiString(aValue)); // Delphi strings aren't objects
       if aValue is DelphiWrappedIslandObject then exit DelphiWrappedIslandObject(aValue).Value;
       if aValue is DelphiException then exit new IslandWrappedDelphiException(DelphiException(aValue));
       result := new IslandWrappedDelphiObject(aValue);
@@ -93,35 +96,27 @@ type
 
     method ToString: IslandString; override;
     begin
-      //result := Value.description as IslandString;
+      result := Value.ToString as IslandString;
     end;
 
     method GetHashCode: Integer; override;
     begin
-      //result := Value.hash;
+      result := Value.GetHashCode;
     end;
 
     method &Equals(aOther: IslandObject): Boolean; override;
     begin
-      //result := Value.isEqual(coalesce(IslandWrappedDelphiObject(aOther):Value,
-                                       ////IslandWrappedSwiftObject(aOther):Value,
-                                       //aOther));
+      if aOther is IslandWrappedDelphiObject then
+        result := Value.Equals(IslandWrappedDelphiObject(aOther):Value);
     end;
 
     method CompareTo(aOther: IslandObject): Integer;
     begin
-      //if not Value.respondsToSelector(selector(compareTo:)) then
-        //raise new Exception("Delphi Object does not implement compareTo:");
-      //case aOther type of
-        //IslandWrappedDelphiObject: begin
-            ////81175: Darwin: cannot call compareTo: after casting to id
-            ////exit id(Value).compareTo(IslandWrappedDelphiObject(aOther).Value);
-        //end;
-        //else begin
-            ////81175: Darwin: cannot call compareTo: after casting to id
-            ////exit id(Value).compareTo(aOther);
-        //end;
-      //end;
+      if Value is not Delphi.System.IComparable then
+        raise new Exception("Delphi Object does not implement IComparable");
+      case aOther type of
+        IslandWrappedDelphiObject: result := (Value as Delphi.System.IComparable).CompareTo(nil, IslandWrappedDelphiObject(aOther).Value);
+      end;
     end;
 
   end;
@@ -131,39 +126,38 @@ type
 
     constructor (aException: DelphiException);
     begin
-      inherited constructor(aException.Message);
-      InnerException := aException;
+      //inherited constructor(aException.Message);
+      //InnerException := aException;
     end;
 
-    property Message: String read InnerException.Message; override;
+    //property Message: String read IslandString(InnerException.Message); override;
 
-    method ToString: String; override;
-    begin
-      result := "(Wrapped) "+InnerException.GetType.Name+': '+Message;
-    end;
+    //method ToString: String; override;
+    //begin
+      //result := "(Wrapped) "+typeOf(InnerException).Name+': '+Message;
+    //end;
 
     property InnerException: DelphiException read private write; reintroduce;
 
   end;
 
+  //DelphiWrappedIslandException = public class(DelphiException)
+  //public
 
-  DelphiWrappedIslandException = public class(DelphiException)
-  public
+    //constructor (aException: IslandException);
+    //begin
+      //inherited constructor(DelphiString(aException.Message));
+      //InnerException := aException;
+    //end;
 
-    constructor (aException: IslandException);
-    begin
-      inherited constructor(aException.Message);
-      InnerException := aException;
-    end;
+    ////[ToString]
+    //method ToString: DelphiString; override;
+    //begin
+      //result := "(Wrapped) "+InnerException.GetType.Name+': '+Message;
+    //end;
 
-    [ToString]
-    method ToString: String; override;
-    begin
-      result := "(Wrapped) "+InnerException.GetType.Name+': '+Message;
-    end;
+    //property InnerException: IslandException read private write; reintroduce;
 
-    property InnerException: IslandException read private write; reintroduce;
-
-  end;
+  //end;
 
 end.
