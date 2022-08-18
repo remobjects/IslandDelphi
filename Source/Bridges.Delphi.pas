@@ -1,7 +1,7 @@
 ﻿namespace RemObjects.Elements.System;
 
 type
-  //TObject = public Delphi.System.TObject;
+  TObject = public Delphi.System.TObject;
 
   DelphiObject = public Delphi.System.TObject;
   DelphiChar = public {$IF ANSI_STRING}Delphi.System.AnsiChar{$ELSE}Delphi.System.WideChar{$ENDIF};
@@ -62,7 +62,7 @@ type
         result := Value.Equals(DelphiWrappedIslandObject(aOther):Value);
     end;
 
-    {$HINT wrong sig}
+    {$HINT wrong sig!}
     method CompareTo(xSelf: Delphi.System.IComparable; aOther: DelphiObject): Integer;
     begin
       if Value is not Delphi.System.IComparable then
@@ -115,7 +115,7 @@ type
       if Value is not Delphi.System.IComparable then
         raise new Exception("Delphi Object does not implement IComparable");
       case aOther type of
-        IslandWrappedDelphiObject: result := (Value as Delphi.System.IComparable).CompareTo(nil, IslandWrappedDelphiObject(aOther).Value);
+        IslandWrappedDelphiObject: result := (Value as Delphi.System.IComparable).CompareTo(nil, IslandWrappedDelphiObject(aOther).Value); {$HINT wrong sig!}
       end;
     end;
 
@@ -127,37 +127,35 @@ type
     constructor (aException: DelphiException);
     begin
       //inherited constructor(aException.Message);
-      //InnerException := aException;
+      InnerException := aException;
     end;
 
-    //property Message: String read IslandString(InnerException.Message); override;
-
-    //method ToString: String; override;
-    //begin
-      //result := "(Wrapped) "+typeOf(InnerException).Name+': '+Message;
-    //end;
+    method ToString: String; override;
+    begin
+      result := "(Wrapped) "/*+typeOf(InnerException).Name+': '*/+Message;
+    end;
 
     property InnerException: DelphiException read private write; reintroduce;
 
   end;
 
-  //DelphiWrappedIslandException = public class(DelphiException)
-  //public
+  DelphiWrappedIslandException = public class(DelphiException)
+  public
 
-    //constructor (aException: IslandException);
-    //begin
-      //inherited constructor(DelphiString(aException.Message));
-      //InnerException := aException;
-    //end;
+    constructor (aException: IslandException);
+    begin
+      inherited constructor(DelphiString(aException.Message));
+      InnerException := aException;
+    end;
 
-    ////[ToString]
-    //method ToString: DelphiString; override;
-    //begin
+    //[ToString]
+    method ToString: DelphiString; //override;
+    begin
       //result := "(Wrapped) "+InnerException.GetType.Name+': '+Message;
-    //end;
+    end;
 
-    //property InnerException: IslandException read private write; reintroduce;
+    property InnerException: IslandException read private write; reintroduce;
 
-  //end;
+  end;
 
 end.
