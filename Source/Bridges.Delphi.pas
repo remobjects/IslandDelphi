@@ -46,17 +46,17 @@ type
       exit new DelphiWrappedIslandObject(aValue);
     end;
 
-    method ToString: DelphiString; //override;
+    method ToString: DelphiString; override;
     begin
       result := Value.ToString() as DelphiString;
     end;
 
-    method GetHashCode: Integer; //override;
+    method GetHashCode: Integer; override;
     begin
       exit Value.GetHashCode;
     end;
 
-    method Equals(aOther: DelphiObject): Boolean; //override;
+    method Equals(aOther: DelphiObject): Boolean; override;
     begin
       if aOther is DelphiWrappedIslandObject then
         result := Value.Equals(DelphiWrappedIslandObject(aOther):Value);
@@ -69,7 +69,6 @@ type
         raise new Exception("Island Object does not implement IComparable");
       case aOther type of
         DelphiWrappedIslandObject: result := (Value as IComparable).CompareTo(DelphiWrappedIslandObject(aOther).Value);
-        //else result := (Value as IComparable).CompareTo(aOther);
       end;
     end;
   end;

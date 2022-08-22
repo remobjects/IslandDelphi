@@ -1,9 +1,6 @@
 ﻿namespace RemObjects.Elements.System;
 
 type
-  DelphiShortString = public record
-  end;
-
   [Packed]
   DelphiUnicodeString = public record
     fStringData: ^Char;
