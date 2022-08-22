@@ -177,6 +177,7 @@
     <Compile Include="Attributes.pas" />
     <Compile Include="File.pas" />
     <Compile Include="Booleans.pas" />
+    <Compile Include="DelphiHelpers.pas" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.targets" />
 </Project>
