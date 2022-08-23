@@ -7,7 +7,7 @@
     <BinaryName>Island.DelphiSupport</BinaryName>
     <NoDelphi>True</NoDelphi>
     <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
-    <MergeArchitectures>True</MergeArchitectures>
+    <MergeArchitectures>False</MergeArchitectures>
     <OutputPathPrefix>$(DelphiSDK)</OutputPathPrefix>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
@@ -134,6 +134,7 @@
     <Mode>Island</Mode>
     <SubMode>Windows</SubMode>
     <DelphiSDK>Delphi 10.3</DelphiSDK>
+    <Architecture>x86_64;i386</Architecture>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Target)' == 'Delphi.10.3.Linux' ">
     <Mode>Island</Mode>
@@ -147,10 +148,31 @@
     <DelphiSDK>Delphi 10.3</DelphiSDK>
     <Architecture>x86_64</Architecture>
   </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Target)' == 'Delphi.10.4.Windows' ">
+    <Mode>Island</Mode>
+    <SubMode>Windows</SubMode>
+    <DelphiSDK>Delphi 10.4</DelphiSDK>
+    <Architecture>x86_64;i386</Architecture>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Target)' == 'Delphi.10.4.Linux' ">
+    <Mode>Island</Mode>
+    <SubMode>Linux</SubMode>
+    <DelphiSDK>Delphi 10.4</DelphiSDK>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Target)' == 'Delphi.10.4.macOS' ">
+    <Mode>Island</Mode>
+    <SubMode>Darwin</SubMode>
+    <SDK>macOS</SDK>
+    <DelphiSDK>Delphi 10.4</DelphiSDK>
+    <Architecture>x86_64</Architecture>
+  </PropertyGroup>
+
   <PropertyGroup Condition=" '$(Target)' == 'Delphi.11.Windows' ">
     <Mode>Island</Mode>
     <SubMode>Windows</SubMode>
     <DelphiSDK>Delphi 11</DelphiSDK>
+    <Architecture>x86_64;i386</Architecture>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Target)' == 'Delphi.11.Linux' ">
     <Mode>Island</Mode>

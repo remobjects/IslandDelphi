@@ -147,10 +147,10 @@ type
       InnerException := aException;
     end;
 
-    //[ToString]
-    method ToString: DelphiString; //override;
+    //[ToString] // E26099: Island/Delphi: allow [ToString] onm Delphi-model objects
+    method ToString: DelphiString; override;
     begin
-      //result := "(Wrapped) "+InnerException.GetType.Name+': '+Message;
+      //result := "(Wrapped) "+typeOf(InnerException).Name+': '+Message;
     end;
 
     property InnerException: IslandException read private write; reintroduce;
