@@ -148,7 +148,6 @@
     <DelphiSDK>Delphi 10.3</DelphiSDK>
     <Architecture>x86_64</Architecture>
   </PropertyGroup>
-
   <PropertyGroup Condition=" '$(Target)' == 'Delphi.10.4.Windows' ">
     <Mode>Island</Mode>
     <SubMode>Windows</SubMode>
@@ -167,7 +166,6 @@
     <DelphiSDK>Delphi 10.4</DelphiSDK>
     <Architecture>x86_64</Architecture>
   </PropertyGroup>
-
   <PropertyGroup Condition=" '$(Target)' == 'Delphi.11.Windows' ">
     <Mode>Island</Mode>
     <SubMode>Windows</SubMode>
@@ -200,6 +198,8 @@
     <Compile Include="File.pas" />
     <Compile Include="Booleans.pas" />
     <Compile Include="DelphiHelpers.pas" />
+    <Compile Include="Test.pas" />
+    <Compile Include="Bridges.Cocoa.pas" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.targets" />
 </Project>

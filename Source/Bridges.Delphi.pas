@@ -129,6 +129,7 @@ type
       InnerException := aException;
     end;
 
+    [ToString]
     method ToString: String; override;
     begin
       result := "(Wrapped) "/*+typeOf(InnerException).Name+': '*/+Message;

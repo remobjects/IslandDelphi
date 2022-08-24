@@ -77,6 +77,29 @@ type
         memcpy(@(result[1]), aChars, aLength);
     end;
 
+    class method DelphiStringLength(aString: DelphiUnicodeString): Integer;
+    begin
+      if assigned(aString) then
+        result := ^UInt32(aString-sizeOf(UInt32))^;
+    end;
+
+    class method DelphiStringLength(aString: DelphiAnsiString): Integer;
+    begin
+      if assigned(aString) then
+        result := ^UInt32(aString-sizeOf(UInt32))^;
+    end;
+
+    class method DelphiStringLength(aString: DelphiWideString): Integer;
+    begin
+      if assigned(aString) then
+        result := ^UInt32(aString-sizeOf(UInt32))^;
+    end;
+
+    class method DelphiStringLength(aString: DelphiShortString): Integer;
+    begin
+      result := ord(aString[0]);
+    end;
+
   end;
 
 end.
