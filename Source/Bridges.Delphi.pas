@@ -139,6 +139,7 @@ type
 
   end;
 
+  [Delphi]
   DelphiWrappedIslandException = public class(DelphiException)
   public
 

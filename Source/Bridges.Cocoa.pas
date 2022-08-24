@@ -140,7 +140,7 @@ type
     //[ToString] // E26099: Cocoa/Delphi: allow [ToString] onm Delphi-model objects
     method ToString: DelphiString; override;
     begin
-      //result := "(Wrapped) "+typeOf(InnerException).Name+': '+Message;
+      result := "(Wrapped) "+InnerException.class.description+': '+InnerException.Message;
     end;
 
     property InnerException: CocoaException read private write; reintroduce;
