@@ -16,11 +16,13 @@ type
 
     operator Explicit(aString: IslandString): DelphiAnsiString;
     begin
-      result := aString:ToDelphiWideString;
+      result := aString:ToDelphiAnsiString;
     end;
 
     operator Explicit(aString: IslandString): DelphiShortString;
     begin
+      if aString.Length > 255 then
+        raise new InvalidCastException("Cannot represent string longer than 255 characters as DelphiShortString");
       result := aString:ToDelphiShortString;
     end;
 
@@ -89,11 +91,13 @@ type
 
     operator Explicit(aString: CocoaString): DelphiAnsiString;
     begin
-      result := aString:ToDelphiWideString;
+      result := aString:ToDelphiAnsiString;
     end;
 
     operator Explicit(aString: CocoaString): DelphiShortString;
     begin
+      if aString:length > 255 then
+        raise new InvalidCastException("Cannot represent string longer than 255 characters as DelphiShortString");
       result := aString:ToDelphiShortString;
     end;
 

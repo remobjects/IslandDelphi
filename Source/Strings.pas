@@ -148,7 +148,7 @@ type
       aString := p;
     end;
 
-    class method DoCopyOnWriteDelphiString(var aString: ^Void): ^Void; private;
+    class method DoCopyOnWriteDelphiString(var aString: ^Void): Boolean; private;
     begin
       if not assigned(aString) then
         exit false;
