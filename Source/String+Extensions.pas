@@ -97,15 +97,15 @@ type
       result := aString:ToDelphiShortString;
     end;
 
-    operator Explicit(aString: DelphiUnicodeString): CocoaString;
-    begin
-      result := new CocoaString withBytes(aString) length(DelphiStringHelpers.DelphiStringLength(aString)) encoding(Foundation.NSStringEncoding.UTF16LittleEndianStringEncoding);
-    end;
-
-    //operator Explicit(aString: DelphiWideString): CocoaString;
+    //operator Explicit(aString: DelphiUnicodeString): CocoaString;
     //begin
       //result := new CocoaString withBytes(aString) length(DelphiStringHelpers.DelphiStringLength(aString)) encoding(Foundation.NSStringEncoding.UTF16LittleEndianStringEncoding);
     //end;
+
+    operator Explicit(aString: DelphiWideString): CocoaString;
+    begin
+      result := new CocoaString withBytes(aString) length(DelphiStringHelpers.DelphiStringLength(aString)) encoding(Foundation.NSStringEncoding.UTF16LittleEndianStringEncoding);
+    end;
 
     operator Explicit(aString: DelphiAnsiString): CocoaString;
     begin
