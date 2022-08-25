@@ -40,13 +40,13 @@ type
 
     operator Explicit(aString: DelphiAnsiString): IslandString;
     begin
-      result := IslandString:FromPAnsiChars(aString);
+      result := IslandString:FromPAnsiChar(aString);
     end;
 
     operator Explicit(aString: DelphiShortString): IslandString;
     begin
       if aString[0] > #0 then
-        result := IslandString:FromPAnsiChars(@(aString[1]));
+        result := IslandString:FromPAnsiChar(@(aString[1]));
     end;
 
     //
