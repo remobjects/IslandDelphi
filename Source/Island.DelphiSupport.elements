@@ -200,6 +200,7 @@
     <Compile Include="DelphiHelpers.pas" />
     <Compile Include="Test.pas" />
     <Compile Include="Bridges.Cocoa.pas" />
+    <Compile Include="MemoryHelpers.pas" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.targets" />
 </Project>

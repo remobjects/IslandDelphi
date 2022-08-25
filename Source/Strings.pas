@@ -37,7 +37,7 @@ type
       if aLength = 0 then
         exit nil;
       var lSize := aLength*sizeOf(Char);
-      var lResult: ^DelphiLongStringRecord := malloc(lSize+sizeOf(DelphiLongStringRecord)+sizeOf(Char));
+      var lResult: ^DelphiLongStringRecord := DelphiMemoryHelpers.GetMem(lSize+sizeOf(DelphiLongStringRecord)+sizeOf(Char));
       lResult.CodePage := 0; // ToDo
       lResult.ElementSize := sizeOf(Char);
       lResult.ReferenceCount := 1;
@@ -51,7 +51,7 @@ type
       if aLength = 0 then
         exit nil;
       var lSize := aLength*sizeOf(AnsiChar);
-      var lResult: ^DelphiLongStringRecord := malloc(lSize+sizeOf(DelphiLongStringRecord)+sizeOf(AnsiChar));
+      var lResult: ^DelphiLongStringRecord := DelphiMemoryHelpers.GetMem(lSize+sizeOf(DelphiLongStringRecord)+sizeOf(AnsiChar));
       lResult.CodePage := 0; // ToDo
       lResult.ElementSize := sizeOf(AnsiChar);
       lResult.ReferenceCount := 1;
@@ -65,7 +65,7 @@ type
       if aLength = 0 then
         exit nil;
       var lSize := aLength*sizeOf(Char);
-      var lResult := malloc(aLength+sizeOf(UInt32)+sizeOf(Char));
+      var lResult := DelphiMemoryHelpers.GetMem(aLength+sizeOf(UInt32)+sizeOf(Char));
       memcpy(lResult+sizeOf(UInt32), aChars, lSize);
       ^UInt32(lResult)^ := aLength;
       ^Char(lResult+sizeOf(UInt32)+lSize)^ := #0;
@@ -123,7 +123,7 @@ type
         exit nil;
       var lOriginal: ^DelphiLongStringRecord := aString-sizeOf(DelphiLongStringRecord);
       var lSize := lOriginal.Length+lOriginal.ElementSize;
-      var lResult: ^DelphiLongStringRecord := malloc(lOriginal.Length*lOriginal.ElementSize + sizeOf(DelphiLongStringRecord) + sizeOf(Char));
+      var lResult: ^DelphiLongStringRecord := DelphiMemoryHelpers.GetMem(lOriginal.Length*lOriginal.ElementSize + sizeOf(DelphiLongStringRecord) + sizeOf(Char));
       lResult.CodePage := lOriginal.CodePage;
       lResult.ElementSize := lOriginal.ElementSize;
       lResult.ReferenceCount := 1;
