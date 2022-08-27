@@ -50,27 +50,27 @@ type
 
     //
 
-    operator Add(aLeft: DelphiWideString; aRight: DelphiWideString): DelphiWideString;
+    operator &Add(aLeft: DelphiWideString; aRight: DelphiWideString): DelphiWideString;
     begin
       //result := :Delphi.System.Concat(aLeft, aRight);
     end;
 
-    operator Add(aLeft: DelphiObject; aRight: DelphiWideString): DelphiWideString;
+    operator &Add(aLeft: DelphiObject; aRight: DelphiWideString): DelphiWideString;
     begin
       result := aLeft.ToString as DelphiWideString + aRight;
     end;
 
-    operator Add(aLeft: IslandObject; aRight: DelphiWideString): DelphiWideString;
+    operator &Add(aLeft: IslandObject; aRight: DelphiWideString): DelphiWideString;
     begin
       result := (aLeft.ToString as DelphiWideString) + aRight;
     end;
 
-    operator Add(aLeft: DelphiWideString; aRight: DelphiObject): DelphiWideString;
+    operator &Add(aLeft: DelphiWideString; aRight: DelphiObject): DelphiWideString;
     begin
       result := aLeft + aRight.ToString;
     end;
 
-    operator Add(aLeft: DelphiWideString; aRight: IslandObject): DelphiWideString;
+    operator &Add(aLeft: DelphiWideString; aRight: IslandObject): DelphiWideString;
     begin
       result := aLeft + (aRight.ToString as DelphiString);
     end;

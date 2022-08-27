@@ -60,37 +60,37 @@ type
 
     //
 
-    operator Add(aLeft: DelphiUnicodeString; aRight: DelphiUnicodeString): DelphiUnicodeString;
+    operator &Add(aLeft: DelphiUnicodeString; aRight: DelphiUnicodeString): DelphiUnicodeString;
     begin
       //result := :Delphi.System.Concat(aLeft, aRight);
     end;
 
-    operator Add(aLeft: DelphiUnicodeString; aRight: DelphiWideString): DelphiUnicodeString;
+    operator &Add(aLeft: DelphiUnicodeString; aRight: DelphiWideString): DelphiUnicodeString;
     begin
       //result := :Delphi.System.Concat(aLeft, aRight);
     end;
 
-    operator Add(aLeft: DelphiWideString; aRight: DelphiWideString): DelphiUnicodeString;
+    operator &Add(aLeft: DelphiWideString; aRight: DelphiWideString): DelphiUnicodeString;
     begin
       //result := :Delphi.System.Concat(aLeft, aRight);
     end;
 
-    operator Add(aLeft: DelphiObject; aRight: DelphiUnicodeString): DelphiUnicodeString;
+    operator &Add(aLeft: DelphiObject; aRight: DelphiUnicodeString): DelphiUnicodeString;
     begin
       result := aLeft.ToString + aRight;
     end;
 
-    operator Add(aLeft: IslandObject; aRight: DelphiUnicodeString): DelphiUnicodeString;
+    operator &Add(aLeft: IslandObject; aRight: DelphiUnicodeString): DelphiUnicodeString;
     begin
       result := (aLeft.ToString as DelphiString) + aRight;
     end;
 
-    operator Add(aLeft: DelphiUnicodeString; aRight: DelphiObject): DelphiUnicodeString;
+    operator &Add(aLeft: DelphiUnicodeString; aRight: DelphiObject): DelphiUnicodeString;
     begin
       result := aLeft + aRight.ToString;
     end;
 
-    operator Add(aLeft: DelphiUnicodeString; aRight: IslandObject): DelphiUnicodeString;
+    operator &Add(aLeft: DelphiUnicodeString; aRight: IslandObject): DelphiUnicodeString;
     begin
       result := aLeft + (aRight.ToString as DelphiString);
     end;

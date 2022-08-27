@@ -10,6 +10,7 @@ type
 
     property Length: Integer read DelphiStringHelpers.DelphiStringLength(fStringData);
     property ReferenceCount: Integer read DelphiStringHelpers.DelphiStringReferenceCount(fStringData);
+    property CodePage: UInt16 read DelphiStringHelpers.DelphiStringCodePage(fStringData);
 
     property Chars[aIndex: Integer]: AnsiChar
       read begin
@@ -62,27 +63,27 @@ type
 
     //
 
-    operator Add(aLeft: DelphiAnsiString; aRight: DelphiAnsiString): DelphiAnsiString;
+    operator &Add(aLeft: DelphiAnsiString; aRight: DelphiAnsiString): DelphiAnsiString;
     begin
       //result := :Delphi.System.Concat(aLeft, aRight);
     end;
 
-    operator Add(aLeft: DelphiObject; aRight: DelphiAnsiString): DelphiAnsiString;
+    operator &Add(aLeft: DelphiObject; aRight: DelphiAnsiString): DelphiAnsiString;
     begin
       //result := aLeft.ToString + aRight;
     end;
 
-    operator Add(aLeft: IslandObject; aRight: DelphiAnsiString): DelphiAnsiString;
+    operator &Add(aLeft: IslandObject; aRight: DelphiAnsiString): DelphiAnsiString;
     begin
       //result := (aLeft.ToString as DelphiString) + aRight;
     end;
 
-    operator Add(aLeft: DelphiAnsiString; aRight: DelphiObject): DelphiAnsiString;
+    operator &Add(aLeft: DelphiAnsiString; aRight: DelphiObject): DelphiAnsiString;
     begin
       result := aLeft + aRight.ToString;
     end;
 
-    operator Add(aLeft: DelphiAnsiString; aRight: IslandObject): DelphiAnsiString;
+    operator &Add(aLeft: DelphiAnsiString; aRight: IslandObject): DelphiAnsiString;
     begin
       result := aLeft + (aRight.ToString as DelphiString);
     end;

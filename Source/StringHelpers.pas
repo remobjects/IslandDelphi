@@ -141,6 +141,16 @@ type
 
     //
 
+    class method DelphiStringCodePage(aString: ^Void): UInt16;
+    begin
+      if not assigned(aString) then
+        exit 0;
+      var lOriginal: ^DelphiLongStringRecord := aString-sizeOf(DelphiLongStringRecord);
+      result := lOriginal.CodePage;
+    end;
+
+    //
+
     class method DelphiStringReferenceCount(aString: ^Void): Integer;
     begin
       if not assigned(aString) then
