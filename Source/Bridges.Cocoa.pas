@@ -137,10 +137,10 @@ type
       InnerException := aException;
     end;
 
-    //[ToString] // E26099: Cocoa/Delphi: allow [ToString] onm Delphi-model objects
+    //[ToString] // E26099: Cocoa/Delphi: allow [ToString] on Delphi-model objects
     method ToString: DelphiString; override;
     begin
-      result := "(Wrapped) "+InnerException.class.description+': '+InnerException.Message;
+      result := ("(Wrapped) "+InnerException.class.description+': '+InnerException.Message) as DelphiString;
     end;
 
     property InnerException: CocoaException read private write; reintroduce;
