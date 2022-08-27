@@ -201,6 +201,7 @@
     <Compile Include="Test.pas" />
     <Compile Include="Bridges.Cocoa.pas" />
     <Compile Include="MemoryHelpers.pas" />
+    <Compile Include="StringHelpers.pas" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.targets" />
 </Project>
