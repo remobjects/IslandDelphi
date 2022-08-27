@@ -134,7 +134,8 @@
     <Mode>Island</Mode>
     <SubMode>Windows</SubMode>
     <DelphiSDK>Delphi 10.3</DelphiSDK>
-    <Architecture>x86_64;i386</Architecture>
+    <Architecture>x86_64</Architecture>
+    <xArchitecture>x86_64;i386</xArchitecture>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Target)' == 'Delphi.10.3.Linux' ">
     <Mode>Island</Mode>
@@ -202,6 +203,9 @@
     <Compile Include="Bridges.Cocoa.pas" />
     <Compile Include="MemoryHelpers.pas" />
     <Compile Include="StringHelpers.pas" />
+    <Compile Include="Strings.UnicodeString.pas" />
+    <Compile Include="Strings.AnsiString.pas.pas" />
+    <Compile Include="Strings.WideString.pas.pas" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.targets" />
 </Project>

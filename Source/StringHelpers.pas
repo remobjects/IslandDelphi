@@ -9,13 +9,11 @@ type
     ElementSize: UInt16;
     ReferenceCount: UInt32;
     Length: UInt32;
-    StringData: array[0..0] of Byte;
   end;
 
   [Packed]
   DelphiWideStringRecord = assembly record
     Length: UInt32;
-    StringData: array[0..0] of Byte;
   end;
 
   DelphiStringHelpers = public class
@@ -24,40 +22,43 @@ type
     class method DelphiUnicodeStringWithChars(aChars: ^Char; aLength: UInt32): DelphiUnicodeString;
     begin
       if aLength = 0 then
-        exit nil;
+        exit new DelphiUnicodeString;
       var lSize := aLength*sizeOf(Char);
-      var lResult: ^DelphiLongStringRecord := DelphiMemoryHelpers.GetMem(lSize+sizeOf(DelphiLongStringRecord)+sizeOf(Char));
-      lResult.CodePage := 0; // ToDo
-      lResult.ElementSize := sizeOf(Char);
-      lResult.ReferenceCount := 1;
-      lResult.Length := aLength;
+      var lResult := DelphiMemoryHelpers.GetMem(lSize+sizeOf(DelphiLongStringRecord)+sizeOf(Char));
+      ^DelphiLongStringRecord(lResult).CodePage := 0; // ToDo
+      ^DelphiLongStringRecord(lResult).ElementSize := sizeOf(Char);
+      ^DelphiLongStringRecord(lResult).ReferenceCount := 1;
+      ^DelphiLongStringRecord(lResult).Length := aLength;
       memcpy(lResult+sizeOf(DelphiLongStringRecord), aChars, lSize);
       ^Char(lResult+sizeOf(DelphiLongStringRecord)+lSize)^ := #0;
+      result := new DelphiUnicodeString(lResult+sizeOf(DelphiLongStringRecord));
     end;
 
     class method DelphiAnsiStringWithChars(aChars: ^AnsiChar; aLength: UInt32): DelphiAnsiString;
     begin
       if aLength = 0 then
-        exit nil;
+        exit new DelphiAnsiString;
       var lSize := aLength*sizeOf(AnsiChar);
-      var lResult: ^DelphiLongStringRecord := DelphiMemoryHelpers.GetMem(lSize+sizeOf(DelphiLongStringRecord)+sizeOf(AnsiChar));
-      lResult.CodePage := 0; // ToDo
-      lResult.ElementSize := sizeOf(AnsiChar);
-      lResult.ReferenceCount := 1;
-      lResult.Length := aLength;
+      var lResult := DelphiMemoryHelpers.GetMem(lSize+sizeOf(DelphiLongStringRecord)+sizeOf(AnsiChar));
+      ^DelphiLongStringRecord(lResult).CodePage := 0; // ToDo
+      ^DelphiLongStringRecord(lResult).ElementSize := sizeOf(AnsiChar);
+      ^DelphiLongStringRecord(lResult).ReferenceCount := 1;
+      ^DelphiLongStringRecord(lResult).Length := aLength;
       memcpy(lResult+sizeOf(DelphiLongStringRecord), aChars, lSize);
       ^AnsiChar(lResult+sizeOf(DelphiLongStringRecord)+lSize)^ := #0;
+      result := new DelphiAnsiString(lResult+sizeOf(DelphiLongStringRecord));
     end;
 
-    class method ToDelphiWideStringWithChars(aChars: ^Char; aLength: UInt32): DelphiUnicodeString;
+    class method DelphiWideStringWithChars(aChars: ^Char; aLength: UInt32): DelphiWideString;
     begin
       if aLength = 0 then
-        exit nil;
+        exit new DelphiWideString;
       var lSize := aLength*sizeOf(Char);
       var lResult := DelphiMemoryHelpers.GetMem(aLength+sizeOf(UInt32)+sizeOf(Char));
       memcpy(lResult+sizeOf(UInt32), aChars, lSize);
       ^UInt32(lResult)^ := aLength;
       ^Char(lResult+sizeOf(UInt32)+lSize)^ := #0;
+      result := new DelphiWideString(lResult+sizeOf(DelphiWideStringRecord));
     end;
 
     class method DelphiShortStringWithChars(aChars: ^AnsiChar; aLength: UInt32): Delphi.System.ShortString;
@@ -71,23 +72,11 @@ type
 
     //
 
-    class method DelphiStringLength(aString: DelphiUnicodeString): Integer;
+    class method DelphiStringLength(aString: ^Void): Integer;
     begin
       if assigned(aString) then
         result := ^UInt32(aString-sizeOf(UInt32))^;
     end;
-
-    class method DelphiStringLength(aString: DelphiAnsiString): Integer;
-    begin
-      if assigned(aString) then
-        result := ^UInt32(aString-sizeOf(UInt32))^;
-    end;
-
-    //class method DelphiStringLength(aString: DelphiWideString): Integer;
-    //begin
-      //if assigned(aString) then
-        //result := ^UInt32(aString-sizeOf(UInt32))^;
-    //end;
 
     class method DelphiStringLength(aString: DelphiShortString): Integer;
     begin
@@ -98,74 +87,114 @@ type
 
     class method CopyDelphiUnicodeString(aString: DelphiUnicodeString): DelphiUnicodeString; inline;
     begin
-      result := DoCopyDelphiLongString(aString);
+      result := new DelphiUnicodeString(CopyDelphiLongString(aString.fStringData));
     end;
 
     class method CopyDelphiAnsiString(aString: DelphiAnsiString): DelphiAnsiString; inline;
     begin
-      result := DoCopyDelphiLongString(aString);
+      result := new DelphiAnsiString(CopyDelphiLongString(aString.fStringData));
     end;
 
-    class method DoCopyDelphiLongString(aString: ^Void): ^Void; private;
+    class method CopyDelphiLongString(aString: ^Void): ^Void;
     begin
       if not assigned(aString) then
         exit nil;
       var lOriginal: ^DelphiLongStringRecord := aString-sizeOf(DelphiLongStringRecord);
-      var lSize := lOriginal.Length+lOriginal.ElementSize;
-      var lResult: ^DelphiLongStringRecord := DelphiMemoryHelpers.GetMem(lOriginal.Length*lOriginal.ElementSize + sizeOf(DelphiLongStringRecord) + sizeOf(Char));
-      lResult.CodePage := lOriginal.CodePage;
-      lResult.ElementSize := lOriginal.ElementSize;
-      lResult.ReferenceCount := 1;
-      lResult.Length := lOriginal.Length;
+      var lSize := lOriginal.Length*lOriginal.ElementSize;
+      var lResult := DelphiMemoryHelpers.GetMem(lOriginal.Length*lOriginal.ElementSize + sizeOf(DelphiLongStringRecord) + sizeOf(Char));
+      ^DelphiLongStringRecord(lResult).CodePage := lOriginal.CodePage;
+      ^DelphiLongStringRecord(lResult).ElementSize := lOriginal.ElementSize;
+      ^DelphiLongStringRecord(lResult).ReferenceCount := 1;
+      ^DelphiLongStringRecord(lResult).Length := lOriginal.Length;
       memcpy(lResult+sizeOf(DelphiLongStringRecord), aString, lSize);
       ^Char(lResult+sizeOf(DelphiLongStringRecord)+lSize)^ := #0;
+      result := lResult+sizeOf(DelphiLongStringRecord);
     end;
 
     //
 
-    class method CopyOnWriteDelphiUnicodeString(var aString: DelphiUnicodeString): Boolean; inline;
+    class method CopyOnWriteDelphiUnicodeString(var aString: DelphiUnicodeString): Boolean;// inline;
     begin
-      var p: ^Void := aString;
-      result := DoCopyOnWriteDelphiString(var p);
-      aString := p;
+      var p: ^Void := aString.fStringData;
+      result := CopyOnWriteDelphiString(var p);
+      aString.fStringData := p;
     end;
 
     class method CopyOnWriteDelphiAnsiString(var aString: DelphiAnsiString): Boolean; inline;
     begin
-      var p: ^Void := aString;
-      result := DoCopyOnWriteDelphiString(var p);
-      aString := p;
+      var p: ^Void := aString.fStringData;
+      result := CopyOnWriteDelphiString(var p);
+      aString.fStringData := p;
     end;
 
-    class method DoCopyOnWriteDelphiString(var aString: ^Void): Boolean; private;
+    class method CopyOnWriteDelphiString(var aString: ^Void): Boolean;
     begin
       if not assigned(aString) then
         exit false;
       var lOriginal: ^DelphiLongStringRecord := aString-sizeOf(DelphiLongStringRecord);
       if lOriginal.ReferenceCount < 2 then
         exit false;
-      aString := DoCopyDelphiLongString(aString);
-      dec(lOriginal.ReferenceCount);
+      aString := CopyDelphiLongString(aString);
+      //dec(lOriginal.ReferenceCount);
+      lOriginal.ReferenceCount := lOriginal.ReferenceCount-1;
     end;
 
     //
 
-    class method AdjustDelphiUnicodeStringReferenceCount(aString: DelphiUnicodeString; aBy: Integer); inline;
+    class method DelphiStringReferenceCount(aString: ^Void): Integer;
     begin
-      DoAdjustReferenceCount(aString, aBy);
+      if not assigned(aString) then
+        exit 0;
+      var lOriginal: ^DelphiLongStringRecord := aString-sizeOf(DelphiLongStringRecord);
+      result := lOriginal.ReferenceCount;
     end;
 
-    class method AdjustDelphiAnsiStringReferenceCount(aString: DelphiAnsiString; aBy: Integer); inline;
+    class method AdjustDelphiUnicodeStringReferenceCount(aString: DelphiUnicodeString; aBy: Integer): Integer; inline;
     begin
-      DoAdjustReferenceCount(aString, aBy);
+      result := AdjustLongStringReferenceCount(aString.fStringData, aBy);
     end;
 
-    class method DoAdjustReferenceCount(aString: ^Void; aBy: Integer); private;
+    class method AdjustDelphiAnsiStringReferenceCount(aString: DelphiAnsiString; aBy: Integer): Integer; inline;
+    begin
+      result := AdjustLongStringReferenceCount(aString.fStringData, aBy);
+    end;
+
+    class method AdjustLongStringReferenceCount(aString: ^Void; aBy: Integer): Integer;
     begin
       if not assigned(aString) then
         exit;
       var lOriginal: ^DelphiLongStringRecord := aString-sizeOf(DelphiLongStringRecord);
-      inc(lOriginal.ReferenceCount, aBy);
+      if lOriginal.ReferenceCount = -1 then
+        exit -1;
+      //inc(lOriginal.ReferenceCount, aBy);
+      lOriginal.ReferenceCount := lOriginal.ReferenceCount+aBy;
+      result := lOriginal.ReferenceCount;
+    end;
+
+    method RetainDelphiLongString(aString: ^Void): Integer;
+    begin
+      result := AdjustLongStringReferenceCount(aString, 1);
+    end;
+
+    method ReleaseDelphiLongString(aString: ^Void): Integer;
+    begin
+      result := AdjustLongStringReferenceCount(aString, 1);
+      if result = 0 then
+        FreeDelphiLongString(aString);
+    end;
+
+    //
+
+    method FreeDelphiLongString(aString: ^Void);
+    begin
+      var lOriginal := aString-sizeOf(DelphiLongStringRecord);
+      DelphiMemoryHelpers.FreeMem(lOriginal);
+    end;
+
+    method FreeDelphiWideString(aString: ^Void);
+    begin
+      var lOriginal := aString-sizeOf(DelphiWideStringRecord);
+      DelphiMemoryHelpers.FreeMem(lOriginal);
     end;
 
   end;
