@@ -16,10 +16,10 @@ type
     Length: UInt32;
   end;
 
-  DelphiStringHelpers = public class
+  DelphiStringHelpers = public static class
   public
 
-    class method DelphiUnicodeStringWithChars(aChars: ^Char; aLength: UInt32): DelphiUnicodeString;
+    method DelphiUnicodeStringWithChars(aChars: ^Char; aLength: UInt32): DelphiUnicodeString;
     begin
       if aLength = 0 then
         exit new DelphiUnicodeString;
@@ -34,7 +34,7 @@ type
       result := new DelphiUnicodeString(lResult+sizeOf(DelphiLongStringRecord));
     end;
 
-    class method DelphiAnsiStringWithChars(aChars: ^AnsiChar; aLength: UInt32): DelphiAnsiString;
+    method DelphiAnsiStringWithChars(aChars: ^AnsiChar; aLength: UInt32): DelphiAnsiString;
     begin
       if aLength = 0 then
         exit new DelphiAnsiString;
@@ -49,7 +49,7 @@ type
       result := new DelphiAnsiString(lResult+sizeOf(DelphiLongStringRecord));
     end;
 
-    class method DelphiWideStringWithChars(aChars: ^Char; aLength: UInt32): DelphiWideString;
+    method DelphiWideStringWithChars(aChars: ^Char; aLength: UInt32): DelphiWideString;
     begin
       if aLength = 0 then
         exit new DelphiWideString;
@@ -61,7 +61,7 @@ type
       result := new DelphiWideString(lResult+sizeOf(DelphiWideStringRecord));
     end;
 
-    class method DelphiShortStringWithChars(aChars: ^AnsiChar; aLength: UInt32): Delphi.System.ShortString;
+    method DelphiShortStringWithChars(aChars: ^AnsiChar; aLength: UInt32): Delphi.System.ShortString;
     begin
       if aLength > 255 then
         raise new ArgumentException("Cannot represent string longer than 255 characters as DelphiShortString");
@@ -72,30 +72,30 @@ type
 
     //
 
-    class method DelphiStringLength(aString: ^Void): Integer;
+    method DelphiStringLength(aString: ^Void): Integer;
     begin
       if assigned(aString) then
         result := ^UInt32(aString-sizeOf(UInt32))^;
     end;
 
-    class method DelphiStringLength(aString: DelphiShortString): Integer;
+    method DelphiStringLength(aString: DelphiShortString): Integer;
     begin
       result := ord(aString[0]);
     end;
 
     //
 
-    class method CopyDelphiUnicodeString(aString: DelphiUnicodeString): DelphiUnicodeString; inline;
+    method CopyDelphiUnicodeString(aString: DelphiUnicodeString): DelphiUnicodeString; inline;
     begin
       result := new DelphiUnicodeString(CopyDelphiLongString(aString.fStringData));
     end;
 
-    class method CopyDelphiAnsiString(aString: DelphiAnsiString): DelphiAnsiString; inline;
+    method CopyDelphiAnsiString(aString: DelphiAnsiString): DelphiAnsiString; inline;
     begin
       result := new DelphiAnsiString(CopyDelphiLongString(aString.fStringData));
     end;
 
-    class method CopyDelphiLongString(aString: ^Void): ^Void;
+    method CopyDelphiLongString(aString: ^Void): ^Void;
     begin
       if not assigned(aString) then
         exit nil;
@@ -113,21 +113,21 @@ type
 
     //
 
-    class method CopyOnWriteDelphiUnicodeString(var aString: DelphiUnicodeString): Boolean;// inline;
+    method CopyOnWriteDelphiUnicodeString(var aString: DelphiUnicodeString): Boolean;// inline;
     begin
       var p: ^Void := aString.fStringData;
       result := CopyOnWriteDelphiString(var p);
       aString.fStringData := p;
     end;
 
-    class method CopyOnWriteDelphiAnsiString(var aString: DelphiAnsiString): Boolean; inline;
+    method CopyOnWriteDelphiAnsiString(var aString: DelphiAnsiString): Boolean; inline;
     begin
       var p: ^Void := aString.fStringData;
       result := CopyOnWriteDelphiString(var p);
       aString.fStringData := p;
     end;
 
-    class method CopyOnWriteDelphiString(var aString: ^Void): Boolean;
+    method CopyOnWriteDelphiString(var aString: ^Void): Boolean;
     begin
       if not assigned(aString) then
         exit false;
@@ -141,7 +141,7 @@ type
 
     //
 
-    class method DelphiStringCodePage(aString: ^Void): UInt16;
+    method DelphiStringCodePage(aString: ^Void): UInt16;
     begin
       if not assigned(aString) then
         exit 0;
@@ -151,7 +151,7 @@ type
 
     //
 
-    class method DelphiStringReferenceCount(aString: ^Void): Integer;
+    method DelphiStringReferenceCount(aString: ^Void): Integer;
     begin
       if not assigned(aString) then
         exit 0;
@@ -159,17 +159,17 @@ type
       result := lOriginal.ReferenceCount;
     end;
 
-    class method AdjustDelphiUnicodeStringReferenceCount(aString: DelphiUnicodeString; aBy: Integer): Integer; inline;
+    method AdjustDelphiUnicodeStringReferenceCount(aString: DelphiUnicodeString; aBy: Integer): Integer; inline;
     begin
       result := AdjustLongStringReferenceCount(aString.fStringData, aBy);
     end;
 
-    class method AdjustDelphiAnsiStringReferenceCount(aString: DelphiAnsiString; aBy: Integer): Integer; inline;
+    method AdjustDelphiAnsiStringReferenceCount(aString: DelphiAnsiString; aBy: Integer): Integer; inline;
     begin
       result := AdjustLongStringReferenceCount(aString.fStringData, aBy);
     end;
 
-    class method AdjustLongStringReferenceCount(aString: ^Void; aBy: Integer): Integer;
+    method AdjustLongStringReferenceCount(aString: ^Void; aBy: Integer): Integer;
     begin
       if not assigned(aString) then
         exit;
