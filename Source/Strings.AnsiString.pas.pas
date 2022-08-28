@@ -27,7 +27,7 @@ type
     // Operators
     //
 
-    operator Explicit(aString: DelphiAnsiString): IslandString;
+    operator Explicit(aString: InstanceType): IslandString;
     begin
       result := IslandString:FromPAnsiChar(aString.fStringData);
     end;
@@ -42,7 +42,7 @@ type
       result := DelphiStringHelpers.DelphiAnsiStringWithChars(@aString[1], aString.Length);
     end;
 
-    operator Explicit(aString: DelphiAnsiString): DelphiShortString;
+    operator Explicit(aString: InstanceType): DelphiShortString;
     begin
       if aString.Length > 255 then
         raise new InvalidCastException("Cannot represent string longer than 255 characters as DelphiShortString");
@@ -50,7 +50,7 @@ type
     end;
 
     {$IF DARWIN}
-    operator Explicit(aString: DelphiAnsiString): CocoaString;
+    operator Explicit(aString: InstanceType): CocoaString;
     begin
       result := new CocoaString withBytes(aString.fStringData) length(DelphiStringHelpers.DelphiStringLength(aString.fStringData)) encoding(Foundation.NSStringEncoding.UTF16LittleEndianStringEncoding);
     end;
@@ -63,27 +63,27 @@ type
 
     //
 
-    operator &Add(aLeft: DelphiAnsiString; aRight: DelphiAnsiString): DelphiAnsiString;
+    operator &Add(aLeft: InstanceType; aRight: InstanceType): InstanceType;
     begin
       //result := :Delphi.System.Concat(aLeft, aRight);
     end;
 
-    operator &Add(aLeft: DelphiObject; aRight: DelphiAnsiString): DelphiAnsiString;
+    operator &Add(aLeft: DelphiObject; aRight: InstanceType): InstanceType;
     begin
       //result := aLeft.ToString + aRight;
     end;
 
-    operator &Add(aLeft: IslandObject; aRight: DelphiAnsiString): DelphiAnsiString;
+    operator &Add(aLeft: IslandObject; aRight: InstanceType): InstanceType;
     begin
       //result := (aLeft.ToString as DelphiString) + aRight;
     end;
 
-    operator &Add(aLeft: DelphiAnsiString; aRight: DelphiObject): DelphiAnsiString;
+    operator &Add(aLeft: InstanceType; aRight: DelphiObject): InstanceType;
     begin
       result := aLeft + aRight.ToString;
     end;
 
-    operator &Add(aLeft: DelphiAnsiString; aRight: IslandObject): DelphiAnsiString;
+    operator &Add(aLeft: InstanceType; aRight: IslandObject): InstanceType;
     begin
       result := aLeft + (aRight.ToString as DelphiString);
     end;

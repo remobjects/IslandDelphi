@@ -26,7 +26,7 @@ type
     // Operators
     //
 
-    operator Explicit(aString: DelphiUnicodeString): IslandString;
+    operator Explicit(aString: InstanceType): IslandString;
     begin
       result := IslandString:FromPChar(aString.fStringData);
     end;
@@ -36,7 +36,7 @@ type
       result := aString:ToDelphiUnicodeString;
     end;
 
-    operator Explicit(aString: DelphiUnicodeString): DelphiWideString;
+    operator Explicit(aString: InstanceType): DelphiWideString;
     begin
       result := DelphiStringHelpers.DelphiWideStringWithChars(aString.fStringData, aString.Length);
     end;
@@ -47,7 +47,7 @@ type
     end;
 
     {$IF DARWIN}
-    operator Explicit(aString: DelphiUnicodeString): CocoaString;
+    operator Explicit(aString: InstanceType): CocoaString;
     begin
       result := new CocoaString withBytes(aString.fStringData) length(DelphiStringHelpers.DelphiStringLength(aString.fStringData)) encoding(Foundation.NSStringEncoding.UTF16LittleEndianStringEncoding);
     end;
@@ -60,12 +60,12 @@ type
 
     //
 
-    operator &Add(aLeft: DelphiUnicodeString; aRight: DelphiUnicodeString): DelphiUnicodeString;
+    operator &Add(aLeft: InstanceType; aRight: InstanceType): InstanceType;
     begin
       //result := :Delphi.System.Concat(aLeft, aRight);
     end;
 
-    operator &Add(aLeft: DelphiUnicodeString; aRight: DelphiWideString): DelphiUnicodeString;
+    operator &Add(aLeft: InstanceType; aRight: DelphiWideString): InstanceType;
     begin
       //result := :Delphi.System.Concat(aLeft, aRight);
     end;
@@ -75,22 +75,22 @@ type
       //result := :Delphi.System.Concat(aLeft, aRight);
     end;
 
-    operator &Add(aLeft: DelphiObject; aRight: DelphiUnicodeString): DelphiUnicodeString;
+    operator &Add(aLeft: DelphiObject; aRight: InstanceType): InstanceType;
     begin
-      result := aLeft.ToString + aRight;
+      //result := aLeft.ToString + aRight;
     end;
 
-    operator &Add(aLeft: IslandObject; aRight: DelphiUnicodeString): DelphiUnicodeString;
+    operator &Add(aLeft: IslandObject; aRight: InstanceType): InstanceType;
     begin
       result := (aLeft.ToString as DelphiString) + aRight;
     end;
 
-    operator &Add(aLeft: DelphiUnicodeString; aRight: DelphiObject): DelphiUnicodeString;
+    operator &Add(aLeft: InstanceType; aRight: DelphiObject): InstanceType;
     begin
       result := aLeft + aRight.ToString;
     end;
 
-    operator &Add(aLeft: DelphiUnicodeString; aRight: IslandObject): DelphiUnicodeString;
+    operator &Add(aLeft: InstanceType; aRight: IslandObject): InstanceType;
     begin
       result := aLeft + (aRight.ToString as DelphiString);
     end;
@@ -119,4 +119,10 @@ type
     end;
 
   end;
+
+  method Length(aString: DelphiUnicodeString): Integer;
+  begin
+    result := aString.Length;
+  end;
+
 end.
