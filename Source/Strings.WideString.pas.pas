@@ -66,7 +66,9 @@ type
 
     operator &Add(aLeft: InstanceType; aRight: InstanceType): InstanceType;
     begin
-      //result := :Delphi.System.Concat(aLeft, aRight);
+      result := DelphiStringHelpers.EmptyDelphiWideStringWithCapacity(aLeft.Length+aRight.Length);
+      memcpy(result.fStringData,                             aLeft.fStringData,  aLeft.Length*sizeOf(Char));
+      memcpy(result.fStringData+aRight.Length**sizeOf(Char), aRight.fStringData, aRight.Length*sizeOf(Char));
     end;
 
     // DelphiObject

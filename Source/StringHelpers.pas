@@ -54,7 +54,7 @@ type
       if aLength = 0 then
         exit new DelphiWideString;
       var lSize := aLength*sizeOf(Char);
-      var lResult := DelphiMemoryHelpers.GetMem(aLength+sizeOf(UInt32)+sizeOf(Char));
+      var lResult := DelphiMemoryHelpers.GetMem(lSize+sizeOf(UInt32)+sizeOf(Char));
       memcpy(lResult+sizeOf(UInt32), aChars, lSize);
       ^UInt32(lResult)^ := aLength;
       ^Char(lResult+sizeOf(UInt32)+lSize)^ := #0;
@@ -68,6 +68,47 @@ type
       result[0] := AnsiChar(Byte(aLength and $ff));
       if aLength > 0 then
         memcpy(@(result[1]), aChars, aLength);
+    end;
+
+    //
+
+    method EmptyDelphiUnicodeStringWithCapacity(aLength: UInt32): DelphiUnicodeString;
+    begin
+      if aLength = 0 then
+        exit new DelphiUnicodeString;
+      var lSize := aLength*sizeOf(Char);
+      var lResult := DelphiMemoryHelpers.GetMem(lSize+sizeOf(DelphiLongStringRecord)+sizeOf(Char));
+      ^DelphiLongStringRecord(lResult).CodePage := 0; // ToDo
+      ^DelphiLongStringRecord(lResult).ElementSize := sizeOf(Char);
+      ^DelphiLongStringRecord(lResult).ReferenceCount := 0;//1;
+      ^DelphiLongStringRecord(lResult).Length := aLength;
+      ^AnsiChar(lResult+sizeOf(DelphiLongStringRecord)+lSize)^ := #0;
+      result := new DelphiUnicodeString(lResult+sizeOf(DelphiLongStringRecord));
+    end;
+
+    method EmptyDelphiAnsiStringWithCapacity(aLength: UInt32): DelphiAnsiString;
+    begin
+      if aLength = 0 then
+        exit new DelphiAnsiString;
+      var lSize := aLength*sizeOf(AnsiChar);
+      var lResult := DelphiMemoryHelpers.GetMem(lSize+sizeOf(DelphiLongStringRecord)+sizeOf(AnsiChar));
+      ^DelphiLongStringRecord(lResult).CodePage := 0; // ToDo
+      ^DelphiLongStringRecord(lResult).ElementSize := sizeOf(AnsiChar);
+      ^DelphiLongStringRecord(lResult).ReferenceCount := 0;//1;
+      ^DelphiLongStringRecord(lResult).Length := aLength;
+      ^AnsiChar(lResult+sizeOf(DelphiLongStringRecord)+lSize)^ := #0;
+      result := new DelphiAnsiString(lResult+sizeOf(DelphiLongStringRecord));
+    end;
+
+    method EmptyDelphiWideStringWithCapacity(aLength: UInt32): DelphiWideString;
+    begin
+      if aLength = 0 then
+        exit new DelphiWideString;
+      var lSize := aLength*sizeOf(Char);
+      var lResult := DelphiMemoryHelpers.GetMem(lSize+sizeOf(UInt32)+sizeOf(Char));
+      ^UInt32(lResult)^ := aLength;
+      ^Char(lResult+sizeOf(UInt32)+lSize)^ := #0;
+      result := new DelphiWideString(lResult+sizeOf(DelphiWideStringRecord));
     end;
 
     //

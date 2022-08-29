@@ -108,6 +108,9 @@ type
 
     operator &Add(aLeft: InstanceType; aRight: InstanceType): InstanceType;
     begin
+      result := DelphiStringHelpers.EmptyDelphiAnsoStringWithCapacity(aLeft.Length+aRight.Length);
+      memcpy(result.fStringData,                                 aLeft.fStringData,  aLeft.Length*sizeOf(AnsiChar));
+      memcpy(result.fStringData+aRight.Length**sizeOf(AnsiChar), aRight.fStringData, aRight.Length*sizeOf(AnsiChar));
       //result := :Delphi.System.Concat(aLeft, aRight);
     end;
 
