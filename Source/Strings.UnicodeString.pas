@@ -191,11 +191,9 @@ type
       if (@aDestination) = (@aSource) then
         exit;
       if aDestination.fStringData = aSource.fStringData then
-        exit;
-      if assigned(aDestination.fStringData) then
-        Release(var aDestination); // just like assign, but this one releases old
+        exit; {$HINT review if this case should still inc the ref count}
       aDestination.fStringData := aSource.fStringData;
-      DelphiStringHelpers.AdjustLongStringReferenceCount(^Void(aSource.fStringData), 1);
+      DelphiStringHelpers.RetainDelphiLongString(aSource.fStringData);
     end;
 
     constructor &Copy(var aSource: DelphiUnicodeString);
@@ -204,7 +202,7 @@ type
       if not assigned(aSource.fStringData) then
         exit;
       fStringData := aSource.fStringData;
-      DelphiStringHelpers.AdjustLongStringReferenceCount(^Void(aSource.fStringData), 1);
+      DelphiStringHelpers.RetainDelphiLongString(aSource.fStringData);
     end;
 
     class operator Assign(var aDestination: DelphiUnicodeString; var aSource: DelphiUnicodeString);
@@ -214,33 +212,29 @@ type
         exit;
       if aDestination.fStringData = aSource.fStringData then
         exit;
+      if assigned(aDestination.fStringData) then
+        DelphiStringHelpers.ReleaseDelphiUnicodeString(var aDestination);
       aDestination.fStringData := aSource.fStringData;
-      DelphiStringHelpers.AdjustLongStringReferenceCount(^Void(aSource.fStringData), 1);
+      DelphiStringHelpers.RetainDelphiLongString(aSource.fStringData);
     end;
 
-    //class method Assign(var aDestination, aSource: DelphiUnicodeString);
-    //begin
-      //writeLn($"DelphiUnicodeString: Assign {IntPtr(aSource.fStringData)} => {IntPtr(aDestination.fStringData)}");
-      //if (@aDestination) = (@aSource) then
-        //exit;
-      //if aDestination.fStringData = aSource.fStringData then
-        //exit;
-      //aDestination.fStringData := aSource.fStringData;
-      //DelphiStringHelpers.AdjustLongStringReferenceCount(^Void(aSource.fStringData), 1);
-    //end;
-
-    class method Release(var aDestination: DelphiUnicodeString);
+    class method Assign(var aDestination, aSource: DelphiUnicodeString);
     begin
-      writeLn($"DelphiUnicodeString: Release {IntPtr(aDestination.fStringData)} {DelphiStringHelpers.DelphiStringReferenceCount(^Void(aDestination.fStringData))}");
-      if not assigned(aDestination.fStringData) then
+      writeLn($"DelphiUnicodeString: Assign method {IntPtr(aSource.fStringData)} => {IntPtr(aDestination.fStringData)}");
+      if (@aDestination) = (@aSource) then
         exit;
-      DelphiStringHelpers.ReleaseDelphiLongString(^Void(aDestination.fStringData))
+      if aDestination.fStringData = aSource.fStringData then
+        exit;
+      if assigned(aDestination.fStringData) then
+        DelphiStringHelpers.ReleaseDelphiUnicodeString(var aDestination);
+      aDestination.fStringData := aSource.fStringData;
+      DelphiStringHelpers.RetainDelphiLongString(aSource.fStringData);
     end;
 
     finalizer;
     begin
-      writeLn("DelphiUnicodeString: Finalizer");
-      //Release(var self);
+      writeLn($"DelphiUnicodeString: Finalizer {IntPtr(self.fStringData)}");
+      DelphiStringHelpers.ReleaseDelphiUnicodeString(var self);
     end;
 
   end;

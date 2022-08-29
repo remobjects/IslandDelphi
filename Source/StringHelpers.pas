@@ -223,34 +223,64 @@ type
       result := lOriginal.ReferenceCount;
     end;
 
+    //
+
+    method RetainDelphiUnicodeString(var aString: DelphiUnicodeString): Integer; inline;
+    begin
+      result := RetainDelphiLongString(aString.fStringData);
+    end;
+
+    method RetainDelphiAnsiString(var aString: DelphiAnsiString): Integer; inline;
+    begin
+      result := RetainDelphiLongString(aString.fStringData);
+    end;
+
     method RetainDelphiLongString(aString: ^Void): Integer;
     begin
       result := AdjustLongStringReferenceCount(aString, 1);
     end;
 
-    method ReleaseDelphiLongString(aString: ^Void): Integer;
+    //
+
+    method ReleaseDelphiUnicodeString(var aString: DelphiUnicodeString): Integer; inline;
+    begin
+      result := ReleaseDelphiLongString(var aString.fStringData);
+      if result = 0 then
+        aString.fStringData := nil;
+    end;
+
+    method ReleaseDelphiAnsiString(var aString: DelphiAnsiString): Integer; inline;
+    begin
+      result := ReleaseDelphiLongString(var aString.fStringData);
+      if result = 0 then
+        aString.fStringData := nil;
+    end;
+
+    method ReleaseDelphiLongString(var aString: ^Void): Integer;
     begin
       result := AdjustLongStringReferenceCount(aString, -1);
       if result = 0 then
-        FreeDelphiLongString(aString);
+        FreeDelphiLongString(var aString);
     end;
 
     //
 
-    method FreeDelphiLongString(aString: ^Void);
+    method FreeDelphiLongString(var aString: ^Void);
     begin
       if not assigned(aString) then
         exit;
       var lOriginal := aString-sizeOf(DelphiLongStringRecord);
       DelphiMemoryHelpers.FreeMem(lOriginal);
+      aString := nil;
     end;
 
-    method FreeDelphiWideString(aString: ^Void);
+    method FreeDelphiWideString(var aString: ^Void);
     begin
       if not assigned(aString) then
         exit;
       var lOriginal := aString-sizeOf(DelphiWideStringRecord);
       DelphiMemoryHelpers.FreeMem(lOriginal);
+      aString := nil;
     end;
 
   end;

@@ -1,7 +1,5 @@
 ﻿namespace RemObjects.Elements.System;
 
-[assembly: RemObjects.Elements.System.LifetimeStrategyOverrideAttribute(typeOf(DelphiAnsiString), typeOf(DelphiLongStringRC))]
-
 type
   [Packed]
   DelphiAnsiString = public record
