@@ -1,5 +1,7 @@
 ﻿namespace RemObjects.Elements.System;
 
+[assembly: RemObjects.Elements.System.LifetimeStrategyOverrideAttribute(typeOf(DelphiAnsiString), typeOf(DelphiLongStringRC))]
+
 type
   [Packed]
   DelphiAnsiString = public record
@@ -19,7 +21,8 @@ type
       end
       write begin
         CheckIndex(aIndex);
-        DelphiStringHelpers.CopyOnWriteDelphiAnsiString(var self);
+        if DelphiStringHelpers.CopyOnWriteDelphiAnsiString(var self) then
+          DelphiStringHelpers.AdjustDelphiAnsiStringReferenceCount(self, 1); // seems hacky top do this here?
         (fStringData+aIndex-1)^ := value;
       end; default;
 
@@ -47,6 +50,12 @@ type
       if aString.Length > 255 then
         raise new InvalidCastException("Cannot represent string longer than 255 characters as DelphiShortString");
       result := DelphiStringHelpers.DelphiShortStringWithChars(aString.fStringData, aString.Length);
+    end;
+
+    operator Implicit(aString: ^AnsiChar): DelphiAnsiString;
+    begin
+      if assigned(aString) then
+        result := DelphiStringHelpers.DelphiAnsiStringWithChars(aString, PAnsiCharLen(aString));
     end;
 
     {$IF DARWIN}
@@ -112,4 +121,21 @@ type
     end;
 
   end;
+
+method Length(aString: DelphiAnsiString): Integer;
+begin
+  result := aString.Length;
+end;
+
+method PAnsiCharLen(aChars: ^AnsiChar): Integer;
+begin
+  if not assigned(aChars) then
+    exit 0;
+  result := 0;
+  var c := aChars;
+  while c^ ≠ #0 do
+    inc(c);
+  result := c-aChars;
+end;
+
 end.

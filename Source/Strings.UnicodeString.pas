@@ -34,7 +34,7 @@ type
       result := IslandString:FromPChar(aString.fStringData);
     end;
 
-    operator Explicit(aString: IslandString): DelphiUnicodeString;
+    operator Implicit(aString: IslandString): DelphiUnicodeString;
     begin
       result := aString:ToDelphiUnicodeString;
     end;
@@ -47,6 +47,12 @@ type
     operator Explicit(aString: DelphiWideString): DelphiUnicodeString;
     begin
       result := DelphiStringHelpers.DelphiUnicodeStringWithChars(aString.fStringData, aString.Length);
+    end;
+
+    operator Implicit(aString: ^Char): DelphiUnicodeString;
+    begin
+      if assigned(aString) then
+        result := DelphiStringHelpers.DelphiUnicodeStringWithChars(aString, PCharLen(aString));
     end;
 
     {$IF DARWIN}
@@ -123,9 +129,20 @@ type
 
   end;
 
-  method Length(aString: DelphiUnicodeString): Integer;
-  begin
-    result := aString.Length;
-  end;
+method Length(aString: DelphiUnicodeString): Integer;
+begin
+  result := aString.Length;
+end;
+
+method PCharLen(aChars: ^Char): Integer;
+begin
+  if not assigned(aChars) then
+    exit 0;
+  result := 0;
+  var c := aChars;
+  while c^ ≠ #0 do
+    inc(c);
+  result := c-aChars;
+end;
 
 end.

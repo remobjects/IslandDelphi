@@ -18,8 +18,9 @@ type
       end
       write begin
         CheckIndex(aIndex);
-        //DelphiStringHelpers.CopyOnWriteDelphiWideString(var self);
-        (fStringData+aIndex)^ := value;
+        //if DelphiStringHelpers.CopyOnWriteDelphiUnicodeString(var self) then
+          //DelphiStringHelpers.AdjustDelphiUnicodeStringReferenceCount(self, 1); // seems hacky top do this here?
+        (fStringData+aIndex-1)^ := value;
       end; default;
 
     //
@@ -31,7 +32,7 @@ type
       result := IslandString:FromPChar(aString.fStringData);
     end;
 
-    operator Explicit(aString: IslandString): DelphiWideString;
+    operator Implicit(aString: IslandString): DelphiWideString;
     begin
       result := aString:ToDelphiWideString;
     end;
@@ -42,7 +43,13 @@ type
       result := new CocoaString withBytes(aString.fStringData) length(DelphiStringHelpers.DelphiStringLength(aString.fStringData)) encoding(Foundation.NSStringEncoding.UTF16LittleEndianStringEncoding);
     end;
 
-    operator Explicit(aString: CocoaString): DelphiWideString;
+    operator Implicit(aString: ^Char): DelphiWideString;
+    begin
+      if assigned(aString) then
+        result := DelphiStringHelpers.DelphiWideStringWithChars(aString, PCharLen(aString));
+    end;
+
+  operator Explicit(aString: CocoaString): DelphiWideString;
     begin
       result := aString:ToDelphiWideString;
     end;
@@ -99,4 +106,10 @@ type
     end;
 
   end;
+
+method Length(aString: DelphiWideString): Integer;
+begin
+  result := aString.Length;
+end;
+
 end.
