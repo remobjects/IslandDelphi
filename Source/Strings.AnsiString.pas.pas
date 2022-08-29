@@ -32,7 +32,7 @@ type
 
     operator Explicit(aString: InstanceType): IslandString;
     begin
-      result := IslandString:FromPAnsiChar(aString.fStringData);
+      result := IslandString:FromPAnsiChar(aString.fStringData, aString.Length);
     end;
 
     operator Explicit(aString: IslandString): DelphiAnsiString;
@@ -42,7 +42,8 @@ type
 
     operator Explicit(aString: DelphiShortString): DelphiAnsiString;
     begin
-      result := DelphiStringHelpers.DelphiAnsiStringWithChars(@aString[1], aString.Length);
+      if aString[0] > #0 then
+        result := DelphiStringHelpers.DelphiAnsiStringWithChars(@aString[1], ord(aString[0]));
     end;
 
     operator Explicit(aString: InstanceType): DelphiShortString;

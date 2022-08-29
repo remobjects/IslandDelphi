@@ -29,7 +29,7 @@ type
 
     operator Explicit(aString: InstanceType): IslandString;
     begin
-      result := IslandString:FromPChar(aString.fStringData);
+      result := IslandString:FromPChar(aString.fStringData, aString.Length);
     end;
 
     operator Implicit(aString: IslandString): DelphiWideString;
