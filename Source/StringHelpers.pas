@@ -27,7 +27,7 @@ type
       var lResult := DelphiMemoryHelpers.GetMem(lSize+sizeOf(DelphiLongStringRecord)+sizeOf(Char));
       ^DelphiLongStringRecord(lResult).CodePage := 0; // ToDo
       ^DelphiLongStringRecord(lResult).ElementSize := sizeOf(Char);
-      ^DelphiLongStringRecord(lResult).ReferenceCount := 1;
+      ^DelphiLongStringRecord(lResult).ReferenceCount := 0;//1;
       ^DelphiLongStringRecord(lResult).Length := aLength;
       memcpy(lResult+sizeOf(DelphiLongStringRecord), aChars, lSize);
       ^Char(lResult+sizeOf(DelphiLongStringRecord)+lSize)^ := #0;
@@ -42,7 +42,7 @@ type
       var lResult := DelphiMemoryHelpers.GetMem(lSize+sizeOf(DelphiLongStringRecord)+sizeOf(AnsiChar));
       ^DelphiLongStringRecord(lResult).CodePage := 0; // ToDo
       ^DelphiLongStringRecord(lResult).ElementSize := sizeOf(AnsiChar);
-      ^DelphiLongStringRecord(lResult).ReferenceCount := 1;
+      ^DelphiLongStringRecord(lResult).ReferenceCount := 0;//1;
       ^DelphiLongStringRecord(lResult).Length := aLength;
       memcpy(lResult+sizeOf(DelphiLongStringRecord), aChars, lSize);
       ^AnsiChar(lResult+sizeOf(DelphiLongStringRecord)+lSize)^ := #0;
@@ -104,7 +104,7 @@ type
       var lResult := DelphiMemoryHelpers.GetMem(lOriginal.Length*lOriginal.ElementSize + sizeOf(DelphiLongStringRecord) + sizeOf(Char));
       ^DelphiLongStringRecord(lResult).CodePage := lOriginal.CodePage;
       ^DelphiLongStringRecord(lResult).ElementSize := lOriginal.ElementSize;
-      ^DelphiLongStringRecord(lResult).ReferenceCount := 1;
+      ^DelphiLongStringRecord(lResult).ReferenceCount := 0;//1
       ^DelphiLongStringRecord(lResult).Length := lOriginal.Length;
       memcpy(lResult+sizeOf(DelphiLongStringRecord), aString, lSize);
       ^Char(lResult+sizeOf(DelphiLongStringRecord)+lSize)^ := #0;
@@ -137,6 +137,7 @@ type
       aString := CopyDelphiLongString(aString);
       //dec(lOriginal.ReferenceCount);
       lOriginal.ReferenceCount := lOriginal.ReferenceCount-1;
+      result := true;
     end;
 
     //
@@ -188,7 +189,7 @@ type
 
     method ReleaseDelphiLongString(aString: ^Void): Integer;
     begin
-      result := AdjustLongStringReferenceCount(aString, 1);
+      result := AdjustLongStringReferenceCount(aString, -1);
       if result = 0 then
         FreeDelphiLongString(aString);
     end;
@@ -197,12 +198,16 @@ type
 
     method FreeDelphiLongString(aString: ^Void);
     begin
+      if not assigned(aString) then
+        exit;
       var lOriginal := aString-sizeOf(DelphiLongStringRecord);
       DelphiMemoryHelpers.FreeMem(lOriginal);
     end;
 
     method FreeDelphiWideString(aString: ^Void);
     begin
+      if not assigned(aString) then
+        exit;
       var lOriginal := aString-sizeOf(DelphiWideStringRecord);
       DelphiMemoryHelpers.FreeMem(lOriginal);
     end;
