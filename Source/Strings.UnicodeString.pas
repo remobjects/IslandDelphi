@@ -34,7 +34,7 @@ type
       result := IslandString:FromPChar(aString.fStringData, aString.Length);
     end;
 
-    operator Implicit(aString: IslandString): DelphiUnicodeString;
+    operator Implicit(aString: IslandString): InstanceType;
     begin
       result := aString:ToDelphiUnicodeString;
     end;
@@ -44,12 +44,12 @@ type
       result := DelphiStringHelpers.DelphiWideStringWithChars(aString.fStringData, aString.Length);
     end;
 
-    operator Explicit(aString: DelphiWideString): DelphiUnicodeString;
+    operator Explicit(aString: DelphiWideString): InstanceType;
     begin
       result := DelphiStringHelpers.DelphiUnicodeStringWithChars(aString.fStringData, aString.Length);
     end;
 
-    operator Implicit(aString: ^Char): DelphiUnicodeString;
+    operator Implicit(aString: ^Char): InstanceType;
     begin
       if assigned(aString) then
         result := DelphiStringHelpers.DelphiUnicodeStringWithChars(aString, PCharLen(aString));
@@ -61,7 +61,7 @@ type
       result := new CocoaString withBytes(aString.fStringData) length(DelphiStringHelpers.DelphiStringLength(aString.fStringData)) encoding(Foundation.NSStringEncoding.UTF16LittleEndianStringEncoding);
     end;
 
-    operator Explicit(aString: CocoaString): DelphiUnicodeString;
+    operator Explicit(aString: CocoaString): InstanceType;
     begin
       result := aString:ToDelphiUnicodeString;
     end;
@@ -79,7 +79,7 @@ type
       //result := :Delphi.System.Concat(aLeft, aRight);
     end;
 
-    operator &Add(aLeft: DelphiWideString; aRight: DelphiWideString): DelphiUnicodeString;
+    operator &Add(aLeft: DelphiWideString; aRight: DelphiWideString): InstanceType;
     begin
       //result := :Delphi.System.Concat(aLeft, aRight);
     end;

@@ -35,12 +35,12 @@ type
       result := IslandString:FromPAnsiChar(aString.fStringData, aString.Length);
     end;
 
-    operator Explicit(aString: IslandString): DelphiAnsiString;
+    operator Explicit(aString: IslandString): InstanceType;
     begin
       result := aString:ToDelphiAnsiString;
     end;
 
-    operator Explicit(aString: DelphiShortString): DelphiAnsiString;
+    operator Explicit(aString: DelphiShortString): InstanceType;
     begin
       if aString[0] > #0 then
         result := DelphiStringHelpers.DelphiAnsiStringWithChars(@aString[1], ord(aString[0]));
@@ -53,7 +53,7 @@ type
       result := DelphiStringHelpers.DelphiShortStringWithChars(aString.fStringData, aString.Length);
     end;
 
-    operator Implicit(aString: ^AnsiChar): DelphiAnsiString;
+    operator Implicit(aString: ^AnsiChar): InstanceType;
     begin
       if assigned(aString) then
         result := DelphiStringHelpers.DelphiAnsiStringWithChars(aString, PAnsiCharLen(aString));
@@ -65,7 +65,7 @@ type
       result := new CocoaString withBytes(aString.fStringData) length(DelphiStringHelpers.DelphiStringLength(aString.fStringData)) encoding(Foundation.NSStringEncoding.UTF16LittleEndianStringEncoding);
     end;
 
-    operator Explicit(aString: CocoaString): DelphiAnsiString;
+    operator Explicit(aString: CocoaString): InstanceType;
     begin
       result := aString:ToDelphiAnsiString;
     end;

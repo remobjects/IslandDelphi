@@ -32,7 +32,7 @@ type
       result := IslandString:FromPChar(aString.fStringData, aString.Length);
     end;
 
-    operator Implicit(aString: IslandString): DelphiWideString;
+    operator Implicit(aString: IslandString): InstanceType;
     begin
       result := aString:ToDelphiWideString;
     end;
@@ -43,13 +43,13 @@ type
       result := new CocoaString withBytes(aString.fStringData) length(DelphiStringHelpers.DelphiStringLength(aString.fStringData)) encoding(Foundation.NSStringEncoding.UTF16LittleEndianStringEncoding);
     end;
 
-    operator Implicit(aString: ^Char): DelphiWideString;
+    operator Implicit(aString: ^Char): InstanceType;
     begin
       if assigned(aString) then
         result := DelphiStringHelpers.DelphiWideStringWithChars(aString, PCharLen(aString));
     end;
 
-  operator Explicit(aString: CocoaString): DelphiWideString;
+    operator Explicit(aString: CocoaString): InstanceType;
     begin
       result := aString:ToDelphiWideString;
     end;
