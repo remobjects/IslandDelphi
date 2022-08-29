@@ -79,22 +79,22 @@ type
     operator &Add(aLeft: InstanceType; aRight: InstanceType): InstanceType;
     begin
       result := DelphiStringHelpers.EmptyDelphiUnicodeStringWithCapacity(aLeft.Length+aRight.Length);
-      memcpy(result.fStringData,                             aLeft.fStringData,  aLeft.Length*sizeOf(Char));
-      memcpy(result.fStringData+aRight.Length**sizeOf(Char), aRight.fStringData, aRight.Length*sizeOf(Char));
+      memcpy(result.fStringData,              aLeft.fStringData,  aLeft.Length*sizeOf(Char));
+      memcpy(result.fStringData+aLeft.Length, aRight.fStringData, aRight.Length*sizeOf(Char));
     end;
 
     operator &Add(aLeft: InstanceType; aRight: DelphiWideString): InstanceType;
     begin
       result := DelphiStringHelpers.EmptyDelphiUnicodeStringWithCapacity(aLeft.Length+aRight.Length);
-      memcpy(result.fStringData,                             aLeft.fStringData,  aLeft.Length*sizeOf(Char));
-      memcpy(result.fStringData+aRight.Length**sizeOf(Char), aRight.fStringData, aRight.Length*sizeOf(Char));
+      memcpy(result.fStringData,              aLeft.fStringData,  aLeft.Length*sizeOf(Char));
+      memcpy(result.fStringData+aLeft.Length, aRight.fStringData, aRight.Length*sizeOf(Char));
     end;
 
     operator &Add(aLeft: DelphiWideString; aRight: InstanceType): InstanceType;
     begin
       result := DelphiStringHelpers.EmptyDelphiUnicodeStringWithCapacity(aLeft.Length+aRight.Length);
-      memcpy(result.fStringData,                             aLeft.fStringData,  aLeft.Length*sizeOf(Char));
-      memcpy(result.fStringData+aRight.Length**sizeOf(Char), aRight.fStringData, aRight.Length*sizeOf(Char));
+      memcpy(result.fStringData,              aLeft.fStringData,  aLeft.Length*sizeOf(Char));
+      memcpy(result.fStringData+aLeft.Length, aRight.fStringData, aRight.Length*sizeOf(Char));
     end;
 
     // DelphiObject
@@ -126,12 +126,24 @@ type
     {$IF DARWIN}
     operator &Add(aLeft: CocoaObject; aRight: InstanceType): InstanceType;
     begin
-      result := (aLeft.description as DelphiUnicodeString) + aRight;
+      var lLeft := aLeft.description;
+      var lLength := lLeft.length;
+      var lBytes := new Char[lLength];
+      lLeft.getCharacters(lBytes);
+      result := DelphiStringHelpers.EmptyDelphiUnicodeStringWithCapacity(lLength+aRight.Length);
+      memcpy(result.fStringData,         @(lBytes[0]),       lLength*sizeOf(Char));
+      memcpy(result.fStringData+lLength, aRight.fStringData, aRight.Length*sizeOf(Char));
     end;
 
     operator &Add(aLeft: InstanceType; aRight: CocoaObject): InstanceType;
     begin
-      result := aLeft + (aRight.description as DelphiUnicodeString);
+      var lRight := aRight.description;
+      var lLength := lRight.length;
+      var lBytes := new Char[lLength];
+      lRight.getCharacters(lBytes);
+      result := DelphiStringHelpers.EmptyDelphiUnicodeStringWithCapacity(aLeft.Length+lLength);
+      memcpy(result.fStringData,              aLeft.fStringData, aLeft.Length*sizeOf(Char));
+      memcpy(result.fStringData+aLeft.Length, @(lBytes[0]),      lLength*sizeOf(Char));
     end;
     {$ENDIF}
 

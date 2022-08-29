@@ -67,32 +67,44 @@ type
     operator &Add(aLeft: InstanceType; aRight: InstanceType): InstanceType;
     begin
       result := DelphiStringHelpers.EmptyDelphiWideStringWithCapacity(aLeft.Length+aRight.Length);
-      memcpy(result.fStringData,                             aLeft.fStringData,  aLeft.Length*sizeOf(Char));
-      memcpy(result.fStringData+aRight.Length**sizeOf(Char), aRight.fStringData, aRight.Length*sizeOf(Char));
+      memcpy(result.fStringData,              aLeft.fStringData,  aLeft.Length*sizeOf(Char));
+      memcpy(result.fStringData+aLeft.Length, aRight.fStringData, aRight.Length*sizeOf(Char));
     end;
 
     // DelphiObject
 
     operator &Add(aLeft: DelphiObject; aRight: InstanceType): InstanceType;
     begin
-      result := aLeft.ToString as DelphiWideString + aRight; {$HINT This needs memory management}
+      var lLeft := aLeft.ToString;
+      result := DelphiStringHelpers.EmptyDelphiWideStringWithCapacity(lLeft.Length+aRight.Length);
+      memcpy(result.fStringData,              lLeft.fStringData,  lLeft.Length*sizeOf(Char));
+      memcpy(result.fStringData+lLeft.Length, aRight.fStringData, aRight.Length*sizeOf(Char));
     end;
 
     operator &Add(aLeft: InstanceType; aRight: DelphiObject): InstanceType;
     begin
-      result := aLeft + (aRight.ToString as DelphiWideString); {$HINT This needs memory management}
+      var lRight := aRight.ToString;
+      result := DelphiStringHelpers.EmptyDelphiWideStringWithCapacity(aLeft.Length+lRight.Length);
+      memcpy(result.fStringData,              aLeft.fStringData,  aLeft.Length*sizeOf(Char));
+      memcpy(result.fStringData+aLeft.Length, lRight.fStringData, lRight.Length*sizeOf(Char));
     end;
 
-    // IslandObjecty
+    // IslandObject
 
     operator &Add(aLeft: IslandObject; aRight: InstanceType): InstanceType;
     begin
-      result := (aLeft.ToString as DelphiWideString) + aRight; {$HINT This needs memory management}
+      var lLeft := aLeft.ToString;
+      result := DelphiStringHelpers.EmptyDelphiWideStringWithCapacity(lLeft.Length+aRight.Length);
+      memcpy(result.fStringData,              lLeft.FirstChar,    lLeft.Length*sizeOf(Char));
+      memcpy(result.fStringData+lLeft.Length, aRight.fStringData, aRight.Length*sizeOf(Char));
     end;
 
     operator &Add(aLeft: InstanceType; aRight: IslandObject): InstanceType;
     begin
-      result := aLeft + (aRight.ToString as DelphiWideString); {$HINT This needs memory management}
+      var lRight := aRight.ToString;
+      result := DelphiStringHelpers.EmptyDelphiWideStringWithCapacity(aLeft.Length+lRight.Length);
+      memcpy(result.fStringData,              aLeft.fStringData, aLeft.Length*sizeOf(Char));
+      memcpy(result.fStringData+aLeft.Length, lRight.FirstChar,  lRight.Length*sizeOf(Char));
     end;
 
     // CocoaObject
@@ -100,12 +112,24 @@ type
     {$IF DARWIN}
     operator &Add(aLeft: CocoaObject; aRight: InstanceType): InstanceType;
     begin
-      result := (aLeft.description as DelphiWideString) + aRight; {$HINT This needs memory management}
+      var lLeft := aLeft.description;
+      var lLength := lLeft.length;
+      var lBytes := new Char[lLength];
+      lLeft.getCharacters(lBytes);
+      result := DelphiStringHelpers.EmptyDelphiWideStringWithCapacity(lLength+aRight.Length);
+      memcpy(result.fStringData,         @(lBytes[0]),       lLength*sizeOf(Char));
+      memcpy(result.fStringData+lLength, aRight.fStringData, aRight.Length*sizeOf(Char));
     end;
 
     operator &Add(aLeft: InstanceType; aRight: CocoaObject): InstanceType;
     begin
-      result := aLeft + (aRight.description as DelphiWideString); {$HINT This needs memory management}
+      var lRight := aRight.description;
+      var lLength := lRight.length;
+      var lBytes := new Char[lLength];
+      lRight.getCharacters(lBytes);
+      result := DelphiStringHelpers.EmptyDelphiWideStringWithCapacity(aLeft.Length+lLength);
+      memcpy(result.fStringData,              aLeft.fStringData, aLeft.Length*sizeOf(Char));
+      memcpy(result.fStringData+aLeft.Length, @(lBytes[0]),      lLength*sizeOf(Char));
     end;
     {$ENDIF}
 

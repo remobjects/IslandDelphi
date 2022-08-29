@@ -108,9 +108,9 @@ type
 
     operator &Add(aLeft: InstanceType; aRight: InstanceType): InstanceType;
     begin
-      result := DelphiStringHelpers.EmptyDelphiAnsoStringWithCapacity(aLeft.Length+aRight.Length);
-      memcpy(result.fStringData,                                 aLeft.fStringData,  aLeft.Length*sizeOf(AnsiChar));
-      memcpy(result.fStringData+aRight.Length**sizeOf(AnsiChar), aRight.fStringData, aRight.Length*sizeOf(AnsiChar));
+      result := DelphiStringHelpers.EmptyDelphiAnsiStringWithCapacity(aLeft.Length+aRight.Length);
+      memcpy(result.fStringData,              aLeft.fStringData,  aLeft.Length*sizeOf(AnsiChar));
+      memcpy(result.fStringData+aLeft.Length, aRight.fStringData, aRight.Length*sizeOf(AnsiChar));
       //result := :Delphi.System.Concat(aLeft, aRight);
     end;
 
@@ -118,24 +118,24 @@ type
 
     operator &Add(aLeft: DelphiObject; aRight: InstanceType): InstanceType;
     begin
-      result := (aLeft.ToString as DelphiAnsiString) + aRight;
+      result := (aLeft.ToString as DelphiAnsiString) + aRight; {$HINT Review, this is lossy}
     end;
 
     operator &Add(aLeft: InstanceType; aRight: DelphiObject): InstanceType;
     begin
-      result := aLeft + (aRight.ToString as DelphiAnsiString);
+      result := aLeft + (aRight.ToString as DelphiAnsiString); {$HINT Review, this is lossy}
     end;
 
     // IslandObject
 
     operator &Add(aLeft: IslandObject; aRight: InstanceType): InstanceType;
     begin
-      result := (aLeft.ToString as DelphiAnsiString) + aRight;
+      result := (aLeft.ToString as DelphiAnsiString) + aRight; {$HINT Review, this is lossy}
     end;
 
     operator &Add(aLeft: InstanceType; aRight: IslandObject): InstanceType;
     begin
-      result := aLeft + (aRight.ToString as DelphiAnsiString);
+      result := aLeft + (aRight.ToString as DelphiAnsiString); {$HINT Review, this is lossy}
     end;
 
     // CocoaObject
@@ -143,12 +143,12 @@ type
     {$IF DARWIN}
     operator &Add(aLeft: CocoaObject; aRight: InstanceType): InstanceType;
     begin
-      result := (aLeft.description as DelphiAnsiString) + aRight;
+      result := (aLeft.description as DelphiAnsiString) + aRight; {$HINT Review, this is lossy}
     end;
 
     operator &Add(aLeft: InstanceType; aRight: CocoaObject): InstanceType;
     begin
-      result := aLeft + (aRight.description as DelphiAnsiString);
+      result := aLeft + (aRight.description as DelphiAnsiString); {$HINT Review, this is lossy}
     end;
     {$ENDIF}
 
