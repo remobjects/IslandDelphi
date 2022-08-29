@@ -61,6 +61,12 @@ type
     end;
     {$ENDIF}
 
+    //[ToString]
+    //method ToString: IslandString; override;
+    //begin
+      //result := self as IslandString;
+    //end;
+
   private
 
     method CheckIndex(aIndex: Integer);

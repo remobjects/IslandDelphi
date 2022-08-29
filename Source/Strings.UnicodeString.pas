@@ -1,5 +1,7 @@
 ﻿namespace RemObjects.Elements.System;
 
+[assembly: RemObjects.Elements.System.LifetimeStrategyOverrideAttribute(typeOf(DelphiUnicodeString), typeOf(DelphiLongStringRC))]
+
 type
   [Packed]
   DelphiUnicodeString = public record
@@ -18,7 +20,8 @@ type
       end
       write begin
         CheckIndex(aIndex);
-        DelphiStringHelpers.CopyOnWriteDelphiUnicodeString(var self);
+        if DelphiStringHelpers.CopyOnWriteDelphiUnicodeString(var self) then
+          DelphiStringHelpers.AdjustDelphiUnicodeStringReferenceCount(self, 1); // seems hacky top do this here?
         (fStringData+aIndex-1)^ := value;
       end; default;
 

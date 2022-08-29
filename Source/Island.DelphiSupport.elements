@@ -206,6 +206,7 @@
     <Compile Include="Strings.UnicodeString.pas" />
     <Compile Include="Strings.AnsiString.pas.pas" />
     <Compile Include="Strings.WideString.pas.pas" />
+    <Compile Include="Strings.Lifetime.pas" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.targets" />
 </Project>
