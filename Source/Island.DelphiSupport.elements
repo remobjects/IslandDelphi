@@ -191,7 +191,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bridges.Delphi.pas" />
-    <Compile Include="String+Extensions.pas" />
     <Compile Include="Floats.pas" />
     <Compile Include="Strings.pas" />
     <Compile Include="Variant.pas" />

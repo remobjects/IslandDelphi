@@ -32,11 +32,12 @@ type
         result := ""; // short strings are always assigned, so we won't return nil
     end;
 
-    operator Implicit(aString: IslandString): DelphiShortString;
+    operator Explicit(aString: IslandString): DelphiShortString;
     begin
       if aString.Length > 255 then
         raise new InvalidCastException("Cannot represent string longer than 255 characters as DelphiShortString");
-      result := aString:ToDelphiShortString;
+      var lChars := aString.ToAnsiChars(); {$HINT Review, this is lossy}
+      result := DelphiStringHelpers.DelphiShortStringWithChars(@lChars[0], aString.Length);
     end;
 
     {$IF DARWIN}
@@ -48,12 +49,13 @@ type
         result := ""; // short strings are always assigned, so we won't return nil
     end;
 
-    operator Explicit(aString: CocoaString): DelphiShortString;
-    begin
-      if aString:length > 255 then
-        raise new InvalidCastException("Cannot represent string longer than 255 characters as DelphiShortString");
-      result := aString:ToDelphiShortString;
-    end;
+    //operator Explicit(aString: CocoaString): DelphiShortString;
+    //begin
+      // would be lossy
+      //if aString:length > 255 then
+        //raise new InvalidCastException("Cannot represent string longer than 255 characters as DelphiShortString");
+      //{$HINT Review, this is lossy}
+    //end;
     {$ENDIF}
 
     operator Implicit(aString: ^AnsiChar): DelphiShortString;

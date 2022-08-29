@@ -1,7 +1,5 @@
 ﻿namespace RemObjects.Elements.System;
 
-[assembly: RemObjects.Elements.System.LifetimeStrategyOverrideAttribute(typeOf(DelphiUnicodeString), typeOf(DelphiLongStringRC))]
-
 type
   [Packed]
   DelphiUnicodeString = public record
@@ -36,8 +34,18 @@ type
 
     operator Implicit(aString: IslandString): InstanceType;
     begin
-      result := aString:ToDelphiUnicodeString;
+      result := DelphiStringHelpers.DelphiUnicodeStringWithChars(aString.FirstChar, aString.Length);
     end;
+
+    // PChar
+
+    operator Implicit(aString: ^Char): InstanceType;
+    begin
+      if assigned(aString) then
+        result := DelphiStringHelpers.DelphiUnicodeStringWithChars(aString, PCharLen(aString));
+    end;
+
+    // WideString
 
     operator Explicit(aString: InstanceType): DelphiWideString;
     begin
@@ -49,11 +57,7 @@ type
       result := DelphiStringHelpers.DelphiUnicodeStringWithChars(aString.fStringData, aString.Length);
     end;
 
-    operator Implicit(aString: ^Char): InstanceType;
-    begin
-      if assigned(aString) then
-        result := DelphiStringHelpers.DelphiUnicodeStringWithChars(aString, PCharLen(aString));
-    end;
+    // NSString
 
     {$IF DARWIN}
     operator Explicit(aString: InstanceType): CocoaString;
@@ -63,11 +67,14 @@ type
 
     operator Explicit(aString: CocoaString): InstanceType;
     begin
-      result := aString:ToDelphiUnicodeString;
+      var lLength := aString.length;
+      var lBytes := new Char[lLength];
+      aString.getCharacters(lBytes);
+      result := DelphiStringHelpers.DelphiUnicodeStringWithChars(@(lBytes[0]), lLength);
     end;
     {$ENDIF}
 
-    //
+    // Concat
 
     operator &Add(aLeft: InstanceType; aRight: InstanceType): InstanceType;
     begin
@@ -79,30 +86,48 @@ type
       //result := :Delphi.System.Concat(aLeft, aRight);
     end;
 
-    operator &Add(aLeft: DelphiWideString; aRight: DelphiWideString): InstanceType;
+    operator &Add(aLeft: DelphiWideString; aRight: InstanceType): InstanceType;
     begin
       //result := :Delphi.System.Concat(aLeft, aRight);
     end;
 
+    // DelphiObject
+
     operator &Add(aLeft: DelphiObject; aRight: InstanceType): InstanceType;
     begin
-      //result := aLeft.ToString + aRight;
-    end;
-
-    operator &Add(aLeft: IslandObject; aRight: InstanceType): InstanceType;
-    begin
-      result := (aLeft.ToString as DelphiString) + aRight;
+      result := (aLeft.ToString as DelphiUnicodeString) + aRight;
     end;
 
     operator &Add(aLeft: InstanceType; aRight: DelphiObject): InstanceType;
     begin
-      result := aLeft + aRight.ToString;
+      result := aLeft + (aRight.ToString as DelphiUnicodeString);
+    end;
+
+    // IslandObject
+
+    operator &Add(aLeft: IslandObject; aRight: InstanceType): InstanceType;
+    begin
+      result := (aLeft.ToString as DelphiUnicodeString) + aRight;
     end;
 
     operator &Add(aLeft: InstanceType; aRight: IslandObject): InstanceType;
     begin
-      result := aLeft + (aRight.ToString as DelphiString);
+      result := aLeft + (aRight.ToString as DelphiUnicodeString);
     end;
+
+    // CocoaObject
+
+    {$IF DARWIN}
+    operator &Add(aLeft: CocoaObject; aRight: InstanceType): InstanceType;
+    begin
+      result := (aLeft.description as DelphiUnicodeString) + aRight;
+    end;
+
+    operator &Add(aLeft: InstanceType; aRight: CocoaObject): InstanceType;
+    begin
+      result := aLeft + (aRight.description as DelphiUnicodeString);
+    end;
+    {$ENDIF}
 
     [ToString]
     method ToString: IslandString;
@@ -125,6 +150,79 @@ type
     begin
       if (aIndex < 1) or (aIndex > Length) then
         raise new IndexOutOfRangeException($"Index {aIndex} is out of valid bounds (1..{Length}).");
+    end;
+
+  public
+
+    // live-time management
+
+    class method &New(aTTY: ^Void; aSize: IntPtr): ^Void;
+    begin
+      writeLn("DelphiUnicodeString: New");
+      // ??
+    end;
+
+    class method Init(var aDestination: DelphiUnicodeString); //empty; // zero value
+    begin
+      writeLn("DelphiUnicodeString: Init");
+    end;
+
+    class method &Copy(var aDestination, aSource: DelphiUnicodeString);
+    begin
+      writeLn("DelphiUnicodeString: Copy");
+      if (@aDestination) = (@aSource) then
+        exit;
+      if aDestination.fStringData = aSource.fStringData then
+        exit;
+      if assigned(aDestination.fStringData) then
+        Release(var aDestination); // just like assign, but this one releases old
+      aDestination.fStringData := aSource.fStringData;
+      DelphiStringHelpers.AdjustLongStringReferenceCount(^Void(aSource.fStringData), 1);
+    end;
+
+    constructor &Copy(var aSource: DelphiUnicodeString);
+    begin
+      writeLn("DelphiUnicodeString: Copy ctor");
+      if not assigned(aSource.fStringData) then
+        exit;
+      fStringData := aSource.fStringData;
+      DelphiStringHelpers.AdjustLongStringReferenceCount(^Void(aSource.fStringData), 1);
+    end;
+
+    class operator Assign(var aDestination: DelphiUnicodeString; var aSource: DelphiUnicodeString);
+    begin
+      writeLn($"DelphiUnicodeString: Assign operator {IntPtr(aSource.fStringData)} => {IntPtr(aDestination.fStringData)}");
+      if (@aDestination) = (@aSource) then
+        exit;
+      if aDestination.fStringData = aSource.fStringData then
+        exit;
+      aDestination.fStringData := aSource.fStringData;
+      DelphiStringHelpers.AdjustLongStringReferenceCount(^Void(aSource.fStringData), 1);
+    end;
+
+    //class method Assign(var aDestination, aSource: DelphiUnicodeString);
+    //begin
+      //writeLn($"DelphiUnicodeString: Assign {IntPtr(aSource.fStringData)} => {IntPtr(aDestination.fStringData)}");
+      //if (@aDestination) = (@aSource) then
+        //exit;
+      //if aDestination.fStringData = aSource.fStringData then
+        //exit;
+      //aDestination.fStringData := aSource.fStringData;
+      //DelphiStringHelpers.AdjustLongStringReferenceCount(^Void(aSource.fStringData), 1);
+    //end;
+
+    class method Release(var aDestination: DelphiUnicodeString);
+    begin
+      writeLn($"DelphiUnicodeString: Release {IntPtr(aDestination.fStringData)} {DelphiStringHelpers.DelphiStringReferenceCount(^Void(aDestination.fStringData))}");
+      if not assigned(aDestination.fStringData) then
+        exit;
+      DelphiStringHelpers.ReleaseDelphiLongString(^Void(aDestination.fStringData))
+    end;
+
+    finalizer;
+    begin
+      writeLn("DelphiUnicodeString: Finalizer");
+      //Release(var self);
     end;
 
   end;

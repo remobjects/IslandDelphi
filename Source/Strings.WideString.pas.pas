@@ -32,10 +32,20 @@ type
       result := IslandString:FromPChar(aString.fStringData, aString.Length);
     end;
 
-    operator Implicit(aString: IslandString): InstanceType;
+    operator Explicit(aString: IslandString): InstanceType;
     begin
-      result := aString:ToDelphiWideString;
+      result := DelphiStringHelpers.DelphiWideStringWithChars(aString.FirstChar, aString.Length);
     end;
+
+    // PChar
+
+    operator Explicit(aString: ^Char): InstanceType;
+    begin
+      if assigned(aString) then
+        result := DelphiStringHelpers.DelphiWideStringWithChars(aString, PCharLen(aString));
+    end;
+
+    // NSString
 
     {$IF DARWIN}
     operator Explicit(aString: InstanceType): CocoaString;
@@ -43,44 +53,59 @@ type
       result := new CocoaString withBytes(aString.fStringData) length(DelphiStringHelpers.DelphiStringLength(aString.fStringData)) encoding(Foundation.NSStringEncoding.UTF16LittleEndianStringEncoding);
     end;
 
-    operator Implicit(aString: ^Char): InstanceType;
-    begin
-      if assigned(aString) then
-        result := DelphiStringHelpers.DelphiWideStringWithChars(aString, PCharLen(aString));
-    end;
-
     operator Explicit(aString: CocoaString): InstanceType;
     begin
-      result := aString:ToDelphiWideString;
+      var lLength := aString.length;
+      var lBytes := new Char[lLength];
+      aString.getCharacters(lBytes);
+      result := DelphiStringHelpers.DelphiWideStringWithChars(@(lBytes[0]), lLength);
     end;
     {$ENDIF}
 
-    //
+    // Concat
 
     operator &Add(aLeft: InstanceType; aRight: InstanceType): InstanceType;
     begin
       //result := :Delphi.System.Concat(aLeft, aRight);
     end;
 
+    // DelphiObject
+
     operator &Add(aLeft: DelphiObject; aRight: InstanceType): InstanceType;
     begin
-      result := aLeft.ToString as DelphiWideString + aRight;
-    end;
-
-    operator &Add(aLeft: IslandObject; aRight: InstanceType): InstanceType;
-    begin
-      result := (aLeft.ToString as DelphiWideString) + aRight;
+      result := aLeft.ToString as DelphiWideString + aRight; {$HINT This needs memory management}
     end;
 
     operator &Add(aLeft: InstanceType; aRight: DelphiObject): InstanceType;
     begin
-      result := aLeft + aRight.ToString;
+      result := aLeft + (aRight.ToString as DelphiWideString); {$HINT This needs memory management}
+    end;
+
+    // IslandObjecty
+
+    operator &Add(aLeft: IslandObject; aRight: InstanceType): InstanceType;
+    begin
+      result := (aLeft.ToString as DelphiWideString) + aRight; {$HINT This needs memory management}
     end;
 
     operator &Add(aLeft: InstanceType; aRight: IslandObject): InstanceType;
     begin
-      result := aLeft + (aRight.ToString as DelphiString);
+      result := aLeft + (aRight.ToString as DelphiWideString); {$HINT This needs memory management}
     end;
+
+    // CocoaObject
+
+    {$IF DARWIN}
+    operator &Add(aLeft: CocoaObject; aRight: InstanceType): InstanceType;
+    begin
+      result := (aLeft.description as DelphiWideString) + aRight; {$HINT This needs memory management}
+    end;
+
+    operator &Add(aLeft: InstanceType; aRight: CocoaObject): InstanceType;
+    begin
+      result := aLeft + (aRight.description as DelphiWideString); {$HINT This needs memory management}
+    end;
+    {$ENDIF}
 
     [ToString]
     method ToString: IslandString;

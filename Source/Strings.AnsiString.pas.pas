@@ -37,8 +37,45 @@ type
 
     operator Explicit(aString: IslandString): InstanceType;
     begin
-      result := aString:ToDelphiAnsiString;
+      var lChars := aString.ToAnsiChars(); // ToDo: this extra copy could be optimized with a TPAnsiChar on String?
+      result := DelphiStringHelpers.DelphiAnsiStringWithChars(@lChars[0], aString.Length);
     end;
+
+    // PChar
+
+    operator Implicit(aString: ^AnsiChar): InstanceType;
+    begin
+      if assigned(aString) then
+        result := DelphiStringHelpers.DelphiAnsiStringWithChars(aString, PAnsiCharLen(aString));
+    end;
+
+    // UnicodeString
+
+    operator Explicit(aString: InstanceType): DelphiUnicodeString;
+    begin
+      result := IslandString:FromPAnsiChar(aString.fStringData, aString.Length) as DelphiUnicodeString; {$HINT Can be Optimized}
+    end;
+
+    operator Explicit(aString: DelphiUnicodeString): InstanceType;
+    begin
+      var lChars := (aString as IslandString).ToAnsiChars(); {$HINT Can be Optimized}{$HINT Review, this is lossy}
+      result := DelphiStringHelpers.DelphiAnsiStringWithChars(@lChars[0], aString.Length);
+    end;
+
+    // WideString
+
+    operator Explicit(aString: InstanceType): DelphiWideString;
+    begin
+      result := IslandString:FromPAnsiChar(aString.fStringData, aString.Length) as DelphiWideString; {$HINT Can be Optimized}
+    end;
+
+    operator Explicit(aString: DelphiWideString): InstanceType;
+    begin
+      var lChars := (aString as IslandString).ToAnsiChars(); {$HINT Can be Optimized}{$HINT Review, this is lossy}
+      result := DelphiStringHelpers.DelphiAnsiStringWithChars(@lChars[0], aString.Length);
+    end;
+
+     // ShortString
 
     operator Explicit(aString: DelphiShortString): InstanceType;
     begin
@@ -53,11 +90,7 @@ type
       result := DelphiStringHelpers.DelphiShortStringWithChars(aString.fStringData, aString.Length);
     end;
 
-    operator Implicit(aString: ^AnsiChar): InstanceType;
-    begin
-      if assigned(aString) then
-        result := DelphiStringHelpers.DelphiAnsiStringWithChars(aString, PAnsiCharLen(aString));
-    end;
+    // NSString
 
     {$IF DARWIN}
     operator Explicit(aString: InstanceType): CocoaString;
@@ -65,38 +98,56 @@ type
       result := new CocoaString withBytes(aString.fStringData) length(DelphiStringHelpers.DelphiStringLength(aString.fStringData)) encoding(Foundation.NSStringEncoding.UTF16LittleEndianStringEncoding);
     end;
 
-    operator Explicit(aString: CocoaString): InstanceType;
-    begin
-      result := aString:ToDelphiAnsiString;
-    end;
+    //operator Explicit(aString: CocoaString): InstanceType;
+    //begin
+      // {$HINT Review, this is lossy}
+    //end;
     {$ENDIF}
 
-    //
+    // Concat
 
     operator &Add(aLeft: InstanceType; aRight: InstanceType): InstanceType;
     begin
       //result := :Delphi.System.Concat(aLeft, aRight);
     end;
 
+    // DelphiObject
+
     operator &Add(aLeft: DelphiObject; aRight: InstanceType): InstanceType;
     begin
-      //result := aLeft.ToString + aRight;
-    end;
-
-    operator &Add(aLeft: IslandObject; aRight: InstanceType): InstanceType;
-    begin
-      //result := (aLeft.ToString as DelphiString) + aRight;
+      result := (aLeft.ToString as DelphiAnsiString) + aRight;
     end;
 
     operator &Add(aLeft: InstanceType; aRight: DelphiObject): InstanceType;
     begin
-      result := aLeft + aRight.ToString;
+      result := aLeft + (aRight.ToString as DelphiAnsiString);
+    end;
+
+    // IslandObject
+
+    operator &Add(aLeft: IslandObject; aRight: InstanceType): InstanceType;
+    begin
+      result := (aLeft.ToString as DelphiAnsiString) + aRight;
     end;
 
     operator &Add(aLeft: InstanceType; aRight: IslandObject): InstanceType;
     begin
-      result := aLeft + (aRight.ToString as DelphiString);
+      result := aLeft + (aRight.ToString as DelphiAnsiString);
     end;
+
+    // CocoaObject
+
+    {$IF DARWIN}
+    operator &Add(aLeft: CocoaObject; aRight: InstanceType): InstanceType;
+    begin
+      result := (aLeft.description as DelphiAnsiString) + aRight;
+    end;
+
+    operator &Add(aLeft: InstanceType; aRight: CocoaObject): InstanceType;
+    begin
+      result := aLeft + (aRight.description as DelphiAnsiString);
+    end;
+    {$ENDIF}
 
     [ToString]
     method ToString: IslandString;
