@@ -192,7 +192,7 @@
   <ItemGroup>
     <Compile Include="Bridges.Delphi.pas" />
     <Compile Include="Floats.pas" />
-    <Compile Include="Strings.pas" />
+    <Compile Include="Strings\Strings.pas" />
     <Compile Include="Variant.pas" />
     <Compile Include="Attributes.pas" />
     <Compile Include="File.pas" />
@@ -201,12 +201,12 @@
     <Compile Include="Test.pas" />
     <Compile Include="Bridges.Cocoa.pas" />
     <Compile Include="MemoryHelpers.pas" />
-    <Compile Include="StringHelpers.pas" />
-    <Compile Include="Strings.UnicodeString.pas" />
-    <Compile Include="Strings.AnsiString.pas.pas" />
-    <Compile Include="Strings.WideString.pas.pas" />
-    <Compile Include="Strings.Lifetime.pas" />
-    <Compile Include="Strings.ShortString.pas" />
+    <Compile Include="Strings\StringHelpers.pas" />
+    <Compile Include="Strings\UnicodeString.pas" />
+    <Compile Include="Strings\AnsiString.pas" />
+    <Compile Include="Strings\WideString.pas.pas" />
+    <Compile Include="Strings\ShortString.pas" />
+    <Folder Include="Strings" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.targets" />
 </Project>
