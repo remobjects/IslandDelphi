@@ -19,9 +19,8 @@ type
       end
       write begin
         CheckIndex(aIndex);
-        //if DelphiStringHelpers.CopyOnWriteDelphiUnicodeString(var self) then
-          //DelphiStringHelpers.AdjustDelphiUnicodeStringReferenceCount(self, 1); // seems hacky top do this here?
-        (fStringData+aIndex-1)^ := value;
+        if (fStringData+aIndex-1)^ ≠ value then
+          (fStringData+aIndex-1)^ := value;
       end; default;
 
     property Chars[aIndex: &Index]: Char read Chars[aIndex.GetOffset(Length)] write Chars[aIndex.GetOffset(Length)];

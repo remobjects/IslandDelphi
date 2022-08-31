@@ -20,9 +20,10 @@ type
       end
       write begin
         CheckIndex(aIndex);
-        if DelphiStringHelpers.CopyOnWriteDelphiAnsiString(var self) then
-          DelphiStringHelpers.AdjustDelphiAnsiStringReferenceCount(self, 1); // seems hacky top do this here?
-        (fStringData+aIndex-1)^ := value;
+        if (fStringData+aIndex-1)^ ≠ value then begin
+          DelphiStringHelpers.CopyOnWriteDelphiAnsiString(var self);
+          (fStringData+aIndex-1)^ := value;
+        end;
       end; default;
 
     property Chars[aIndex: &Index]: AnsiChar read Chars[aIndex.GetOffset(Length)] write Chars[aIndex.GetOffset(Length)];
@@ -181,6 +182,38 @@ type
     begin
       if (aIndex < 1) or (aIndex > Length) then
         raise new IndexOutOfRangeException($"Index {aIndex} is out of valid bounds (1..{Length}).");
+    end;
+
+  public
+
+    // live-time management
+
+    constructor &Copy(var aSource: DelphiAnsiString);
+    begin
+      writeLn("DelphiAnsiString: Copy ctor");
+      if not assigned(aSource.fStringData) then
+        exit;
+      fStringData := aSource.fStringData;
+      DelphiStringHelpers.RetainDelphiLongString(aSource.fStringData);
+    end;
+
+    class operator Assign(var aDestination: DelphiAnsiString; var aSource: DelphiAnsiString);
+    begin
+      writeLn($"DelphiAnsiString: Assign operator {IntPtr(aSource.fStringData)} => {IntPtr(aDestination.fStringData)}");
+      if (@aDestination) = (@aSource) then
+        exit;
+      if aDestination.fStringData = aSource.fStringData then
+        exit;
+      if assigned(aDestination.fStringData) then
+        DelphiStringHelpers.ReleaseDelphiAnsiString(var aDestination);
+      aDestination.fStringData := aSource.fStringData;
+      DelphiStringHelpers.RetainDelphiLongString(aSource.fStringData);
+    end;
+
+    finalizer;
+    begin
+      writeLn($"DelphiAnsiString: Finalizer {IntPtr(self.fStringData)} '{self}'");
+      DelphiStringHelpers.ReleaseDelphiAnsiString(var self);
     end;
 
   end;

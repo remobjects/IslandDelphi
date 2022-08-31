@@ -19,9 +19,10 @@ type
       end
       write begin
         CheckIndex(aIndex);
-        if DelphiStringHelpers.CopyOnWriteDelphiUnicodeString(var self) then
-          DelphiStringHelpers.AdjustDelphiUnicodeStringReferenceCount(self, 1); // seems hacky top do this here?
-        (fStringData+aIndex-1)^ := value;
+        if (fStringData+aIndex-1)^ ≠ value then begin
+          DelphiStringHelpers.CopyOnWriteDelphiUnicodeString(var self);
+          (fStringData+aIndex-1)^ := value;
+        end;
       end; default;
 
     property Chars[aIndex: &Index]: Char read Chars[aIndex.GetOffset(Length)] write Chars[aIndex.GetOffset(Length)];
@@ -62,7 +63,7 @@ type
       result := DelphiStringHelpers.DelphiWideStringWithChars(aString.fStringData, aString.Length);
     end;
 
-    operator Explicit(aString: DelphiWideString): InstanceType;
+    operator Implicit(aString: DelphiWideString): InstanceType;
     begin
       result := DelphiStringHelpers.DelphiUnicodeStringWithChars(aString.fStringData, aString.Length);
     end;
@@ -184,28 +185,6 @@ type
 
     // live-time management
 
-    class method &New(aTTY: ^Void; aSize: IntPtr): ^Void;
-    begin
-      writeLn("DelphiUnicodeString: New");
-      // ??
-    end;
-
-    class method Init(var aDestination: DelphiUnicodeString); //empty; // zero value
-    begin
-      writeLn("DelphiUnicodeString: Init");
-    end;
-
-    class method &Copy(var aDestination, aSource: DelphiUnicodeString);
-    begin
-      writeLn("DelphiUnicodeString: Copy");
-      if (@aDestination) = (@aSource) then
-        exit;
-      if aDestination.fStringData = aSource.fStringData then
-        exit; {$HINT review if this case should still inc the ref count}
-      aDestination.fStringData := aSource.fStringData;
-      DelphiStringHelpers.RetainDelphiLongString(aSource.fStringData);
-    end;
-
     constructor &Copy(var aSource: DelphiUnicodeString);
     begin
       writeLn("DelphiUnicodeString: Copy ctor");
@@ -228,22 +207,9 @@ type
       DelphiStringHelpers.RetainDelphiLongString(aSource.fStringData);
     end;
 
-    class method Assign(var aDestination, aSource: DelphiUnicodeString);
-    begin
-      writeLn($"DelphiUnicodeString: Assign method {IntPtr(aSource.fStringData)} => {IntPtr(aDestination.fStringData)}");
-      if (@aDestination) = (@aSource) then
-        exit;
-      if aDestination.fStringData = aSource.fStringData then
-        exit;
-      if assigned(aDestination.fStringData) then
-        DelphiStringHelpers.ReleaseDelphiUnicodeString(var aDestination);
-      aDestination.fStringData := aSource.fStringData;
-      DelphiStringHelpers.RetainDelphiLongString(aSource.fStringData);
-    end;
-
     finalizer;
     begin
-      writeLn($"DelphiUnicodeString: Finalizer {IntPtr(self.fStringData)}");
+      writeLn($"DelphiUnicodeString: Finalizer {IntPtr(self.fStringData)} '{self}' {self.ReferenceCount} => {self.ReferenceCount-1}");
       DelphiStringHelpers.ReleaseDelphiUnicodeString(var self);
     end;
 
