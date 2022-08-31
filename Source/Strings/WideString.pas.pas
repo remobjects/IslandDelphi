@@ -2,12 +2,13 @@
 
 type
   [Packed]
-  DelphiWideString = public record
+  DelphiWideString = public record(sequence of Char)
   assembly
     fStringData: ^Char;
 
   public
 
+    property Count: Integer read DelphiStringHelpers.DelphiStringLength(fStringData);
     property Length: Integer read DelphiStringHelpers.DelphiStringLength(fStringData);
     property ReferenceCount: Integer read DelphiStringHelpers.DelphiStringReferenceCount(fStringData);
 
@@ -22,6 +23,15 @@ type
           //DelphiStringHelpers.AdjustDelphiUnicodeStringReferenceCount(self, 1); // seems hacky top do this here?
         (fStringData+aIndex-1)^ := value;
       end; default;
+
+    property Chars[aIndex: &Index]: Char read Chars[aIndex.GetOffset(Length)] write Chars[aIndex.GetOffset(Length)];
+
+    [&Sequence]
+    method GetSequence: sequence of Char; iterator;
+    begin
+      for i := 0 to DelphiStringHelpers.DelphiStringLength(fStringData)-1 do
+        yield (fStringData+i)^;
+    end;
 
     //
     // Operators
@@ -157,10 +167,5 @@ type
     end;
 
   end;
-
-method Length(aString: DelphiWideString): Integer;
-begin
-  result := aString.Length;
-end;
 
 end.

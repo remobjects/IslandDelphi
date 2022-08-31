@@ -25,7 +25,7 @@ type
         exit new DelphiUnicodeString;
       var lSize := aLength*sizeOf(Char);
       var lResult := DelphiMemoryHelpers.GetMem(lSize+sizeOf(DelphiLongStringRecord)+sizeOf(Char));
-      ^DelphiLongStringRecord(lResult).CodePage := 0; // ToDo
+      ^DelphiLongStringRecord(lResult).CodePage := 0/*:Delphi.System.DefaultUnicodeCodePage*/;
       ^DelphiLongStringRecord(lResult).ElementSize := sizeOf(Char);
       ^DelphiLongStringRecord(lResult).ReferenceCount := 0;//1;
       ^DelphiLongStringRecord(lResult).Length := aLength;
@@ -40,7 +40,7 @@ type
         exit new DelphiAnsiString;
       var lSize := aLength*sizeOf(AnsiChar);
       var lResult := DelphiMemoryHelpers.GetMem(lSize+sizeOf(DelphiLongStringRecord)+sizeOf(AnsiChar));
-      ^DelphiLongStringRecord(lResult).CodePage := 0; // ToDo
+      ^DelphiLongStringRecord(lResult).CodePage := 0/*:Delphi.System.DefaultSystemCodePage*/;
       ^DelphiLongStringRecord(lResult).ElementSize := sizeOf(AnsiChar);
       ^DelphiLongStringRecord(lResult).ReferenceCount := 0;//1;
       ^DelphiLongStringRecord(lResult).Length := aLength;
@@ -78,7 +78,7 @@ type
         exit new DelphiUnicodeString;
       var lSize := aLength*sizeOf(Char);
       var lResult := DelphiMemoryHelpers.GetMem(lSize+sizeOf(DelphiLongStringRecord)+sizeOf(Char));
-      ^DelphiLongStringRecord(lResult).CodePage := 0; // ToDo
+      ^DelphiLongStringRecord(lResult).CodePage := 0/*:Delphi.System.DefaultUnicodeCodePage*/;
       ^DelphiLongStringRecord(lResult).ElementSize := sizeOf(Char);
       ^DelphiLongStringRecord(lResult).ReferenceCount := 0;//1;
       ^DelphiLongStringRecord(lResult).Length := aLength;
@@ -92,7 +92,7 @@ type
         exit new DelphiAnsiString;
       var lSize := aLength*sizeOf(AnsiChar);
       var lResult := DelphiMemoryHelpers.GetMem(lSize+sizeOf(DelphiLongStringRecord)+sizeOf(AnsiChar));
-      ^DelphiLongStringRecord(lResult).CodePage := 0; // ToDo
+      ^DelphiLongStringRecord(lResult).CodePage := 0/*:Delphi.System.DefaultSystemCodePage*/;
       ^DelphiLongStringRecord(lResult).ElementSize := sizeOf(AnsiChar);
       ^DelphiLongStringRecord(lResult).ReferenceCount := 0;//1;
       ^DelphiLongStringRecord(lResult).Length := aLength;

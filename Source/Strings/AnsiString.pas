@@ -2,12 +2,13 @@
 
 type
   [Packed]
-  DelphiAnsiString = public record
+  DelphiAnsiString = public record(sequence of AnsiChar)
   assembly
     fStringData: ^AnsiChar;
 
   public
 
+    property Count: Integer read DelphiStringHelpers.DelphiStringLength(fStringData);
     property Length: Integer read DelphiStringHelpers.DelphiStringLength(fStringData);
     property ReferenceCount: Integer read DelphiStringHelpers.DelphiStringReferenceCount(fStringData);
     property CodePage: UInt16 read DelphiStringHelpers.DelphiStringCodePage(fStringData);
@@ -23,6 +24,15 @@ type
           DelphiStringHelpers.AdjustDelphiAnsiStringReferenceCount(self, 1); // seems hacky top do this here?
         (fStringData+aIndex-1)^ := value;
       end; default;
+
+    property Chars[aIndex: &Index]: AnsiChar read Chars[aIndex.GetOffset(Length)] write Chars[aIndex.GetOffset(Length)];
+
+    [&Sequence]
+    method GetSequence: sequence of AnsiChar; iterator;
+    begin
+      for i := 0 to DelphiStringHelpers.DelphiStringLength(fStringData)-1 do
+        yield (fStringData+i)^;
+    end;
 
     //
     // Operators
@@ -174,11 +184,6 @@ type
     end;
 
   end;
-
-method Length(aString: DelphiAnsiString): Integer;
-begin
-  result := aString.Length;
-end;
 
 method PAnsiCharLen(aChars: ^AnsiChar): Integer;
 begin
