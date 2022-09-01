@@ -51,7 +51,7 @@ type
         result := Value.isEqual(DelphiWrappedCocoaObject(aOther):Value);
     end;
 
-    method CompareTo(xSelf: Delphi.System.IComparable; aOther: DelphiObject): Integer;
+    method CompareTo(aOther: DelphiObject): Integer;
     begin
       if Value is not Delphi.System.IComparable then
         raise new Exception("Cocoa Object does not implement IComparable");
@@ -103,7 +103,7 @@ type
       if Value is not Delphi.System.IComparable then
         raise new Exception("Delphi Object does not implement IComparable");
       case aOther type of
-        CocoaWrappedDelphiObject: result := (Value as Delphi.System.IComparable).CompareTo(nil, CocoaWrappedDelphiObject(aOther).Value) as Foundation.NSComparisonResult; {$HINT wrong sig!}
+        CocoaWrappedDelphiObject: result := (Value as Delphi.System.IComparable).CompareTo(CocoaWrappedDelphiObject(aOther).Value) as Foundation.NSComparisonResult;
       end;
     end;
 

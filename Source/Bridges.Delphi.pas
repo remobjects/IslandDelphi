@@ -62,8 +62,7 @@ type
         result := Value.Equals(DelphiWrappedIslandObject(aOther):Value);
     end;
 
-    {$HINT wrong sig!}
-    method CompareTo(xSelf: Delphi.System.IComparable; aOther: DelphiObject): Integer;
+    method CompareTo(aOther: DelphiObject): Integer;
     begin
       if Value is not Delphi.System.IComparable then
         raise new Exception("Island Object does not implement IComparable");
@@ -114,7 +113,7 @@ type
       if Value is not Delphi.System.IComparable then
         raise new Exception("Delphi Object does not implement IComparable");
       case aOther type of
-        IslandWrappedDelphiObject: result := (Value as Delphi.System.IComparable).CompareTo(nil, IslandWrappedDelphiObject(aOther).Value); {$HINT wrong sig!}
+        IslandWrappedDelphiObject: result := (Value as Delphi.System.IComparable).CompareTo(IslandWrappedDelphiObject(aOther).Value);
       end;
     end;
 
