@@ -39,14 +39,19 @@ type
     // Operators
     //
 
-    operator Explicit(aString: InstanceType): IslandString;
+    operator Implicit(aString: InstanceType): IslandString;
     begin
-      result := IslandString:FromPAnsiChar(aString.fStringData, aString.Length);
+      result := IslandString:FromPAnsiChar(aString.fStringData, aString.Length); {$HINT Should use code page?}
+    end;
+
+    operator Implicit(aString: InstanceType): IslandObject;
+    begin
+      result := IslandString:FromPAnsiChar(aString.fStringData, aString.Length); {$HINT Should use code page?}
     end;
 
     operator Explicit(aString: IslandString): InstanceType;
     begin
-      var lChars := aString.ToAnsiChars(); // ToDo: this extra copy could be optimized with a TPAnsiChar on String?
+      var lChars := aString.ToAnsiChars(); {$HINT Review, this is lossy} {$HINT Can be Optimized with a ToPAnsiChar on String?}
       result := DelphiStringHelpers.DelphiAnsiStringWithChars(@lChars[0], aString.Length);
     end;
 
@@ -86,7 +91,7 @@ type
 
      // ShortString
 
-    operator Explicit(aString: DelphiShortString): InstanceType;
+    operator Implicit(aString: DelphiShortString): InstanceType;
     begin
       if aString[0] > #0 then
         result := DelphiStringHelpers.DelphiAnsiStringWithChars(@aString[1], ord(aString[0]));

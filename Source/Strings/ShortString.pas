@@ -24,9 +24,9 @@ type
     // Operators
     //
 
-    operator Explicit(aString: DelphiShortString): IslandString;
+    operator Implicit(aString: DelphiShortString): IslandString;
     begin
-      if aString[0] > #0 then
+      if aString[0] > #0 then {$HINT Should use code page?}
         result := IslandString:FromPAnsiChar(@(aString/*.fStringData*/[1]), ord(aString[0]))
       else
         result := ""; // short strings are always assigned, so we won't return nil
@@ -43,7 +43,7 @@ type
     {$IF DARWIN}
     operator Explicit(aString: DelphiShortString): CocoaString;
     begin
-      if aString[0] > #0 then
+      if aString[0] > #0 then {$HINT Should use code page?}
         result := new CocoaString withBytes(@(aString[1])) length(DelphiStringHelpers.DelphiStringLength(aString)) encoding(Foundation.NSStringEncoding.UTF8StringEncoding)
       else
         result := ""; // short strings are always assigned, so we won't return nil
@@ -51,7 +51,6 @@ type
 
     //operator Explicit(aString: CocoaString): DelphiShortString;
     //begin
-      // would be lossy
       //if aString:length > 255 then
         //raise new InvalidCastException("Cannot represent string longer than 255 characters as DelphiShortString");
       //{$HINT Review, this is lossy}
@@ -60,6 +59,8 @@ type
 
     operator Implicit(aString: ^AnsiChar): DelphiShortString;
     begin
+      if not assigned(aString) then
+        exit;
       var lLength := PAnsiCharLen(aString);
       if lLength > 255 then
         raise new InvalidCastException("Cannot represent string longer than 255 characters as DelphiShortString");

@@ -61,7 +61,7 @@ type
       result := new DelphiWideString(lResult+sizeOf(DelphiWideStringRecord));
     end;
 
-    method DelphiShortStringWithChars(aChars: ^AnsiChar; aLength: UInt32): Delphi.System.ShortString;
+    method DelphiShortStringWithChars(aChars: ^AnsiChar; aLength: UInt32): DelphiShortString;
     begin
       if aLength > 255 then
         raise new ArgumentException("Cannot represent string longer than 255 characters as DelphiShortString");

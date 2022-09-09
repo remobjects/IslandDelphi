@@ -36,7 +36,12 @@ type
     // Operators
     //
 
-    operator Explicit(aString: InstanceType): IslandString;
+    operator Implicit(aString: InstanceType): IslandString;
+    begin
+      result := IslandString:FromPChar(aString.fStringData, aString.Length);
+    end;
+
+    operator Implicit(aString: InstanceType): IslandObject;
     begin
       result := IslandString:FromPChar(aString.fStringData, aString.Length);
     end;
