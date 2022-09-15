@@ -53,7 +53,7 @@ type
 
     // PChar
 
-    operator Explicit(aString: ^Char): InstanceType;
+    operator Implicit(aString: ^Char): InstanceType; {$HINT seems risky for non-nil?}
     begin
       if assigned(aString) then
         result := DelphiStringHelpers.DelphiWideStringWithChars(aString, PCharLen(aString));
@@ -168,6 +168,36 @@ type
     begin
       if (aIndex < 1) or (aIndex > Length) then
         raise new IndexOutOfRangeException($"Index {aIndex} is out of valid bounds (1..{Length}).");
+    end;
+
+  public
+
+    // live-time management
+
+    constructor &Copy(var aSource: DelphiWideString);
+    begin
+      writeLn("DelphiWideString: Copy ctor");
+      if not assigned(aSource.fStringData) then
+        exit;
+      fStringData := DelphiStringHelpers.CopyDelphiWideString(aSource.fStringData);
+    end;
+
+    class operator Assign(var aDestination: DelphiWideString; var aSource: DelphiWideString);
+    begin
+      writeLn($"DelphiWideString: Assign operator {IntPtr(aSource.fStringData)} => {IntPtr(aDestination.fStringData)}");
+      if (@aDestination) = (@aSource) then
+        exit;
+      if aDestination.fStringData = aSource.fStringData then
+        exit; // is this correct, for WideString, or dio we have to copy?
+      if assigned(aDestination.fStringData) then
+        DelphiStringHelpers.FreeDelphiWideString(var aDestination.fStringData);
+      aDestination.fStringData := DelphiStringHelpers.CopyDelphiWideString(aSource.fStringData);
+    end;
+
+    finalizer;
+    begin
+      writeLn($"DelphiWideString: Finalizer {IntPtr(self.fStringData)} '{self}'");
+      DelphiStringHelpers.FreeDelphiWideString(var self.fStringData);
     end;
 
   end;

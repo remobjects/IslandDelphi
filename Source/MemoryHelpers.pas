@@ -1,5 +1,7 @@
 ﻿namespace RemObjects.Elements.System;
 
+{$DEFINE USE_DELPHI_MM}
+
 type
   DelphiMemoryHelpers = public static class
   public
@@ -7,7 +9,7 @@ type
     method GetMem(aSize: IntPtr): ^Void;
     begin
       {$IF USE_DELPHI_MM}
-      result := :Delphi.System.«@GetMem»(aSize);
+      result := :Delphi.System.SysGetMem(aSize);
       {$ELSE}
       result := malloc(aSize);
       {$ENDIF}
@@ -16,7 +18,7 @@ type
     method FreeMem(aMemory: ^Void);
     begin
       {$IF USE_DELPHI_MM}
-      :Delphi.System.«@FreeMem»(aMemory);
+      :Delphi.System.SysFreeMem(aMemory);
       {$ELSE}
       free(aMemory);
       {$ENDIF}

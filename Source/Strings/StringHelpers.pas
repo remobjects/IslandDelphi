@@ -5,6 +5,7 @@ type
   {$HIDE H7}
   [Packed]
   DelphiLongStringRecord = assembly record
+    Padding: UInt32; {why?}
     CodePage: UInt16;
     ElementSize: UInt16;
     ReferenceCount: UInt32;
@@ -12,7 +13,11 @@ type
   end;
 
   [Packed]
-  DelphiWideStringRecord = assembly record
+  DelphiWideStringRecord = assembly record { really same as DelphiLongStringRecord}
+    Padding: UInt32;
+    Padding_CodePage: UInt16;
+    Padding_ElementSize: UInt16;
+    Padding_ReferenceCount: UInt32;
     Length: UInt32;
   end;
 
@@ -142,14 +147,33 @@ type
         exit nil;
       var lOriginal: ^DelphiLongStringRecord := aString-sizeOf(DelphiLongStringRecord);
       var lSize := lOriginal.Length*lOriginal.ElementSize;
-      var lResult := DelphiMemoryHelpers.GetMem(lOriginal.Length*lOriginal.ElementSize + sizeOf(DelphiLongStringRecord) + sizeOf(Char));
+      var lResult := DelphiMemoryHelpers.GetMem(lOriginal.Length*lOriginal.ElementSize + sizeOf(DelphiLongStringRecord) + lOriginal.ElementSize);
       ^DelphiLongStringRecord(lResult).CodePage := lOriginal.CodePage;
       ^DelphiLongStringRecord(lResult).ElementSize := lOriginal.ElementSize;
       ^DelphiLongStringRecord(lResult).ReferenceCount := 1;
       ^DelphiLongStringRecord(lResult).Length := lOriginal.Length;
       memcpy(lResult+sizeOf(DelphiLongStringRecord), aString, lSize);
-      ^Char(lResult+sizeOf(DelphiLongStringRecord)+lSize)^ := #0;
+      case lOriginal.ElementSize of
+        1: ^AnsiChar(lResult+sizeOf(DelphiLongStringRecord)+lSize)^ := #0;
+        2: ^Char(lResult+sizeOf(DelphiLongStringRecord)+lSize)^ := #0;
+        4: ^UInt32(lResult+sizeOf(DelphiLongStringRecord)+lSize)^ := 0;
+        8: ^UInt32(lResult+sizeOf(DelphiLongStringRecord)+lSize)^ := 0;
+        else raise new ArgumentException($"Unexpected Elements size {lOriginal.ElementSize} in DelphiLongString");
+      end;
       result := lResult+sizeOf(DelphiLongStringRecord);
+    end;
+
+    method CopyDelphiWideString(aString: ^Void): ^Void;
+    begin
+      if not assigned(aString) then
+        exit nil;
+      var lOriginal: ^DelphiWideStringRecord := aString-sizeOf(DelphiWideStringRecord);
+      var lSize := lOriginal.Length*sizeOf(WideChar);
+      var lResult := DelphiMemoryHelpers.GetMem(lOriginal.Length*sizeOf(Char) + sizeOf(DelphiWideStringRecord) + sizeOf(Char));
+      ^DelphiWideStringRecord(lResult).Length := lOriginal.Length;
+      memcpy(lResult+sizeOf(DelphiWideStringRecord), aString, lSize);
+      ^Char(lResult+sizeOf(DelphiWideStringRecord)+lSize)^ := #0;
+      result := lResult+sizeOf(DelphiWideStringRecord);
     end;
 
     //
@@ -281,6 +305,7 @@ type
         exit;
       var lOriginal := aString-sizeOf(DelphiWideStringRecord);
       DelphiMemoryHelpers.FreeMem(lOriginal);
+      writeLn($"| was freed {IntPtr(aString)}");
       aString := nil;
     end;
 
