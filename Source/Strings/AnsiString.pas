@@ -63,6 +63,11 @@ type
         result := DelphiStringHelpers.DelphiAnsiStringWithChars(aString, PAnsiCharLen(aString));
     end;
 
+    operator Explicit(aString: InstanceType): ^AnsiChar;
+    begin
+      result := aString.fStringData;
+    end;
+
     // UnicodeString
 
     operator Explicit(aString: InstanceType): DelphiUnicodeString;
@@ -191,7 +196,7 @@ type
 
   public
 
-    // live-time management
+    // life-time management
 
     constructor &Copy(var aSource: DelphiAnsiString);
     begin
@@ -222,6 +227,11 @@ type
     end;
 
   end;
+
+method SetLength(var aString: DelphiAnsiString; aNewLength: Int32); public; inline;
+begin
+  :Delphi.System.«@LStrSetLength»(var aString, aNewLength, aString.CodePage);
+end;
 
 method PAnsiCharLen(aChars: ^AnsiChar): Integer;
 begin

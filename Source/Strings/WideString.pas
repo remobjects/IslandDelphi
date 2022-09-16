@@ -59,6 +59,11 @@ type
         result := DelphiStringHelpers.DelphiWideStringWithChars(aString, PCharLen(aString));
     end;
 
+    operator Explicit(aString: InstanceType): ^Char;
+    begin
+      result := aString.fStringData;
+    end;
+
     // NSString
 
     {$IF DARWIN}
@@ -172,7 +177,7 @@ type
 
   public
 
-    // live-time management
+    // life-time management
 
     constructor &Copy(var aSource: DelphiWideString);
     begin
@@ -201,5 +206,10 @@ type
     end;
 
   end;
+
+method SetLength(var aString: DelphiWideString; aNewLength: Int32); public; inline;
+begin
+  :Delphi.System.«@WStrSetLength»(var aString, aNewLength);
+end;
 
 end.

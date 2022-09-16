@@ -61,6 +61,11 @@ type
         result := DelphiStringHelpers.DelphiUnicodeStringWithChars(aString, PCharLen(aString));
     end;
 
+    operator Explicit(aString: InstanceType): ^Char;
+    begin
+      result := aString.fStringData;
+    end;
+
     // WideString
 
     operator Explicit(aString: InstanceType): DelphiWideString;
@@ -188,7 +193,7 @@ type
 
   public
 
-    // live-time management
+    // life-time management
 
     constructor &Copy(var aSource: DelphiUnicodeString);
     begin
@@ -219,6 +224,11 @@ type
     end;
 
   end;
+
+method SetLength(var aString: DelphiUnicodeString; aNewLength: Int32); public; inline;
+begin
+  :Delphi.System.«@UStrSetLength»(var aString, aNewLength);
+end;
 
 method PCharLen(aChars: ^Char): Integer;
 begin

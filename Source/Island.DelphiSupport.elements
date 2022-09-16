@@ -204,7 +204,7 @@
     <Compile Include="Strings\StringHelpers.pas" />
     <Compile Include="Strings\UnicodeString.pas" />
     <Compile Include="Strings\AnsiString.pas" />
-    <Compile Include="Strings\WideString.pas.pas" />
+    <Compile Include="Strings\WideString.pas" />
     <Compile Include="Strings\ShortString.pas" />
     <Folder Include="Strings" />
   </ItemGroup>

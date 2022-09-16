@@ -242,7 +242,7 @@ type
       var lOriginal: ^DelphiLongStringRecord := aString-sizeOf(DelphiLongStringRecord);
       if lOriginal.ReferenceCount = -1 then
         exit -1;
-      //inc(lOriginal.ReferenceCount, aBy);
+      //result := interlockedInc(var lOriginal.ReferenceCount, aBy)+aBy;
       lOriginal.ReferenceCount := lOriginal.ReferenceCount+aBy;
       result := lOriginal.ReferenceCount;
     end;
@@ -259,7 +259,7 @@ type
       result := RetainDelphiLongString(aString.fStringData);
     end;
 
-    method RetainDelphiLongString(aString: ^Void): Integer;
+    method RetainDelphiLongString(aString: ^Void): Integer; inline;
     begin
       result := AdjustLongStringReferenceCount(aString, 1);
     end;
