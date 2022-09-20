@@ -197,7 +197,8 @@ type
 
     constructor &Copy(var aSource: DelphiUnicodeString);
     begin
-      writeLn("DelphiUnicodeString: Copy ctor");
+      if defined("DELPHI_DEBUG_STRING_ARC") then
+        writeLn("DelphiUnicodeString: Copy ctor");
       if not assigned(aSource.fStringData) then
         exit;
       fStringData := aSource.fStringData;
@@ -206,7 +207,8 @@ type
 
     class operator Assign(var aDestination: DelphiUnicodeString; var aSource: DelphiUnicodeString);
     begin
-      writeLn($"DelphiUnicodeString: Assign operator {IntPtr(aSource.fStringData)} => {IntPtr(aDestination.fStringData)}");
+      if defined("DELPHI_DEBUG_STRING_ARC") then
+        writeLn($"DelphiUnicodeString: Assign operator {IntPtr(aSource.fStringData)} => {IntPtr(aDestination.fStringData)}");
       if (@aDestination) = (@aSource) then
         exit;
       if aDestination.fStringData = aSource.fStringData then
@@ -219,7 +221,8 @@ type
 
     finalizer;
     begin
-      writeLn($"DelphiUnicodeString: Finalizer {IntPtr(self.fStringData)} '{self}' {self.ReferenceCount} => {self.ReferenceCount-1}");
+      if defined("DELPHI_DEBUG_STRING_ARC") then
+        writeLn($"DelphiUnicodeString: Finalizer {IntPtr(self.fStringData)} '{self}' {self.ReferenceCount} => {self.ReferenceCount-1}");
       DelphiStringHelpers.ReleaseDelphiUnicodeString(var self);
     end;
 

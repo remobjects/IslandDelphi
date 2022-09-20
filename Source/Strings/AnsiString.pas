@@ -200,7 +200,8 @@ type
 
     constructor &Copy(var aSource: DelphiAnsiString);
     begin
-      writeLn("DelphiAnsiString: Copy ctor");
+      if defined("DELPHI_DEBUG_STRING_ARC") then
+        writeLn("DelphiAnsiString: Copy ctor");
       if not assigned(aSource.fStringData) then
         exit;
       fStringData := aSource.fStringData;
@@ -209,7 +210,8 @@ type
 
     class operator Assign(var aDestination: DelphiAnsiString; var aSource: DelphiAnsiString);
     begin
-      writeLn($"DelphiAnsiString: Assign operator {IntPtr(aSource.fStringData)} => {IntPtr(aDestination.fStringData)}");
+      if defined("DELPHI_DEBUG_STRING_ARC") then
+        writeLn($"DelphiAnsiString: Assign operator {IntPtr(aSource.fStringData)} => {IntPtr(aDestination.fStringData)}");
       if (@aDestination) = (@aSource) then
         exit;
       if aDestination.fStringData = aSource.fStringData then
@@ -222,7 +224,8 @@ type
 
     finalizer;
     begin
-      writeLn($"DelphiAnsiString: Finalizer {IntPtr(self.fStringData)} '{self}'");
+      if defined("DELPHI_DEBUG_STRING_ARC") then
+        writeLn($"DelphiAnsiString: Finalizer {IntPtr(self.fStringData)} '{self}'");
       DelphiStringHelpers.ReleaseDelphiAnsiString(var self);
     end;
 

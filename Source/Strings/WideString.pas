@@ -181,7 +181,8 @@ type
 
     constructor &Copy(var aSource: DelphiWideString);
     begin
-      writeLn("DelphiWideString: Copy ctor");
+      if defined("DELPHI_DEBUG_STRING_ARC") then
+        writeLn("DelphiWideString: Copy ctor");
       if not assigned(aSource.fStringData) then
         exit;
       fStringData := DelphiStringHelpers.CopyDelphiWideString(aSource.fStringData);
@@ -189,7 +190,8 @@ type
 
     class operator Assign(var aDestination: DelphiWideString; var aSource: DelphiWideString);
     begin
-      writeLn($"DelphiWideString: Assign operator {IntPtr(aSource.fStringData)} => {IntPtr(aDestination.fStringData)}");
+      if defined("DELPHI_DEBUG_STRING_ARC") then
+        writeLn($"DelphiWideString: Assign operator {IntPtr(aSource.fStringData)} => {IntPtr(aDestination.fStringData)}");
       if (@aDestination) = (@aSource) then
         exit;
       if aDestination.fStringData = aSource.fStringData then
@@ -201,7 +203,8 @@ type
 
     finalizer;
     begin
-      writeLn($"DelphiWideString: Finalizer {IntPtr(self.fStringData)} '{self}'");
+      if defined("DELPHI_DEBUG_STRING_ARC") then
+        writeLn($"DelphiWideString: Finalizer {IntPtr(self.fStringData)} '{self}'");
       DelphiStringHelpers.FreeDelphiWideString(var self.fStringData);
     end;
 

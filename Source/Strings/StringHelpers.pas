@@ -292,7 +292,8 @@ type
         exit;
       var lOriginal := aString-sizeOf(DelphiLongStringRecord);
       DelphiMemoryHelpers.FreeMem(lOriginal);
-      writeLn($"| was freed {IntPtr(aString)}");
+      if defined("DELPHI_DEBUG_STRING_ARC") then
+        writeLn($"| was freed {IntPtr(aString)}");
       aString := nil;
     end;
 
@@ -302,7 +303,8 @@ type
         exit;
       var lOriginal := aString-sizeOf(DelphiWideStringRecord);
       DelphiMemoryHelpers.FreeMem(lOriginal);
-      writeLn($"| was freed {IntPtr(aString)}");
+      if defined("DELPHI_DEBUG_STRING_ARC") then
+        writeLn($"| was freed {IntPtr(aString)}");
       aString := nil;
     end;
 
