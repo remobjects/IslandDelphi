@@ -200,8 +200,7 @@ type
       if lOriginal.ReferenceCount < 2 then
         exit false;
       aString := CopyDelphiLongString(aString);
-      //dec(lOriginal.ReferenceCount);
-      lOriginal.ReferenceCount := lOriginal.ReferenceCount-1;
+      interlockedDec(var lOriginal.ReferenceCount);
       result := true;
     end;
 
@@ -242,9 +241,7 @@ type
       var lOriginal: ^DelphiLongStringRecord := aString-sizeOf(DelphiLongStringRecord);
       if lOriginal.ReferenceCount = -1 then
         exit -1;
-      //result := interlockedInc(var lOriginal.ReferenceCount, aBy)+aBy;
-      lOriginal.ReferenceCount := lOriginal.ReferenceCount+aBy;
-      result := lOriginal.ReferenceCount;
+      result := interlockedInc(var lOriginal.ReferenceCount, aBy)+aBy;
     end;
 
     //
