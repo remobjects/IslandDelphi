@@ -26,7 +26,12 @@ type
     [RemObjects.Elements.System.GlobalConstructor(0)]
     class method Initialize;
     begin
-      ForeignExceptionImplementation.Register(new ForeignExceptionImplementation($EEDFADE, @Handler, @Free));
+      ForeignExceptionImplementation.Register(new ForeignExceptionImplementation(
+      {$IFDEF WINDOWS}
+      $EEDFADE
+      {$ELSE}
+      $454D4254444C5048
+      {$ENDIF}, @Handler, @FreeRec));
     end;
 
     method Handler(aData: ^Void): Exception;
@@ -42,14 +47,12 @@ type
       {$ENDIF}
     end;
 
-    method Free(aData: ^Void);
+    method FreeRec(aData: ^Void);
     begin
       {$IFDEF WINDOWS}
       // Nothing to do
       {$ELSE}
-      var lRec := ^CXXException(aData);
-      lRec := ^CXXException(@^Byte(lRec)[-Int32((^Byte(@lRec^.Unwind) - ^Byte(lRec))) - (sizeOf(IntPtr) * 2)]);
-      Free(lRec)
+      // Nothing to do; delphi cleans this up
       {$ENDIF}
     end;
   end;
