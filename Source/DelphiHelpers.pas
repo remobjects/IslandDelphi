@@ -26,6 +26,10 @@ type
     [RemObjects.Elements.System.GlobalConstructor(0)]
     class method Initialize;
     begin
+    end;
+
+    class constructor;
+    begin
       ForeignExceptionImplementation.Register(new ForeignExceptionImplementation(
       {$IFDEF WINDOWS}
       $EEDFADE
