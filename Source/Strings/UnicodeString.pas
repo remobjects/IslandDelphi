@@ -81,17 +81,22 @@ type
     // NSString
 
     {$IF DARWIN}
-    operator Explicit(aString: InstanceType): CocoaString;
+    operator Implicit(aString: InstanceType): CocoaString;
     begin
-      result := new CocoaString withBytes(aString.fStringData) length(DelphiStringHelpers.DelphiStringLength(aString.fStringData)) encoding(Foundation.NSStringEncoding.UTF16LittleEndianStringEncoding);
+      result := new CocoaString withBytes(aString.fStringData) length(DelphiStringHelpers.DelphiStringLength(aString.fStringData)*2) encoding(Foundation.NSStringEncoding.UTF16LittleEndianStringEncoding);
     end;
 
-    operator Explicit(aString: CocoaString): InstanceType;
+    operator Implicit(aString: CocoaString): InstanceType;
     begin
       var lLength := aString.length;
       var lBytes := new Char[lLength];
       aString.getCharacters(lBytes);
       result := DelphiStringHelpers.DelphiUnicodeStringWithChars(@(lBytes[0]), lLength);
+    end;
+
+    operator Implicit(aString: InstanceType): CocoaObject;
+    begin
+      result := aString as CocoaString;
     end;
     {$ENDIF}
 

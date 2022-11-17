@@ -55,6 +55,11 @@ type
         //raise new InvalidCastException("Cannot represent string longer than 255 characters as DelphiShortString");
       //{$HINT Review, this is lossy}
     //end;
+
+    operator Implicit(aString: DelphiShortString): CocoaObject;
+    begin
+      result := aString as CocoaString;
+    end;
     {$ENDIF}
 
     operator Implicit(aString: ^AnsiChar): DelphiShortString;

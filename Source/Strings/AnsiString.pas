@@ -112,7 +112,7 @@ type
     // NSString
 
     {$IF DARWIN}
-    operator Explicit(aString: InstanceType): CocoaString;
+    operator Implicit(aString: InstanceType): CocoaString;
     begin
       result := new CocoaString withBytes(aString.fStringData) length(DelphiStringHelpers.DelphiStringLength(aString.fStringData)) encoding(Foundation.NSStringEncoding.UTF16LittleEndianStringEncoding);
     end;
@@ -121,6 +121,11 @@ type
     //begin
       // {$HINT Review, this is lossy}
     //end;
+
+    operator Implicit(aString: InstanceType): CocoaObject;
+    begin
+      result := aString as CocoaString;
+    end;
     {$ENDIF}
 
     // Concat
