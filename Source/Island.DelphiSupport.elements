@@ -9,6 +9,7 @@
     <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
     <MergeArchitectures>False</MergeArchitectures>
     <OutputPathPrefix>$(DelphiSDK)</OutputPathPrefix>
+    <KnownConditionalDefines>DELPHI_DEBUG_STRING_ARC</KnownConditionalDefines>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <OutputPath>.\Bin\Debug</OutputPath>
@@ -117,7 +118,6 @@
     <Mode>Island</Mode>
     <SubMode>Windows</SubMode>
     <DelphiSDK>Delphi 10.1</DelphiSDK>
-    <Architecture>i386;x86_64</Architecture>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Target)' == 'Delphi.10.2.Windows' ">
     <Mode>Island</Mode>
@@ -134,7 +134,7 @@
     <Mode>Island</Mode>
     <SubMode>Windows</SubMode>
     <DelphiSDK>Delphi 10.3</DelphiSDK>
-    <Architecture>x86_64</Architecture>
+    <Architecture>x86_64;i386</Architecture>
     <xArchitecture>x86_64;i386</xArchitecture>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Target)' == 'Delphi.10.3.Linux' ">
@@ -183,10 +183,12 @@
     <SubMode>Darwin</SubMode>
     <SDK>macOS</SDK>
     <DelphiSDK>Delphi 11</DelphiSDK>
+    <Architecture>x86_64;arm64</Architecture>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Island" />
     <Reference Include="gc" />
+    <Reference Include="rtl" />
     <Reference Include="Delphi.rtl" />
   </ItemGroup>
   <ItemGroup>
@@ -207,6 +209,8 @@
     <Compile Include="Strings\WideString.pas" />
     <Compile Include="Strings\ShortString.pas" />
     <Folder Include="Strings" />
+    <Compile Include="DelphiObjectInfo.pas" />
+    <Compile Include="Guid+Extensions.pas" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.targets" />
 </Project>

@@ -1,7 +1,6 @@
 ﻿namespace RemObjects.Elements.System;
 
 type
-
   DelphiBool16 = public record
   public
 
@@ -17,7 +16,7 @@ type
 
     operator Implicit(aValue: DelphiBool16): Boolean;
     begin
-      result := aValue.Value = 0;
+      result := aValue.Value ≠ 0;
     end;
 
     operator Implicit(aValue: Boolean): DelphiBool16;
@@ -28,7 +27,7 @@ type
     [ToString]
     method ToString: String; override;
     begin
-      result := (Value > 0).ToString;
+      result := (Value ≠ 0).ToString;
     end;
 
   private
@@ -50,7 +49,7 @@ type
 
     operator Implicit(aValue: DelphiBool32): Boolean;
     begin
-      result := aValue.Value = 0;
+      result := aValue.Value ≠ 0;
     end;
 
     operator Implicit(aValue: Boolean): DelphiBool32;
@@ -61,7 +60,7 @@ type
     [ToString]
     method ToString: String; override;
     begin
-      result := (Value > 0).ToString;
+      result := (Value ≠ 0).ToString;
     end;
 
   private
@@ -83,7 +82,7 @@ type
 
     operator Implicit(aValue: DelphiBool64): Boolean;
     begin
-      result := aValue.Value = 0;
+      result := aValue.Value ≠ 0;
     end;
 
     operator Implicit(aValue: Boolean): DelphiBool64;
@@ -94,7 +93,7 @@ type
     [ToString]
     method ToString: String; override;
     begin
-      result := (Value > 0).ToString;
+      result := (Value ≠ 0).ToString;
     end;
 
   private
