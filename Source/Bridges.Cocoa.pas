@@ -53,8 +53,8 @@ type
 
     method CompareTo(aOther: DelphiObject): Integer;
     begin
-      if Value is not Delphi.System.IComparable then
-        raise new Exception("Cocoa Object does not implement IComparable");
+      if not Value.respondsToSelector(selector(compareTo:)) then
+        raise new Exception("The wrapped Cocoa Object does not implement compareTo:");
       case aOther type of
         DelphiWrappedCocoaObject: result := (Value as IComparable).CompareTo(DelphiWrappedCocoaObject(aOther).Value);
       end;
@@ -101,7 +101,7 @@ type
     method compareTo(aOther: id): Foundation.NSComparisonResult;
     begin
       if Value is not Delphi.System.IComparable then
-        raise new Exception("Delphi Object does not implement IComparable");
+        raise new Exception("The wrapped Delphi Object does not implement Delphi.System.IComparable");
       case aOther type of
         CocoaWrappedDelphiObject: result := (Value as Delphi.System.IComparable).CompareTo(CocoaWrappedDelphiObject(aOther).Value) as Foundation.NSComparisonResult;
       end;

@@ -64,10 +64,10 @@ type
 
     method CompareTo(aOther: DelphiObject): Integer;
     begin
-      if Value is not Delphi.System.IComparable then
-        raise new Exception("Island Object does not implement IComparable");
+      if Value is not System.IComparable then
+        raise new Exception("The wrapped Island Object does not implement RemObjects.Elements.System.IComparable");
       case aOther type of
-        DelphiWrappedIslandObject: result := (Value as IComparable).CompareTo(DelphiWrappedIslandObject(aOther).Value);
+        DelphiWrappedIslandObject: result := (Value as System.IComparable).CompareTo(DelphiWrappedIslandObject(aOther).Value);
       end;
     end;
   end;
@@ -111,7 +111,7 @@ type
     method CompareTo(aOther: IslandObject): Integer;
     begin
       if Value is not Delphi.System.IComparable then
-        raise new Exception("Delphi Object does not implement IComparable");
+        raise new Exception("The wrapped Delphi Object does not implement Delphi.System.IComparable");
       case aOther type of
         IslandWrappedDelphiObject: result := (Value as Delphi.System.IComparable).CompareTo(IslandWrappedDelphiObject(aOther).Value);
       end;
@@ -124,14 +124,14 @@ type
 
     constructor (aException: DelphiException);
     begin
-      //inherited constructor(aException.Message);
+      inherited constructor(aException.Message);
       InnerException := aException;
     end;
 
     [ToString]
     method ToString: String; override;
     begin
-      result := "(Wrapped) "/*+typeOf(InnerException).Name+': '*/+Message;
+      result := "(Wrapped) "+typeOf(InnerException).Name+': '+Message;
     end;
 
     property InnerException: DelphiException read private write; reintroduce;
@@ -151,7 +151,7 @@ type
     //[ToString] // E26099: Island/Delphi: allow [ToString] onm Delphi-model objects
     method ToString: DelphiString; override;
     begin
-      //result := "(Wrapped) "+typeOf(InnerException).Name+': '+Message;
+      result := "(Wrapped) "+typeOf(InnerException).Name+': '+Message;
     end;
 
     property InnerException: IslandException read private write; reintroduce;
