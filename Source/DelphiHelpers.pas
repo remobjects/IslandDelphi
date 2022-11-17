@@ -27,7 +27,7 @@ type
 
     method IsInstanceInterface(aInstance: ^Void; aType: ^Void): ^Void;
     begin
-      //raise new NotImplementedException("DelphiHelpers.IsInstanceInterface is not implemented yet.");
+      raise new NotImplementedException("DelphiHelpers.IsInstanceInterface is not implemented yet.");
 
       writeLn($"aType {IntPtr(aType)}");
       for i := -100 to 100 do
