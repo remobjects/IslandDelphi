@@ -1,6 +1,7 @@
 ﻿namespace RemObjects.Elements.System;
 
 type
+  [Internal]
   DelphiHelpers = public static class
   public
 
@@ -21,7 +22,8 @@ type
 
   end;
 
-  DelphiExceptions = public static class
+  [Internal]
+  DelphiExceptionHandler = public static class
   public
     [RemObjects.Elements.System.GlobalConstructor(0)]
     class method Initialize;
