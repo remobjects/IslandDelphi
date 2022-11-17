@@ -12,7 +12,17 @@ type
 
     method IsInstanceClass(aInstance: ^Void; aType: ^Void): ^Void;
     begin
-      raise new NotImplementedException("DelphiHelpers.IsInstanceClass is not implemented yet.");
+      var lVMT := ^^Void(aInstance)^;
+      loop begin
+        if lVMT = aType then
+          exit aInstance; // true;
+        var lParent := (^^Void(lVMT+:Delphi.System.vmtParent))^;
+        if not assigned(lParent) then
+          exit nil; // false
+        lVMT := ^^Void(lParent)^;
+        if not assigned(lVMT) then
+          exit nil; // false
+      end;
     end;
 
     method IsInstanceInterface(aInstance: ^Void; aType: ^Void): ^Void;
