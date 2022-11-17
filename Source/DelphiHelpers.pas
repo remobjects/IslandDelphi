@@ -27,7 +27,26 @@ type
 
     method IsInstanceInterface(aInstance: ^Void; aType: ^Void): ^Void;
     begin
-      raise new NotImplementedException("DelphiHelpers.IsInstanceInterface is not implemented yet.");
+      //raise new NotImplementedException("DelphiHelpers.IsInstanceInterface is not implemented yet.");
+
+      writeLn($"aType {IntPtr(aType)}");
+      for i := -100 to 100 do
+        writeLn($"^AnsiChar(aType+{i})^ ({^Byte(aType+i)^}) {^AnsiChar(aType+i)^}");
+
+      var lVMT := ^^Void(aInstance)^;
+      var lInterfaceTable := (^^Void(lVMT+:Delphi.System.vmtIntfTable))^ as Delphi.System.PInterfaceTable;
+      if assigned(lInterfaceTable) then begin
+
+        for i := 0 to lInterfaceTable.EntryCount-1 do begin
+          writeLn($"lInterfaceTable.Entries[i].VTable {IntPtr(lInterfaceTable.Entries[i].VTable)}");
+          writeLn($"lInterfaceTable.Entries[i].IID {lInterfaceTable.Entries[i].IID as Guid}");
+          writeLn($"lInterfaceTable.Entries[i].ImplGetter {IntPtr(lInterfaceTable.Entries[i].ImplGetter)}");
+          writeLn($"lInterfaceTable.Entries[i].IOffset {IntPtr(lInterfaceTable.Entries[i].IOffset)}");
+          if lInterfaceTable.Entries[i].VTable = aType then // AVs "read of 8"
+            exit aInstance;
+
+        end;
+      end;
     end;
 
   end;
