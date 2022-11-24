@@ -24,6 +24,11 @@ type
       fVMT := ^Void((^IntPtr(aObject))^);
     end;
 
+    constructor withClass(aClass: class of TObject);
+    begin
+      fVMT := ^Void(aClass);
+    end;
+
     constructor withVMT(aVMT: not nullable ^Void);
     begin
       fVMT := aVMT;
@@ -64,9 +69,9 @@ type
     begin
       writeLn($"ClassName {ClassName}");
       writeLn($"InstanceSize {InstanceSize}");
-      writeLn($"VMT {IntPtr(VMT)}");
+      writeLn($"VMT {VMT}");
 
-      //writeLn($"DynamicMethodTable {IntPtr(DynamicMethodTable)}");
+      //writeLn($"DynamicMethodTable {DynamicMethodTable}");
       //if assigned(DynamicMethodTable) then begin
         //writeLn($"{DynamicMethodTable.Count} dynamic method(s)");
         //for i := 0 to DynamicMethodTable.Count-1 do
@@ -74,30 +79,30 @@ type
       //end;
 
       if VirtualMethodTable ≠ fVMT then
-        writeLn($"VirtualMethodTable {IntPtr(VirtualMethodTable)}"); // normally just points back to the VMT
+        writeLn($"VirtualMethodTable {VirtualMethodTable}"); // normally just points back to the VMT
 
-      writeLn($"InterfaceTable {IntPtr(InterfaceTable)}");
+      writeLn($"InterfaceTable {InterfaceTable}");
       if assigned(InterfaceTable) then begin
         writeLn($"{InterfaceTable.EntryCount} interface(s) implemented");
         //for i := 0 to InterfaceTable.EntryCount-1 do
           //writeLn($"Selector[{i}]: {(InterfaceTable^.Entries[i].IID as Guid).ToString}");
       end;
 
-      writeLn($"MethodDefinitionTable {IntPtr(MethodDefinitionTable)}");
+      writeLn($"MethodDefinitionTable {MethodDefinitionTable}");
       if assigned(MethodDefinitionTable) then begin
         writeLn($"{MethodDefinitionTable.Count} method(s)");
         //for i := 0 to MethodDefinitionTable.Count-1 do
           //writeLn($"Selector[{i}]: {MethodDefinitionTable.Selectors[i]}");
       end;
 
-      writeLn($"FieldDefinitionTable {IntPtr(FieldDefinitionTable)}");
+      writeLn($"FieldDefinitionTable {FieldDefinitionTable}");
       if assigned(FieldDefinitionTable) then begin
         writeLn($"{FieldDefinitionTable.Count} fields(s)");
         //for i := 0 to FieldDefinitionTable.Count-1 do
           //writeLn($"Selector[{i}]: {FieldDefinitionTable^.Selectors[i]}");
       end;
 
-      writeLn($"ParentAddress {IntPtr(ParentAddress)}");
+      writeLn($"ParentAddress {ParentAddress}");
       writeLn();
       if assigned(Parent) then
         Parent.Dump;
