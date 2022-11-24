@@ -7,7 +7,7 @@ type
 
     method CreateInstance(aType: ^Void): ^Void;
     begin
-      raise new NotImplementedException("DelphiHelpers.CreateInstance is not implemented yet.");
+      result :=:Delphi.System.«@ClassCreate»(aType, 1);
     end;
 
     method IsInstanceClass(aInstance: ^Void; aType: ^Void): ^Void;
