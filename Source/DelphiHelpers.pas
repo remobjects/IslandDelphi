@@ -51,6 +51,20 @@ type
 
   end;
 
+  DelphiDebuggerHelpers = public static class
+  public
+
+    [SymbolName('DelphiObjectToString'), Used , DllExport]
+    class method DelphiObjectToString(aObject: TObject): ^WideChar;
+    begin
+      if not assigned(aObject) then
+        exit nil;
+      var s := (aObject.ToString as IslandString).ToCharArray(true);
+      result := @s[0];
+    end;
+
+  end;
+
   [Internal]
   DelphiExceptionHandler = public static class
   public
