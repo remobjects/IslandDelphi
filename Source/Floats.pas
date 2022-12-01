@@ -9,9 +9,12 @@ type
   end;
 
   // https://docwiki.embarcadero.com/Libraries/Sydney/en/System.Extended
-  {$IF ARM OR (WINDOWS AND X86_64)}
-  DelphiExtended80 = public Double; {$HINT Need to check if Extended80 (opposed to Extended) is still 10/16 bytes, on platforms where Extended aliases Double...}
-  {$ELSE}
+  //{$IF ARM OR (WINDOWS AND X86_64)}
+  //DelphiExtended80 = public Double;
+  //{$ELSE}
+
+  {$HINT Need to check if Extended80 (opposed to Extended) is still 10/16 bytes, on platforms where Extended aliases Double...}
+
   [Packed]
   DelphiExtended80 = public record
   public
@@ -21,7 +24,7 @@ type
     fBytes: array [0..9] of Byte;
     {$ENDIF}
   end;
-  {$ENDIF}
+  //{$ENDIF}
 
   DelphiComp = public type Int64;
 

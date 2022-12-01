@@ -3,7 +3,8 @@
 {$DEFINE USE_DELPHI_MM}
 
 type
-  DelphiMemoryHelpers = public static class
+  [Internal]
+  DelphiMemoryHelpers = assembly static class
   public
 
     method GetMem(aSize: IntPtr): ^Void;

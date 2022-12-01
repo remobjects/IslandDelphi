@@ -6,7 +6,8 @@ type
 
     method Test;
     begin
-
+      var x: DelphiAnsiString;
+      var y := length(x);
     end;
 
   end;
