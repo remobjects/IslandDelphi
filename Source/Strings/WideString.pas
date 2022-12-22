@@ -51,6 +51,17 @@ type
       result := DelphiStringHelpers.DelphiWideStringWithChars(aString.FirstChar, aString.Length);
     end;
 
+    operator Implicit(aChar: Char): InstanceType;
+    begin
+      result := DelphiStringHelpers.DelphiWideStringWithChars(@aChar, 1);
+    end;
+
+    operator Implicit(aChar: AnsiChar): InstanceType;
+    begin
+      var lChar := Char(aChar);
+      result := DelphiStringHelpers.DelphiWideStringWithChars(@lChar, 1);
+    end;
+
     // PChar
 
     operator Implicit(aString: ^Char): InstanceType; {$HINT seems risky for non-nil?}

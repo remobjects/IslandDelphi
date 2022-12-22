@@ -49,6 +49,11 @@ type
         result := ""; // short strings are always assigned, so we won't return nil
     end;
 
+    operator Implicit(aChar: AnsiChar): DelphiShortString;
+    begin
+      result := DelphiStringHelpers.DelphiShortStringWithChars(@aChar, 1);
+    end;
+
     //operator Explicit(aString: CocoaString): DelphiShortString;
     //begin
       //if aString:length > 255 then

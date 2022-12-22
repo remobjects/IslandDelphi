@@ -55,6 +55,11 @@ type
       result := DelphiStringHelpers.DelphiAnsiStringWithChars(@lChars[0], aString.Length);
     end;
 
+    operator Implicit(aChar: AnsiChar): InstanceType;
+    begin
+      result := DelphiStringHelpers.DelphiAnsiStringWithChars(@aChar, 1);
+    end;
+
     // PChar
 
     operator Implicit(aString: ^AnsiChar): InstanceType;
