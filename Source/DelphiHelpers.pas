@@ -49,6 +49,15 @@ type
       end;
     end;
 
+    //
+
+    method ConvertStringArrayToDelphiStringArray(aArray: array of IslandString): array of DelphiString;
+    begin
+      result := new DelphiString[length(aArray)];
+      for i := 0 to length(aArray)-1 do
+        result[i] := aArray[i] as DelphiString;
+    end;
+
   end;
 
   DelphiDebuggerHelpers = public static class
