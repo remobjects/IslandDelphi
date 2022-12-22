@@ -52,7 +52,8 @@ end;
 // Copy
 //
 
-method &Copy(const aString: DelphiShortString; aIndex, aCount: Integer): DelphiShortString; public; inline;
+// workaround for E26355: Island/Delphi: const parameter is imported as var one (also disable Allow Legacy out/var again, when fixed)
+method &Copy(/*const*/ aString: DelphiShortString; aIndex, aCount: Integer): DelphiShortString; public; inline;
 begin
   result := :Delphi.System.«@Copy»(aString, aIndex, aCount);
 end;

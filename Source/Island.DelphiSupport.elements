@@ -10,6 +10,7 @@
     <MergeArchitectures>False</MergeArchitectures>
     <OutputPathPrefix>$(DelphiSDK)</OutputPathPrefix>
     <KnownConditionalDefines>DELPHI_DEBUG_STRING_ARC</KnownConditionalDefines>
+    <AllowLegacyOutParams>True</AllowLegacyOutParams>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <OutputPath>.\Bin\Debug</OutputPath>
