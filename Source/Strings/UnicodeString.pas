@@ -66,6 +66,11 @@ type
       result := aString.fStringData;
     end;
 
+    operator Explicit(aString: InstanceType): ^Void;
+    begin
+      result := aString.fStringData;
+    end;
+
     // WideString
 
     operator Explicit(aString: InstanceType): DelphiWideString;

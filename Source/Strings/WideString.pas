@@ -64,6 +64,11 @@ type
       result := aString.fStringData;
     end;
 
+    operator Explicit(aString: InstanceType): ^Void;
+    begin
+      result := aString.fStringData;
+    end;
+
     // NSString
 
     {$IF DARWIN}
