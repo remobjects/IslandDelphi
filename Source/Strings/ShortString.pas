@@ -40,6 +40,17 @@ type
       result := DelphiStringHelpers.DelphiShortStringWithChars(@lChars[0], aString.Length);
     end;
 
+    operator Implicit(aChar: Char): DelphiShortString;
+    begin
+      var lChars := String(aChar).ToAnsiChars(); {$HINT Review, this is lossy}
+      result := DelphiStringHelpers.DelphiShortStringWithChars(@lChars[0], 1);
+    end;
+
+    operator Implicit(aChar: AnsiChar): DelphiShortString;
+    begin
+      result := DelphiStringHelpers.DelphiShortStringWithChars(@aChar, 1);
+    end;
+
     {$IF DARWIN}
     operator Explicit(aString: DelphiShortString): CocoaString;
     begin
@@ -47,11 +58,6 @@ type
         result := new CocoaString withBytes(@(aString[1])) length(DelphiStringHelpers.DelphiStringLength(aString)) encoding(Foundation.NSStringEncoding.UTF8StringEncoding)
       else
         result := ""; // short strings are always assigned, so we won't return nil
-    end;
-
-    operator Implicit(aChar: AnsiChar): DelphiShortString;
-    begin
-      result := DelphiStringHelpers.DelphiShortStringWithChars(@aChar, 1);
     end;
 
     //operator Explicit(aString: CocoaString): DelphiShortString;

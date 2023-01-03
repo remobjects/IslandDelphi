@@ -211,7 +211,7 @@ type
       if (@aDestination) = (@aSource) then
         exit;
       if aDestination.fStringData = aSource.fStringData then
-        exit; // is this correct, for WideString, or dio we have to copy?
+        exit; // is this correct, for WideString, or do we have to copy?
       if assigned(aDestination.fStringData) then
         DelphiStringHelpers.FreeDelphiWideString(var aDestination.fStringData);
       aDestination.fStringData := DelphiStringHelpers.CopyDelphiWideString(aSource.fStringData);

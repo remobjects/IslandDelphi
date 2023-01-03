@@ -51,8 +51,14 @@ type
 
     operator Explicit(aString: IslandString): InstanceType;
     begin
-      var lChars := aString.ToAnsiChars(); {$HINT Review, this is lossy} {$HINT Can be Optimized with a ToPAnsiChar on String?}
+      var lChars := aString.ToAnsiChars(); {$HINT Review, this is lossy}
       result := DelphiStringHelpers.DelphiAnsiStringWithChars(@lChars[0], aString.Length);
+    end;
+
+    operator Implicit(aChar: Char): InstanceType;
+    begin
+      var lChars := String(aChar).ToAnsiChars(); {$HINT Review, this is lossy}
+      result := DelphiStringHelpers.DelphiAnsiStringWithChars(@lChars[0], 1);
     end;
 
     operator Implicit(aChar: AnsiChar): InstanceType;
