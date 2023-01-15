@@ -8,7 +8,7 @@ type
     Padding: UInt32; {why?}
     CodePage: UInt16;
     ElementSize: UInt16;
-    ReferenceCount: UInt32;
+    ReferenceCount: Int32;
     Length: UInt32;
   end;
 
@@ -17,7 +17,7 @@ type
     Padding: UInt32;
     Padding_CodePage: UInt16;
     Padding_ElementSize: UInt16;
-    Padding_ReferenceCount: UInt32;
+    Padding_ReferenceCount: Int32;
     Length: UInt32;
   end;
 
