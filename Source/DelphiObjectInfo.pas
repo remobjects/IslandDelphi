@@ -51,6 +51,9 @@ type
     property InterfaceTable: PInterfaceTable read PInterfaceTable(PointerAtOffset(:Delphi.System.vmtIntfTable));
     property VirtualMethodTable: ^Void read PointerAtOffset(:Delphi.System.vmtSelfPtr);
 
+    property TypeInfo: PTypeInfo read PointerAtOffset(:Delphi.System.vmtTypeInfo);
+
+
     method PointerAtOffset(aOffset: IntPtr): ^Void;
     begin
       result := (^^Void(fVMT+aOffset))^;
@@ -102,6 +105,28 @@ type
           //writeLn($"Selector[{i}]: {FieldDefinitionTable^.Selectors[i]}");
       end;
 
+      writeLn($"TypeInfo {TypeInfo}");
+      if assigned(TypeInfo) then begin
+        writeLn($"TypeInfo.Kind {Int32(TypeInfo.Kind)} – Is Class? {Int32(TypeInfo.Kind) = 7}");
+        writeLn($"TypeInfo.Name {TypeInfo.Name as DelphiShortString as IslandString}"); // hack for E26339: Island/Delphi: explicit cast not called
+        //writeLn($"TypeInfo.NameFld {TypeInfo.NameFld}"); // AV
+        var lTypeData := TypeInfo.TypeData;
+        writeLn($"TypeData {lTypeData}");
+        //writeLn($"lTypeData.UnitNameFld {lTypeData.UnitNameFld}"); // AV
+        writeLn($"lTypeData.UnitName {lTypeData.UnitName as DelphiShortString as IslandString}"); // hack for E26339: Island/Delphi: explicit cast not called
+        //writeLn($"lTypeData.DynUnitName {lTypeData.DynUnitName as DelphiShortString as IslandString}"); // hack for E26339: Island/Delphi: explicit cast not called
+        //writeLn($"lTypeData.IntfUnit {lTypeData.IntfUnit as DelphiShortString as IslandString}"); // hack for E26339: Island/Delphi: explicit cast not called
+
+        writeLn($"lTypeData.ClassType {^Void(lTypeData.ClassType)} – Matches VMT? {^Void(lTypeData.ClassType) = VMT}");
+        writeLn($"lTypeData.PropCount {lTypeData.PropCount} Properties");
+
+        var lPropertyData := lTypeData.PropData;
+        if assigned(lPropertyData) then begin
+          writeLn($"lPropertyData {lPropertyData}");
+          writeLn($"lPropertyData.PropCount {lPropertyData.PropCount}");
+        end;
+      end;
+
       writeLn($"ParentAddress {ParentAddress}");
       writeLn();
       if assigned(Parent) then
@@ -111,6 +136,12 @@ type
   private
 
     fVMT: ^Void;
+
+    class method DumpMemory(aAddress: ^Void);
+    begin
+      for i := -100 to 100 do
+        writeLn($"^AnsiChar(aType{if i < 0 then '-' else '+'}{ABS(i)})^ ({^Byte(aAddress+i)^}) {^AnsiChar(aAddress+i)^}");
+    end;
 
   end;
 
