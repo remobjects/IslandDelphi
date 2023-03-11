@@ -84,7 +84,6 @@ type
         result := DelphiStringHelpers.DelphiShortStringWithChars(aString, lLength);
     end;
 
-    // never called!? E26339: Island/Delphi: explicit cast not called
     operator Implicit(aString: DelphiShortString): IslandObject;
     begin
       result := aString as IslandString;
