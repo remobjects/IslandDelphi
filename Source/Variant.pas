@@ -40,7 +40,7 @@ type
         varWord: result := fData.VWord;
         //varLongWord: result := fData.VLongWord;
         {$IF EXISTS("Delphi.System.varUInt32")}
-        varUInt32: result := fData.VUInt64;
+        varUInt32: result := fData.VUInt32;
         {$ENDIF}
         varInt64: result := fData.VInt64;
         varUInt64: result := fData.VUInt64;
