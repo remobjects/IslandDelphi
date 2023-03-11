@@ -137,11 +137,11 @@ type
 
     fVMT: ^Void;
 
-    class method DumpMemory(aAddress: ^Void);
-    begin
-      for i := -100 to 100 do
-        writeLn($"^AnsiChar(aType{if i < 0 then '-' else '+'}{ABS(i)})^ ({^Byte(aAddress+i)^}) {^AnsiChar(aAddress+i)^}");
-    end;
+    //class method DumpMemory(aAddress: ^Void);
+    //begin
+      //for i := -100 to 100 do
+        //writeLn($"^AnsiChar(aType{if i < 0 then '-' else '+'}{ABS(i)})^ ({^Byte(aAddress+i)^}) {^AnsiChar(aAddress+i)^}");
+    //end;
 
   end;
 
