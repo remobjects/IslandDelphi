@@ -107,43 +107,98 @@ type
 
       writeLn($"TypeInfo {TypeInfo}");
       if assigned(TypeInfo) then begin
-        writeLn($"TypeInfo.Kind {Int32(TypeInfo.Kind)} – Is Class? {Int32(TypeInfo.Kind) = 7}");
-        writeLn($"TypeInfo.Name {TypeInfo.Name as DelphiShortString as IslandString}"); // hack for E26339: Island/Delphi: explicit cast not called
-        //writeLn($"TypeInfo.NameFld {TypeInfo.NameFld}"); // AV
+        writeLn($"TypeInfo Kind: {Int32(TypeInfo.Kind)} – Is Class? {Int32(TypeInfo.Kind) = 7}");
+        writeLn($"TypeInfo Name: {TypeInfo.Name as DelphiShortString as IslandString}"); // hack for E26339: Island/Delphi: explicit cast not called
+
         var lTypeData := TypeInfo.TypeData;
         writeLn($"TypeData {lTypeData}");
         //writeLn($"lTypeData.UnitNameFld {lTypeData.UnitNameFld}"); // AV
-        writeLn($"lTypeData.UnitName {lTypeData.UnitName as DelphiShortString as IslandString}"); // hack for E26339: Island/Delphi: explicit cast not called
-        //writeLn($"lTypeData.DynUnitName {lTypeData.DynUnitName as DelphiShortString as IslandString}"); // hack for E26339: Island/Delphi: explicit cast not called
-        //writeLn($"lTypeData.IntfUnit {lTypeData.IntfUnit as DelphiShortString as IslandString}"); // hack for E26339: Island/Delphi: explicit cast not called
-
-        writeLn($"lTypeData.ClassType {^Void(lTypeData.ClassType)} – Matches VMT? {^Void(lTypeData.ClassType) = VMT}");
-        writeLn($"lTypeData.PropCount {lTypeData.PropCount} Properties");
+        writeLn($"TypeData UnitName: {lTypeData.UnitName as DelphiShortString as IslandString}"); // hack for E26339: Island/Delphi: explicit cast not called
+        writeLn($"TypeData DynUnitName: {lTypeData.DynUnitName as DelphiShortString as IslandString}"); // hack for E26339: Island/Delphi: explicit cast not called
+        writeLn($"TypeData IntfUnit: {lTypeData.IntfUnit as DelphiShortString as IslandString}"); // hack for E26339: Island/Delphi: explicit cast not called
+        writeLn($"TypeData Class Type: {^Void(lTypeData.ClassType)} – Matches VMT? {^Void(lTypeData.ClassType) = VMT}");
+        if assigned(lTypeData.ParentInfo) then
+          writeLn($"TypeData Parent Info: {^^Void(lTypeData.ParentInfo)^}");
+        writeLn($"TypeData Property Count: {lTypeData.PropCount} Properties");
 
         var lPropertyData := lTypeData.PropData;
         if assigned(lPropertyData) then begin
-          writeLn($"lPropertyData {lPropertyData}");
-          writeLn($"lPropertyData.PropCount {lPropertyData.PropCount}");
+          var lData := ^TPropData2(lPropertyData);
+          writeLn($"lPropertyData: {lPropertyData}");
+          writeLn($"lPropertyData Property Count: {lData.PropCount}");
+          var p := ^Void(@lData.PropList);
+          const sizeOfTPropInfo2 = 42;//sizeOf(TPropInfo2);
+          for i := 0 to lData.PropCount-1 do begin
+            var lProperty := PPropInfo2(p);
+            var lName := ^DelphiShortString(p+sizeOfTPropInfo2)^;
+            writeLn($"Property Name: {lName as DelphiShortString as IslandString}");
+            if assigned(lProperty.PropType) then
+              writeLn($"  PropType: {^^Void(lProperty.PropType)}");
+            writeLn($"  GetProc {lProperty.GetProc}");
+            writeLn($"  SetProc {lProperty.SetProc}");
+            writeLn($"  Index: {lProperty.Index}");
+            writeLn($"  Default {lProperty.Default}");
+            writeLn($"  NameIndex {lProperty.NameIndex}");
+            //inc(p, sizeOfTPropInfo2+length(lName)+1); // doesnt call Length
+            //p := p + sizeOfTPropInfo2+(lName.Length)+1; // E643 Cannot call Object methods on a static array
+            p := p + sizeOfTPropInfo2+ord(lName[0])+1;
+          end;
         end;
       end;
 
-      writeLn($"ParentAddress {ParentAddress}");
-      writeLn();
-      if assigned(Parent) then
+      writeLn($"ParentAddress at {ParentAddress}");
+      if assigned(ParentAddress) then begin
+        writeLn($"ParentAddress {^^Void(PointerAtOffset(:Delphi.System.vmtParent))^}");
+        writeLn();
         Parent.Dump;
+      end;
     end;
 
   private
 
     fVMT: ^Void;
 
-    //class method DumpMemory(aAddress: ^Void);
-    //begin
-      //for i := -100 to 100 do
-        //writeLn($"^AnsiChar(aType{if i < 0 then '-' else '+'}{ABS(i)})^ ({^Byte(aAddress+i)^}) {^AnsiChar(aAddress+i)^}");
-    //end;
+    class method DumpMemory(aAddress: ^Void);
+    begin
+      for i := 0 to 100 do
+        writeLn($"^AnsiChar(aType{if i > 0 then '+'}{i})^ ({^Byte(aAddress+i)^}) {^AnsiChar(aAddress+i)^}");
+    end;
 
   end;
 
+  {$HIDE H6} // H6 Field "StoredProc" defined in type "TPropInfo2" is never used
+  {$HIDE H8} // H8 Field "PropType" defined in type "TPropInfo2" is never assigned
+
+  [Packed]
+  TPropData2 = assembly record
+    PropCount: Word;
+    PropList: /*array[0..0] of */ TPropInfo; // Not really an array
+  end;
+
+  [Packed]
+  PPropInfo2 = ^TPropInfo2;
+  TPropInfo2 = assembly record
+    PropType: PPTypeInfo;
+    GetProc: Pointer;
+    SetProc: Pointer;
+    StoredProc: Pointer;
+    &Index: Integer;
+
+    &Default: Integer;
+    NameIndex: SmallInt;
+    //Name: TSymbolName; // Is sized dynamically
+  end;
+
+  TPropDataEx = packed record
+    PropCount: Word;
+    PropList: /*array[0..0] of */ TPropInfoEx; // Not really an array
+  end;
+
+  //PPropInfoEx = ^TPropInfoEx;
+  //TPropInfoEx = packed record
+    //Flags: Byte;
+    //Info: PPropInfo;
+    //AttrData: TAttrData
+  //end;
 
 end.
