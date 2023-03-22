@@ -26,20 +26,19 @@ type
 
     property VMT: ^Void read fVMT;
 
-    property Parent: DelphiObjectInfo := if assigned(PointerAtOffset(:Delphi.System.vmtParent)) then new DelphiObjectInfo withVMT(^^Void(PointerAtOffset(:Delphi.System.vmtParent))^); lazy;
-    property ParentAddress: ^Void read PointerAtOffset(:Delphi.System.vmtParent);
+    property Parent: DelphiObjectInfo := if assigned(ParentAddress) then new DelphiObjectInfo withVMT(^^Void(ParentAddress)^); lazy;
 
-    property InstanceSize: Cardinal read (^Cardinal(fVMT+:Delphi.System.vmtInstanceSize))^;
-    property ClassName: String read (^DelphiShortString(PointerAtOffset(:Delphi.System.vmtClassName)))^ as String;
-    property DynamicMethodTable: :Delphi.System.PDynaMethodTable read :Delphi.System.PDynaMethodTable(PointerAtOffset(:Delphi.System.vmtDynamicTable));
-
-    property MethodDefinitionTable: PVmtMethodTable read PVmtMethodTable(PointerAtOffset(:Delphi.System.vmtMethodTable));
-    property FieldDefinitionTable: PVmtFieldTable read PVmtFieldTable(PointerAtOffset(:Delphi.System.vmtFieldTable));
+    property ParentAddress:         ^Void            read PointerAtOffset(:Delphi.System.vmtParent);
+    property InstanceSize:          Cardinal         read (^Cardinal(fVMT+:Delphi.System.vmtInstanceSize))^;
+    property ClassName:             String           read (^DelphiShortString(PointerAtOffset(:Delphi.System.vmtClassName)))^ as String;
+    property DynamicMethodTable:    PDynaMethodTable read PDynaMethodTable(PointerAtOffset(:Delphi.System.vmtDynamicTable));
+    property MethodDefinitionTable: PVmtMethodTable  read PVmtMethodTable(PointerAtOffset(:Delphi.System.vmtMethodTable));
+    property FieldDefinitionTable:  PVmtFieldTable   read PVmtFieldTable(PointerAtOffset(:Delphi.System.vmtFieldTable));
     //property TypeInformationTable: ^Void read PointerAtOffset(:Delphi.System.vmtTypeInfo);
     //property InstanceInitializationTable: ^Void read PointerAtOffset(:Delphi.System.vmtInitTable);
     //property AutomationInformationTable: ^Void read PointerAtOffset(:Delphi.System.vmtAutoTable);
-    property InterfaceTable: PInterfaceTable read PInterfaceTable(PointerAtOffset(:Delphi.System.vmtIntfTable));
-    property VirtualMethodTable: ^Void read PointerAtOffset(:Delphi.System.vmtSelfPtr);
+    property InterfaceTable:        PInterfaceTable  read PInterfaceTable(PointerAtOffset(:Delphi.System.vmtIntfTable));
+    property VirtualMethodTable:    ^Void            read PointerAtOffset(:Delphi.System.vmtSelfPtr);
 
     property TypeInfo: PTypeInfo read PointerAtOffset(:Delphi.System.vmtTypeInfo);
 
@@ -64,13 +63,12 @@ type
       writeLn($"InstanceSize {InstanceSize}");
       writeLn($"VMT {VMT}");
 
-      // STILL BAD FOR OUR OBJECTS
-      //writeLn($"DynamicMethodTable {DynamicMethodTable}");
-      //if assigned(DynamicMethodTable) then begin
-        //writeLn($"{DynamicMethodTable.Count} dynamic method(s)");
-        //for i := 0 to DynamicMethodTable.Count-1 do
-          //writeLn($"Selector[{i}]: {DynamicMethodTable.Selectors[i]}");
-      //end;
+      writeLn($"DynamicMethodTable {DynamicMethodTable}");
+      if assigned(DynamicMethodTable) then begin
+        writeLn($"{DynamicMethodTable.Count} dynamic method(s)");
+        for i := 0 to DynamicMethodTable.Count-1 do
+          writeLn($"Selector[{i}]: {DynamicMethodTable.Selectors[i]}");
+      end;
 
       if VirtualMethodTable ≠ fVMT then
         writeLn($"VirtualMethodTable {VirtualMethodTable}"); // normally just points back to the VMT
@@ -87,7 +85,7 @@ type
         writeLn($"{MethodDefinitionTable.Count} method(s)");
         var p := ^Void(MethodDefinitionTable);
         var lCount := ^Word(p)^;
-        writeLn($"lCount {lCount}");
+        inc(p, 2);
 
         while lCount > 0 do begin
           var lMethod := PMethRec(p);
@@ -169,11 +167,11 @@ type
 
     fVMT: ^Void;
 
-    //class method DumpMemory(aAddress: ^Void);
-    //begin
-      //for i := 0 to 100 do
-        //writeLn($"^AnsiChar(aType{if i > 0 then '+'}{i})^ ({^Byte(aAddress+i)^}) {^AnsiChar(aAddress+i)^}");
-    //end;
+    class method DumpMemory(aAddress: ^Void);
+    begin
+      for i := 0 to 100 do
+        writeLn($"[{if i > 0 then '+'}{i}]^ ({^Byte(aAddress+i)^}) {^AnsiChar(aAddress+i)^}");
+    end;
 
   end;
 
@@ -187,10 +185,10 @@ type
   Delphi.System.PDynaMethodTable = public ^Delphi.System.TDynaMethodTable;
 
   [Internal]
-  Delphi.System.TDynaMethodTable = public record
+  Delphi.System.TDynaMethodTable = public packed record
   public
     var Count: UInt16;
-    var Selectors: array of Int16;
+    var Selectors: array[0..0] of Int16;
   end;
 
   // Method RTTI. Type is private in System.pas
@@ -216,14 +214,13 @@ type
 
   PPropInfo2 = ^TPropInfo2;
   TPropInfo2 = assembly packed record
-    PropType: PPTypeInfo; //8
-    GetProc: Pointer; //8
-    SetProc: Pointer; //8
-    StoredProc: Pointer; //8
-    &Index: Integer; //4
-
-    &Default: Integer; //4
-    NameIndex: SmallInt; //2
+    PropType: PPTypeInfo;
+    GetProc: Pointer;
+    SetProc: Pointer;
+    StoredProc: Pointer;
+    &Index: Integer;
+    &Default: Integer;
+    NameIndex: SmallInt;
     //Name: TSymbolName; // Is sized dynamically
   end;
 
