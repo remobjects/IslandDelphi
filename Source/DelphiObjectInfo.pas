@@ -74,6 +74,7 @@ type
       writeLn($"InstanceSize {InstanceSize}");
       writeLn($"VMT {VMT}");
 
+      // STILL BAD FOR OUR OBJECTS
       //writeLn($"DynamicMethodTable {DynamicMethodTable}");
       //if assigned(DynamicMethodTable) then begin
         //writeLn($"{DynamicMethodTable.Count} dynamic method(s)");
@@ -94,8 +95,17 @@ type
       writeLn($"MethodDefinitionTable {MethodDefinitionTable}");
       if assigned(MethodDefinitionTable) then begin
         writeLn($"{MethodDefinitionTable.Count} method(s)");
-        //for i := 0 to MethodDefinitionTable.Count-1 do
-          //writeLn($"Selector[{i}]: {MethodDefinitionTable.Selectors[i]}");
+        var p := ^Void(MethodDefinitionTable);
+        var lCount := ^Word(p)^;
+        writeLn($"lCount {lCount}");
+
+        while lCount > 0 do begin
+          var lMethod := PMethRec(p);
+          var lName := ^DelphiShortString(p+sizeOf(TMethRec))^ as IslandString;
+          writeLn($"lName {lName} {lMethod.MethAddr}");
+          inc(p, lMethod.RecSize);
+          dec(lCount);
+        end;
       end;
 
       writeLn($"FieldDefinitionTable {FieldDefinitionTable}");
@@ -125,12 +135,12 @@ type
         if assigned(lPropertyData) then begin
           var lData := ^TPropData2(lPropertyData);
           writeLn($"lPropertyData: {lPropertyData}");
-          writeLn($"lPropertyData Property Count: {lData.PropCount}");
+          writeLn($"lPropertyData PropteryInfo Count: {lData.PropCount}");
           var p := ^Void(@lData.PropList);
-          const sizeOfTPropInfo2 = 42;//sizeOf(TPropInfo2);
+          assert(sizeOf(TPropInfo2) = 42);
           for i := 0 to lData.PropCount-1 do begin
             var lProperty := PPropInfo2(p);
-            var lName := ^DelphiShortString(p+sizeOfTPropInfo2)^;
+            var lName := ^DelphiShortString(p+sizeOf(TPropInfo2))^;
             writeLn($"Property Name: {lName as DelphiShortString as IslandString}");
             if assigned(lProperty.PropType) then
               writeLn($"  PropType: {^^Void(lProperty.PropType)}");
@@ -139,10 +149,21 @@ type
             writeLn($"  Index: {lProperty.Index}");
             writeLn($"  Default {lProperty.Default}");
             writeLn($"  NameIndex {lProperty.NameIndex}");
-            //inc(p, sizeOfTPropInfo2+length(lName)+1); // doesnt call Length
-            //p := p + sizeOfTPropInfo2+(lName.Length)+1; // E643 Cannot call Object methods on a static array
-            p := p + sizeOfTPropInfo2+ord(lName[0])+1;
+            //inc(p, sizeOf(TPropInfo2)+length(lName)+1); // doesnt call Length
+            //p := p + sizeOf(TPropInfo2)+(lName.Length)+1; // E643 Cannot call Object methods on a static array
+            p := p + sizeOf(TPropInfo2)+ord(lName[0])+1;
           end;
+
+          //var lExData := ^TPropDataEx(lPropertyData);
+          //writeLn($"lPropertyData PropteryInfoEx Count {lExData.PropCount}");
+          //for i := 0 to lExData.PropCount-1 do begin
+            //var lProperty := PPropInfoEx(p);
+            //writeLn($"lProperty.Flags {lProperty.Flags}");
+            //writeLn($"lProperty.AttrData {lProperty.AttrData}");
+            //writeLn($"lProperty.Info {lProperty.Info}");
+
+          //end;
+
         end;
       end;
 
@@ -158,47 +179,54 @@ type
 
     fVMT: ^Void;
 
-    class method DumpMemory(aAddress: ^Void);
-    begin
-      for i := 0 to 100 do
-        writeLn($"^AnsiChar(aType{if i > 0 then '+'}{i})^ ({^Byte(aAddress+i)^}) {^AnsiChar(aAddress+i)^}");
-    end;
+    //class method DumpMemory(aAddress: ^Void);
+    //begin
+      //for i := 0 to 100 do
+        //writeLn($"^AnsiChar(aType{if i > 0 then '+'}{i})^ ({^Byte(aAddress+i)^}) {^AnsiChar(aAddress+i)^}");
+    //end;
 
   end;
 
   {$HIDE H6} // H6 Field "StoredProc" defined in type "TPropInfo2" is never used
   {$HIDE H8} // H8 Field "PropType" defined in type "TPropInfo2" is never assigned
 
-  [Packed]
-  TPropData2 = assembly record
+  PMethRec = ^TMethRec;
+  TMethRec = assembly packed record
+    RecSize: Word;
+    MethAddr: Pointer;
+    //Name: TSymbolName; // Is sized dynamically
+  end;
+
+  //E26467: Island/Delphi: IE System.IndexOutOfRangeException building DephiSupport in latest
+
+  TPropData2 = assembly packed record
     PropCount: Word;
     PropList: /*array[0..0] of */ TPropInfo; // Not really an array
   end;
 
-  [Packed]
   PPropInfo2 = ^TPropInfo2;
-  TPropInfo2 = assembly record
-    PropType: PPTypeInfo;
-    GetProc: Pointer;
-    SetProc: Pointer;
-    StoredProc: Pointer;
-    &Index: Integer;
+  TPropInfo2 = assembly packed record
+    PropType: PPTypeInfo; //8
+    GetProc: Pointer; //8
+    SetProc: Pointer; //8
+    StoredProc: Pointer; //8
+    &Index: Integer; //4
 
-    &Default: Integer;
-    NameIndex: SmallInt;
+    &Default: Integer; //4
+    NameIndex: SmallInt; //2
     //Name: TSymbolName; // Is sized dynamically
   end;
 
-  TPropDataEx = packed record
+  TPropDataEx2 = packed record
     PropCount: Word;
     PropList: /*array[0..0] of */ TPropInfoEx; // Not really an array
   end;
 
-  //PPropInfoEx = ^TPropInfoEx;
-  //TPropInfoEx = packed record
-    //Flags: Byte;
-    //Info: PPropInfo;
-    //AttrData: TAttrData
-  //end;
+  PPropInfoEx2 = ^TPropInfoEx2;
+  TPropInfoEx2 = packed record
+    Flags: Byte;
+    Info: PPropInfo;
+    AttrData: TAttrData
+  end;
 
 end.
