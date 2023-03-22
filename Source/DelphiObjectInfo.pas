@@ -6,16 +6,6 @@ uses
 
 type
   [Internal]
-  Delphi.System.PDynaMethodTable = public ^Delphi.System.TDynaMethodTable;
-
-  [Internal]
-  Delphi.System.TDynaMethodTable = public record
-  public
-    var Count: UInt16;
-    var Selectors: array of Int16;
-  end;
-
-  [Internal]
   DelphiObjectInfo = public class
   public
 
@@ -187,8 +177,28 @@ type
 
   end;
 
-  {$HIDE H6} // H6 Field "StoredProc" defined in type "TPropInfo2" is never used
-  {$HIDE H8} // H8 Field "PropType" defined in type "TPropInfo2" is never assigned
+  {$HIDE H6} // H6 Field is never used
+  {$HIDE H7} // H7 Field is assigned to but never read
+  {$HIDE H8} // H8 Field is never assigned
+
+  // Dynamic Methods.
+
+  [Internal]
+  Delphi.System.PDynaMethodTable = public ^Delphi.System.TDynaMethodTable;
+
+  [Internal]
+  Delphi.System.TDynaMethodTable = public record
+  public
+    var Count: UInt16;
+    var Selectors: array of Int16;
+  end;
+
+  // Method RTTI. Type is private in System.pas
+
+  TMethData2 = assembly packed record
+    MethCount: Word;
+    MethList: /*array[0..0] of */ TMethRec; // Not really an array
+  end;
 
   PMethRec = ^TMethRec;
   TMethRec = assembly packed record
@@ -197,7 +207,7 @@ type
     //Name: TSymbolName; // Is sized dynamically
   end;
 
-  //E26467: Island/Delphi: IE System.IndexOutOfRangeException building DephiSupport in latest
+  // Property RTTI. Types redeclared to handle dynamic length for "Name"
 
   TPropData2 = assembly packed record
     PropCount: Word;
