@@ -1,5 +1,7 @@
 ﻿namespace RemObjects.Elements.System;
 
+{$IF DARWIN}
+
 uses
   Delphi.System,
   Delphi.System.TypInfo;
@@ -27,6 +29,7 @@ type
     property VMT: ^Void read fVMT;
 
     property Parent: DelphiObjectInfo := if assigned(ParentAddress) then new DelphiObjectInfo withVMT(^^Void(ParentAddress)^); lazy;
+    property Ancestry: String := if assigned(Parent) then $": {Parent.ClassName}{Parent.Ancestry}" else ""; lazy;
 
     property ParentAddress:         ^Void            read PointerAtOffset(:Delphi.System.vmtParent);
     property InstanceSize:          Cardinal         read (^Cardinal(fVMT+:Delphi.System.vmtInstanceSize))^;
@@ -59,25 +62,28 @@ type
 
     method Dump;
     begin
-      writeLn($"ClassName {ClassName}");
-      writeLn($"InstanceSize {InstanceSize}");
+      writeLn($"ClassName {ClassName}{Ancestry}");
+      if assigned(Parent) then
+        writeLn($"InstanceSize {InstanceSize} (+{Integer(InstanceSize)-Integer(Parent.InstanceSize)})")
+      else
+        writeLn($"InstanceSize {InstanceSize}");
+
       writeLn($"VMT {VMT}");
+      if VirtualMethodTable ≠ fVMT then // normally just points back to the VMT
+        writeLn($"VirtualMethodTable {VirtualMethodTable} (does not match {fVMT})");
+
+      writeLn($"InterfaceTable {InterfaceTable}");
+      if assigned(InterfaceTable) then begin
+        writeLn($"{InterfaceTable.EntryCount} interface(s) implemented");
+        for i := 0 to InterfaceTable.EntryCount-1 do
+          writeLn($"- Interface[{i}]: {{{(InterfaceTable^.Entries[i].IID as Guid).ToString.ToUpperInvariant}}} ({InterfaceTable^.Entries[i].VTable})");
+      end;
 
       writeLn($"DynamicMethodTable {DynamicMethodTable}");
       if assigned(DynamicMethodTable) then begin
         writeLn($"{DynamicMethodTable.Count} dynamic method(s)");
         for i := 0 to DynamicMethodTable.Count-1 do
-          writeLn($"Selector[{i}]: {DynamicMethodTable.Selectors[i]}");
-      end;
-
-      if VirtualMethodTable ≠ fVMT then
-        writeLn($"VirtualMethodTable {VirtualMethodTable}"); // normally just points back to the VMT
-
-      writeLn($"InterfaceTable {InterfaceTable}");
-      if assigned(InterfaceTable) then begin
-        writeLn($"{InterfaceTable.EntryCount} interface(s) implemented");
-        //for i := 0 to InterfaceTable.EntryCount-1 do
-          //writeLn($"Selector[{i}]: {(InterfaceTable^.Entries[i].IID as Guid).ToString}");
+          writeLn($"- Selector[{i}]: {DynamicMethodTable.Selectors[i]}");
       end;
 
       writeLn($"MethodDefinitionTable {MethodDefinitionTable}");
@@ -100,25 +106,28 @@ type
       if assigned(FieldDefinitionTable) then begin
         writeLn($"{FieldDefinitionTable.Count} fields(s)");
         //for i := 0 to FieldDefinitionTable.Count-1 do
-          //writeLn($"Selector[{i}]: {FieldDefinitionTable^.Selectors[i]}");
+          //writeLn($"Class[{i}]: {FieldDefinitionTable^.Selectors[i]}");
       end;
 
       writeLn($"TypeInfo {TypeInfo}");
       if assigned(TypeInfo) then begin
-        writeLn($"TypeInfo Kind: {Int32(TypeInfo.Kind)} – Is Class? {Int32(TypeInfo.Kind) = 7}");
-        writeLn($"TypeInfo Name: {TypeInfo.Name as DelphiShortString as IslandString}"); // hack for E26339: Island/Delphi: explicit cast not called
+        if TypeInfo.Kind ≠ 7 then
+          writeLn($"TypeInfo Kind: {Int32(TypeInfo.Kind)} (should be 7 for class!)");
+        if TypeInfo.Name as DelphiShortString as IslandString ≠ ClassName then
+        writeLn($"TypeInfo Name: {TypeInfo.Name as DelphiShortString as IslandString} (does not match '{ClassName}')");
 
         var lTypeData := TypeInfo.TypeData;
         writeLn($"TypeData {lTypeData}");
         //writeLn($"lTypeData.UnitNameFld {lTypeData.UnitNameFld}"); // AV
-        writeLn($"TypeData UnitName: {lTypeData.UnitName as DelphiShortString as IslandString}"); // hack for E26339: Island/Delphi: explicit cast not called
-        writeLn($"TypeData DynUnitName: {lTypeData.DynUnitName as DelphiShortString as IslandString}"); // hack for E26339: Island/Delphi: explicit cast not called
-        writeLn($"TypeData IntfUnit: {lTypeData.IntfUnit as DelphiShortString as IslandString}"); // hack for E26339: Island/Delphi: explicit cast not called
-        writeLn($"TypeData Class Type: {^Void(lTypeData.ClassType)} – Matches VMT? {^Void(lTypeData.ClassType) = VMT}");
+        writeLn($"UnitName: {lTypeData.UnitName as DelphiShortString as IslandString}"); // hack for E26339: Island/Delphi: explicit cast not called
+        writeLn($"DynUnitName: {lTypeData.DynUnitName as DelphiShortString as IslandString}"); // hack for E26339: Island/Delphi: explicit cast not called
+        writeLn($"IntfUnit: {lTypeData.IntfUnit as DelphiShortString as IslandString}"); // hack for E26339: Island/Delphi: explicit cast not called
+        if ^Void(lTypeData.ClassType) ≠ VMT then
+          writeLn($"TypeData Class Type: {^Void(lTypeData.ClassType)} (does not match {fVMT})");
         if assigned(lTypeData.ParentInfo) then
           writeLn($"TypeData Parent Info: {^^Void(lTypeData.ParentInfo)^}");
-        writeLn($"TypeData Property Count: {lTypeData.PropCount} Properties");
 
+        writeLn($"TypeData Property Count: {lTypeData.PropCount} Properties");
         var lPropertyData := lTypeData.PropData;
         if assigned(lPropertyData) then begin
           var lData := ^TPropData2(lPropertyData);
@@ -155,9 +164,9 @@ type
         end;
       end;
 
-      writeLn($"ParentAddress at {ParentAddress}");
+      //writeLn($"ParentAddress at {ParentAddress}");
       if assigned(ParentAddress) then begin
-        writeLn($"ParentAddress {^^Void(PointerAtOffset(:Delphi.System.vmtParent))^}");
+        //writeLn($"ParentAddress {^^Void(PointerAtOffset(:Delphi.System.vmtParent))^}");
         writeLn();
         Parent.Dump;
       end;
@@ -235,5 +244,7 @@ type
     Info: PPropInfo;
     AttrData: TAttrData
   end;
+
+{$ENDIF}
 
 end.
