@@ -37,7 +37,7 @@ type
   //end;
 
   [Delphi]
-  DelphiWrappedIslandObject = public class(DelphiObject, :Delphi.System.IComparable)
+  DelphiWrappedIslandObject = public partial class(DelphiObject)
   public
     constructor(aValue: IslandObject);
     begin
@@ -56,6 +56,7 @@ type
       exit new DelphiWrappedIslandObject(aValue);
     end;
 
+    {$IF EXISTS(Delphi.System.TObject.ToString)}
     method ToString: DelphiString; override;
     begin
       result := Value.ToString() as DelphiString;
@@ -71,7 +72,13 @@ type
       if aOther is DelphiWrappedIslandObject then
         result := Value.Equals(DelphiWrappedIslandObject(aOther):Value);
     end;
+    {$ENDIF}
 
+  end;
+
+  {$IF EXISTS(Delphi.System.IComparable)}
+  DelphiWrappedIslandObject = public partial class(DelphiObject, :Delphi.System.IComparable)
+  public
     method CompareTo(aOther: DelphiObject): Integer;
     begin
       if Value is not System.IComparable then
@@ -81,6 +88,7 @@ type
       end;
     end;
   end;
+  {$ENDIF}
 
   IslandWrappedDelphiObject = public class(WrappedObject, IComparable, IEquatable)
   public
@@ -114,17 +122,23 @@ type
 
     method &Equals(aOther: IslandObject): Boolean; override;
     begin
+      {$IF EXISTS(Delphi.System.TObject.Equals)}
       if aOther is IslandWrappedDelphiObject then
         result := Value.Equals(IslandWrappedDelphiObject(aOther):Value);
+      {$ENDIF}
     end;
 
     method CompareTo(aOther: IslandObject): Integer;
     begin
+      {$IF EXISTS(Delphi.System.IComparable)}
       if Value is not Delphi.System.IComparable then
         raise new Exception("The wrapped Delphi Object does not implement Delphi.System.IComparable");
       case aOther type of
         IslandWrappedDelphiObject: result := (Value as Delphi.System.IComparable).CompareTo(IslandWrappedDelphiObject(aOther).Value);
       end;
+      {$ELSE}
+      raise new Exception("The wrapped Delphi Object does not implement Delphi.System.IComparable because it is not supported by this version of Delphi");
+      {$ENDIF}
     end;
 
   end;
@@ -158,11 +172,13 @@ type
       InnerException := aException;
     end;
 
+    {$IF EXISTS(Delphi.System.TObject.ToString)}
     //[ToString] // E26099: Island/Delphi: allow [ToString] onm Delphi-model objects
     method ToString: DelphiString; override;
     begin
       result := "(Wrapped) "+typeOf(InnerException).Name+': '+Message;
     end;
+    {$ENDIF}
 
     property InnerException: IslandException read private write; reintroduce;
 

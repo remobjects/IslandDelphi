@@ -5,10 +5,17 @@ type
   DelphiHelpers = public static class
   public
 
+    {$IF ANSI_STRING}
+    method CreateInstance(aType: class of TObject): TObject;
+    begin
+      result :=:Delphi.System.«@ClassCreate»(aType, true);
+    end;
+    {$ELSE}
     method CreateInstance(aType: ^Void): ^Void;
     begin
       result :=:Delphi.System.«@ClassCreate»(aType, 1);
     end;
+    {$ENDIF}
 
     method IsInstanceClass(aInstance: ^Void; aType: ^Void): ^Void;
     begin
@@ -74,15 +81,24 @@ type
 
   end;
 
-  {$IF NOT EXISTS(Delphi.System.TObject.ToString)}
   TObject_Extension = public extension class(TObject)
   public
+
+    {$IF NOT EXISTS(Delphi.System.TObject.ToString)}
     method ToString: DelphiString;
     begin
       result := $"{^Void(self)}";
     end;
+    {$ENDIF}
+
+    {$IF NOT EXISTS(Delphi.System.TObject.GetHashCode)}
+    method GetHashCode: IntPtr;
+    begin
+      result := IntPtr(^Void(self));
+    end;
+    {$ENDIF}
+
   end;
-  {$ENDIF}
 
   [Internal]
   DelphiExceptionHandler = public static class

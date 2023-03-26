@@ -286,7 +286,7 @@ type
 method SetLength(var aString: DelphiAnsiString; aNewLength: Int32); public; inline;
 begin
   {$IF ANSI_STRING}
-  {$HINT figure out how to call this, as its dfined badly in .dcu}
+  {$HINT figure out how to call this, as it's defined badly in .dcu}
   //:Delphi.System.«@LStrSetLength»(var aString, aNewLength, aString.CodePage);
   {$ELSE}
   :Delphi.System.«@LStrSetLength»(var aString, aNewLength, aString.CodePage);
