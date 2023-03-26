@@ -21,7 +21,36 @@ type
       end; default;
 
     //
-    // Operators
+    // Comparison Operators
+    //
+
+    operator Equal(aLeft: DelphiShortString; aRight: DelphiShortString): Boolean;
+    begin
+      result := :Delphi.System.AnsiStrings.AnsiCompareStr(aLeft, aRight) = 0;
+    end;
+
+    operator Greater(aLeft: DelphiShortString; aRight: DelphiShortString): Boolean;
+    begin
+      result := :Delphi.System.AnsiStrings.AnsiCompareStr(aLeft, aRight) < 0;
+    end;
+
+    operator GreaterOrEqual(aLeft: DelphiShortString; aRight: DelphiShortString): Boolean;
+    begin
+      result := :Delphi.System.AnsiStrings.AnsiCompareStr(aLeft, aRight) ≤ 0;
+    end;
+
+    operator Less(aLeft: DelphiShortString; aRight: DelphiShortString): Boolean;
+    begin
+      result := :Delphi.System.AnsiStrings.AnsiCompareStr(aLeft, aRight) > 0;
+    end;
+
+    operator LessOrEqual(aLeft: DelphiShortString; aRight: DelphiShortString): Boolean;
+    begin
+      result := :Delphi.System.AnsiStrings.AnsiCompareStr(aLeft, aRight) ≥ 0;
+    end;
+
+    //
+    // Cast Operators
     //
 
     operator Implicit(aString: DelphiShortString): IslandString;

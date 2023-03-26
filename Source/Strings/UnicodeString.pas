@@ -35,7 +35,36 @@ type
     end;
 
     //
-    // Operators
+    // Comparison Operators
+    //
+
+    operator Equal(aLeft: InstanceType; aRight: InstanceType): Boolean;
+    begin
+      result := :Delphi.System.SysUtils.CompareStr(aLeft, aRight) = 0;
+    end;
+
+    operator Greater(aLeft: InstanceType; aRight: InstanceType): Boolean;
+    begin
+      result := :Delphi.System.SysUtils.CompareStr(aLeft, aRight) < 0;
+    end;
+
+    operator GreaterOrEqual(aLeft: InstanceType; aRight: InstanceType): Boolean;
+    begin
+      result := :Delphi.System.SysUtils.CompareStr(aLeft, aRight) ≤ 0;
+    end;
+
+    operator Less(aLeft: InstanceType; aRight: InstanceType): Boolean;
+    begin
+      result := :Delphi.System.SysUtils.CompareStr(aLeft, aRight) > 0;
+    end;
+
+    operator LessOrEqual(aLeft: InstanceType; aRight: InstanceType): Boolean;
+    begin
+      result := :Delphi.System.SysUtils.CompareStr(aLeft, aRight) ≥ 0;
+    end;
+
+    //
+    // Cast Operators
     //
 
     operator Implicit(aString: InstanceType): IslandString;
