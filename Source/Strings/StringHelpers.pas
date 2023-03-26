@@ -24,6 +24,7 @@ type
   DelphiStringHelpers = assembly static class
   public
 
+    {$IF NOT ANSI_STRING}
     method DelphiUnicodeStringWithChars(aChars: ^Char; aLength: UInt32): DelphiUnicodeString;
     begin
       if aLength = 0 then
@@ -38,6 +39,7 @@ type
       ^Char(lResult+sizeOf(DelphiLongStringRecord)+lSize)^ := #0;
       result := new DelphiUnicodeString(lResult+sizeOf(DelphiLongStringRecord));
     end;
+    {$ENDIF}
 
     method DelphiAnsiStringWithChars(aChars: ^AnsiChar; aLength: UInt32): DelphiAnsiString;
     begin
@@ -77,6 +79,7 @@ type
 
     //
 
+    {$IF NOT ANSI_STRING}
     method EmptyDelphiUnicodeStringWithCapacity(aLength: UInt32): DelphiUnicodeString;
     begin
       if aLength = 0 then
@@ -90,6 +93,7 @@ type
       ^AnsiChar(lResult+sizeOf(DelphiLongStringRecord)+lSize)^ := #0;
       result := new DelphiUnicodeString(lResult+sizeOf(DelphiLongStringRecord));
     end;
+    {$ENDIF}
 
     method EmptyDelphiAnsiStringWithCapacity(aLength: UInt32): DelphiAnsiString;
     begin
@@ -131,10 +135,12 @@ type
 
     //
 
+    {$IF NOT ANSI_STRING}
     method CopyDelphiUnicodeString(aString: DelphiUnicodeString): DelphiUnicodeString; inline;
     begin
       result := new DelphiUnicodeString(CopyDelphiLongString(aString.fStringData));
     end;
+    {$ENDIF}
 
     method CopyDelphiAnsiString(aString: DelphiAnsiString): DelphiAnsiString; inline;
     begin
@@ -178,12 +184,14 @@ type
 
     //
 
+    {$IF NOT ANSI_STRING}
     method CopyOnWriteDelphiUnicodeString(var aString: DelphiUnicodeString): Boolean; inline;
     begin
       var p: ^Void := aString.fStringData;
       result := CopyOnWriteDelphiString(var p);
       aString.fStringData := p;
     end;
+    {$ENDIF}
 
     method CopyOnWriteDelphiAnsiString(var aString: DelphiAnsiString): Boolean; inline;
     begin
@@ -224,10 +232,12 @@ type
       result := lOriginal.ReferenceCount;
     end;
 
+    {$IF NOT ANSI_STRING}
     method AdjustDelphiUnicodeStringReferenceCount(aString: DelphiUnicodeString; aBy: Integer): Integer; inline;
     begin
       result := AdjustLongStringReferenceCount(aString.fStringData, aBy);
     end;
+    {$ENDIF}
 
     method AdjustDelphiAnsiStringReferenceCount(aString: DelphiAnsiString; aBy: Integer): Integer; inline;
     begin
@@ -246,10 +256,12 @@ type
 
     //
 
+    {$IF NOT ANSI_STRING}
     method RetainDelphiUnicodeString(var aString: DelphiUnicodeString): Integer; inline;
     begin
       result := RetainDelphiLongString(aString.fStringData);
     end;
+    {$ENDIF}
 
     method RetainDelphiAnsiString(var aString: DelphiAnsiString): Integer; inline;
     begin
@@ -263,12 +275,14 @@ type
 
     //
 
+    {$IF NOT ANSI_STRING}
     method ReleaseDelphiUnicodeString(var aString: DelphiUnicodeString): Integer; inline;
     begin
       result := ReleaseDelphiLongString(var aString.fStringData);
       if result = 0 then
         aString.fStringData := nil;
     end;
+    {$ENDIF}
 
     method ReleaseDelphiAnsiString(var aString: DelphiAnsiString): Integer; inline;
     begin

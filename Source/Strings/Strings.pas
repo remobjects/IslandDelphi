@@ -11,6 +11,7 @@
 // SetString
 //
 
+{$IF NOT ANSI_STRING}
 method SetString(var aString: DelphiUnicodeString; aBuffer: :Delphi.System.PChar; aLength: Integer); public;
 begin
   if assigned(aBuffer) then
@@ -18,6 +19,7 @@ begin
   else
     aString := DelphiStringHelpers.EmptyDelphiUnicodeStringWithCapacity(aLength);
 end;
+{$ENDIF}
 
 method SetString(var aString: DelphiAnsiString; aBuffer: :Delphi.System.PAnsiChar; aLength: Integer); public;
 begin
@@ -27,7 +29,7 @@ begin
     aString := DelphiStringHelpers.EmptyDelphiAnsiStringWithCapacity(aLength);
 end;
 
-method SetString(var aString: DelphiWideString; aBuffer: :Delphi.System.PChar; aLength: Integer); public;
+method SetString(var aString: DelphiWideString; aBuffer: ^RemObjects.Elements.System.Char; aLength: Integer); public;
 begin
   if assigned(aBuffer) then
     aString := DelphiStringHelpers.DelphiWideStringWithChars(aBuffer, aLength)
@@ -40,7 +42,7 @@ begin
   :Delphi.System.«@SetString»(var aString, aBuffer, aLength);
 end;
 
-method SetString(var aString: IslandString; aBuffer: :Delphi.System.PChar; aLength: Integer); public;
+method SetString(var aString: IslandString; aBuffer: ^RemObjects.Elements.System.Char; aLength: Integer); public;
 begin
   if assigned(aBuffer) then
     aString := IslandString.FromPChar(aBuffer, aLength)
@@ -52,10 +54,12 @@ end;
 // Copy
 //
 
-method &Copy(const aString: DelphiShortString; aIndex, aCount: Integer): DelphiShortString; public; inline;
+{$IF NOT ANSI_STRING}
+method &Copy(const aString: DelphiUnicodeString; aIndex, aCount: Integer): DelphiUnicodeString; public; inline;
 begin
-  result := :Delphi.System.«@Copy»(aString, aIndex, aCount);
+  result := :Delphi.System.«@UStrCopy»(aString, aIndex, aCount);
 end;
+{$ENDIF}
 
 method &Copy(const aString: DelphiAnsiString; aIndex, aCount: Integer): DelphiAnsiString; public; inline;
 begin
@@ -67,9 +71,9 @@ begin
   result := :Delphi.System.«@WStrCopy»(aString, aIndex, aCount);
 end;
 
-method &Copy(const aString: DelphiUnicodeString; aIndex, aCount: Integer): DelphiUnicodeString; public; inline;
+method &Copy(const aString: DelphiShortString; aIndex, aCount: Integer): DelphiShortString; public; inline;
 begin
-  result := :Delphi.System.«@UStrCopy»(aString, aIndex, aCount);
+  result := :Delphi.System.«@Copy»(aString, aIndex, aCount);
 end;
 
 end.

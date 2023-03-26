@@ -38,27 +38,27 @@ type
 
     operator Equal(aLeft: InstanceType; aRight: InstanceType): Boolean;
     begin
-      result := :Delphi.System.SysUtils.CompareStr(aLeft, aRight) = 0;
+      result := WideCompareString(aLeft, aRight) = 0;
     end;
 
     operator Greater(aLeft: InstanceType; aRight: InstanceType): Boolean;
     begin
-      result := :Delphi.System.SysUtils.CompareStr(aLeft, aRight) < 0;
+      result := WideCompareString(aLeft, aRight) < 0;
     end;
 
     operator GreaterOrEqual(aLeft: InstanceType; aRight: InstanceType): Boolean;
     begin
-      result := :Delphi.System.SysUtils.CompareStr(aLeft, aRight) ≤ 0;
+      result := WideCompareString(aLeft, aRight) ≤ 0;
     end;
 
     operator Less(aLeft: InstanceType; aRight: InstanceType): Boolean;
     begin
-      result := :Delphi.System.SysUtils.CompareStr(aLeft, aRight) > 0;
+      result := WideCompareString(aLeft, aRight) > 0;
     end;
 
     operator LessOrEqual(aLeft: InstanceType; aRight: InstanceType): Boolean;
     begin
-      result := :Delphi.System.SysUtils.CompareStr(aLeft, aRight) ≥ 0;
+      result := WideCompareString(aLeft, aRight) ≥ 0;
     end;
 
     //
@@ -258,6 +258,15 @@ type
 method SetLength(var aString: DelphiWideString; aNewLength: Int32); public; inline;
 begin
   :Delphi.System.«@WStrSetLength»(var aString, aNewLength);
+end;
+
+method WideCompareString(aLeft: DelphiWideString; aRight: DelphiWideString): Integer; inline;
+begin
+  {$IF ANSI_STRING}
+  result := :Delphi.SysUtils.WideCompareStr(aLeft, aRight);
+  {$ELSE}
+  result := :Delphi.System.SysUtils.CompareStr(aLeft, aRight);
+  {$ENDIF}
 end;
 
 end.

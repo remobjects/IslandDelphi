@@ -1,6 +1,6 @@
 ﻿namespace RemObjects.Elements.System;
 
-{$IF NOT NO_TYPEINFO}
+{$IF NOT NO_TYPEINFO_APIS}
 
 uses
   Delphi.System,

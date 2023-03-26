@@ -43,14 +43,22 @@ type
         varUInt32: result := fData.VUInt32;
         {$ENDIF}
         varInt64: result := fData.VInt64;
+        {$IF EXISTS("Delphi.System.varUInt64")}
         varUInt64: result := fData.VUInt64;
+        {$ENDIF}
+        {$IF EXISTS("Delphi.System.varRecord")}
         varRecord: result := nil;
+        {$ENDIF}
         varStrArg: result := nil;
         //varObject: result := DelphiObject(fData.VPointer);
+        {$IF EXISTS("Delphi.System.varUStrArg")}
         varUStrArg: result := nil;
+        {$ENDIF}
         varString: result := new DelphiAnsiString(fData.VString) as IslandString;
         varAny: result := nil;
+        {$IF EXISTS("Delphi.System.varUString")}
         varUString: result := new DelphiUnicodeString(fData.VString) as IslandString;
+        {$ENDIF}
       end;
     end;
   end;

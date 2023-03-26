@@ -74,6 +74,16 @@ type
 
   end;
 
+  {$IF NOT EXISTS(Delphi.System.TObject.ToString)}
+  TObject_Extension = public extension class(TObject)
+  public
+    method ToString: DelphiString;
+    begin
+      result := $"{^Void(self)}";
+    end;
+  end;
+  {$ENDIF}
+
   [Internal]
   DelphiExceptionHandler = public static class
   public

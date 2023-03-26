@@ -41,27 +41,27 @@ type
 
     operator Equal(aLeft: InstanceType; aRight: InstanceType): Boolean;
     begin
-      result := :Delphi.System.AnsiStrings.AnsiCompareStr(aLeft, aRight) = 0;
+      result := AnsiCompareString(aLeft, aRight) = 0;
     end;
 
     operator Greater(aLeft: InstanceType; aRight: InstanceType): Boolean;
     begin
-      result := :Delphi.System.AnsiStrings.AnsiCompareStr(aLeft, aRight) < 0;
+      result := AnsiCompareString(aLeft, aRight) < 0;
     end;
 
     operator GreaterOrEqual(aLeft: InstanceType; aRight: InstanceType): Boolean;
     begin
-      result := :Delphi.System.AnsiStrings.AnsiCompareStr(aLeft, aRight) ≤ 0;
+      result := AnsiCompareString(aLeft, aRight) ≤ 0;
     end;
 
     operator Less(aLeft: InstanceType; aRight: InstanceType): Boolean;
     begin
-      result := :Delphi.System.AnsiStrings.AnsiCompareStr(aLeft, aRight) > 0;
+      result := AnsiCompareString(aLeft, aRight) > 0;
     end;
 
     operator LessOrEqual(aLeft: InstanceType; aRight: InstanceType): Boolean;
     begin
-      result := :Delphi.System.AnsiStrings.AnsiCompareStr(aLeft, aRight) ≥ 0;
+      result := AnsiCompareString(aLeft, aRight) ≥ 0;
     end;
 
     //
@@ -115,6 +115,7 @@ type
 
     // UnicodeString
 
+    {$IF NOT ANSI_STRING}
     operator Explicit(aString: InstanceType): DelphiUnicodeString;
     begin
       result := IslandString:FromPAnsiChar(aString.fStringData, aString.Length) as DelphiUnicodeString; {$HINT Can be Optimized}
@@ -125,6 +126,7 @@ type
       var lChars := (aString as IslandString).ToAnsiChars(); {$HINT Can be Optimized}{$HINT Review, this is lossy}
       result := DelphiStringHelpers.DelphiAnsiStringWithChars(@lChars[0], aString.Length);
     end;
+    {$ENDIF}
 
     // WideString
 
@@ -283,7 +285,21 @@ type
 
 method SetLength(var aString: DelphiAnsiString; aNewLength: Int32); public; inline;
 begin
+  {$IF ANSI_STRING}
+  {$HINT figure out how to call this, as its dfined badly in .dcu}
+  //:Delphi.System.«@LStrSetLength»(var aString, aNewLength, aString.CodePage);
+  {$ELSE}
   :Delphi.System.«@LStrSetLength»(var aString, aNewLength, aString.CodePage);
+  {$ENDIF}
+end;
+
+method AnsiCompareString(aLeft: DelphiAnsiString; aRight: DelphiAnsiString): Integer; inline;
+begin
+  {$IF ANSI_STRING}
+  result := :Delphi.SysUtils.AnsiCompareStr(aLeft, aRight);
+  {$ELSE}
+  result := :Delphi.System.AnsiStrings.AnsiCompareStr(aLeft, aRight);
+  {$ENDIF}
 end;
 
 method PAnsiCharLen(aChars: ^AnsiChar): Integer;

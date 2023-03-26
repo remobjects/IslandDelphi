@@ -1,5 +1,7 @@
 ﻿namespace RemObjects.Elements.System;
 
+{$IF NOT ANSI_STRING}
+
 type
   [Packed]
   DelphiUnicodeString = public record(sequence of Char)
@@ -282,6 +284,8 @@ method SetLength(var aString: DelphiUnicodeString; aNewLength: Int32); public; i
 begin
   :Delphi.System.«@UStrSetLength»(var aString, aNewLength);
 end;
+
+{$ENDIF}
 
 method PCharLen(aChars: ^Char): Integer;
 begin

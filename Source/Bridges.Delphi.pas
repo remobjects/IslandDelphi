@@ -6,7 +6,11 @@ type
   DelphiObject = public Delphi.System.TObject;
   DelphiChar = public {$IF ANSI_STRING}Delphi.System.AnsiChar{$ELSE}Delphi.System.WideChar{$ENDIF};
   DelphiString = public {$IF ANSI_STRING}Delphi.System.AnsiString{$ELSE}Delphi.System.UnicodeString{$ENDIF};
+  {$IF NO_NAMESPACES}
+  DelphiException = public Delphi.SysUtils.Exception;
+  {$ELSE}
   DelphiException = public Delphi.System.SysUtils.Exception;
+  {$ENDIF}
   DelphiInterface = public Delphi.System.IUnknown;
 
   RemObjects.Elements.System.Delphi.Object = public DelphiObject;
@@ -18,6 +22,12 @@ type
     method «$__CreateDelphiWrapper»: DelphiObject;
   end;
 
+  //{$IF NOT EXISTS("Delphi.System.IComparable")}
+  //[Delphi]
+  //Delphi.System.IComparable = assembly interface
+  //end;
+  //{$ENDIF}
+
   //[Delphi]
   //IDelphiGetIslandWrapper = public interface(DelphiInterface) // E671 Type "IDelphiGetIslandWrapper" has a different class model than "Object" (Delphi vs Island)
 
@@ -27,7 +37,7 @@ type
   //end;
 
   [Delphi]
-  DelphiWrappedIslandObject = public class(DelphiObject, Delphi.System.IComparable)
+  DelphiWrappedIslandObject = public class(DelphiObject, :Delphi.System.IComparable)
   public
     constructor(aValue: IslandObject);
     begin
