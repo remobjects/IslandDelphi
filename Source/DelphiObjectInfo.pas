@@ -1,6 +1,6 @@
 ﻿namespace RemObjects.Elements.System;
 
-{$IF DARWIN}
+{$IF NOT NO_TYPEINFO}
 
 uses
   Delphi.System,
