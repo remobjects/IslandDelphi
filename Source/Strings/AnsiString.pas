@@ -306,7 +306,7 @@ begin
   {$ELSEIF DELPHI2006 OR DELPHI2009 OR DELPHI2010 OR DELPHIXE}
   result := :Delphi.AnsiStrings.AnsiCompareStr(aLeft, aRight);
   {$ELSEIF LINUX AND DELPHI10_2}
-  {$HINT figure out what to call}
+  result := :Delphi.System.SysUtils.AnsiCompareStr(aLeft as DelphiUnicodeString, aRight as DelphiUnicodeString);
   {$ELSE}
   result := :Delphi.System.AnsiStrings.AnsiCompareStr(aLeft, aRight);
   {$ENDIF}
