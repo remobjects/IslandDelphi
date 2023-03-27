@@ -1,6 +1,13 @@
 ﻿namespace RemObjects.Elements.System;
 
 type
+  {$IF CLASSIC}
+  VoidFunction = assembly procedure;
+  LStrSetLengthFunction = assembly procedure(var aString: DelphiAnsiString; aNewLength: Integer; CodePage: UInt16);
+  LStrCopyFunction = assembly method(S: RemObjects.Elements.System.DelphiAnsiString; &Index: Integer; Count: Integer): RemObjects.Elements.System.DelphiAnsiString;
+  CopyFunction = assembly method(S: array[0..255] of AnsiChar; &Index: Integer; Count: Integer): array[0..255] of AnsiChar;
+  {$ENDIF}
+
   {$HIDE H6}
   {$HIDE H7}
   [Packed]

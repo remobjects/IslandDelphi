@@ -32,6 +32,11 @@ type
       result := AnsiCompareString(aLeft, aRight) = 0;
     end;
 
+    operator NotEqual(aLeft: DelphiShortString; aRight: DelphiShortString): Boolean;
+    begin
+      result := AnsiCompareString(aLeft, aRight) ≠ 0;
+    end;
+
     operator Greater(aLeft: DelphiShortString; aRight: DelphiShortString): Boolean;
     begin
       result := AnsiCompareString(aLeft, aRight) < 0;

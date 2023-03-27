@@ -64,7 +64,9 @@ end;
 method &Copy(const aString: DelphiAnsiString; aIndex, aCount: Integer): DelphiAnsiString; public; inline;
 begin
   {$IF CLASSIC}
-  {$HINT figure out how to call this, as it's defined badly in .dcu}
+  var f: LStrCopyFunction;
+  ^VoidFunction(@f)^ := @:Delphi.System.«@LStrCopy»;
+  f(aString, aIndex, aCount);
   {$ELSE}
   result := :Delphi.System.«@LStrCopy»(aString, aIndex, aCount);
   {$ENDIF}
@@ -78,6 +80,9 @@ end;
 method &Copy(const aString: DelphiShortString; aIndex, aCount: Integer): DelphiShortString; public; inline;
 begin
   {$IF CLASSIC}
+  var f: CopyFunction;
+  ^VoidFunction(@f)^ := @:Delphi.System.«@Copy»;
+  f(aString, aIndex, aCount);
   {$HINT figure out how to call this, as it's defined badly in .dcu}
   {$ELSE}
   result := :Delphi.System.«@Copy»(aString, aIndex, aCount);

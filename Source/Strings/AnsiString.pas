@@ -50,6 +50,11 @@ type
       result := AnsiCompareString(aLeft, aRight) = 0;
     end;
 
+    operator NotEqual(aLeft: InstanceType; aRight: InstanceType): Boolean;
+    begin
+      result := AnsiCompareString(aLeft, aRight) ≠ 0;
+    end;
+
     operator Greater(aLeft: InstanceType; aRight: InstanceType): Boolean;
     begin
       result := AnsiCompareString(aLeft, aRight) < 0;
@@ -292,8 +297,9 @@ type
 method SetLength(var aString: DelphiAnsiString; aNewLength: Int32); public; inline;
 begin
   {$IF CLASSIC}
-  {$HINT figure out how to call this, as it's defined badly in .dcu}
-  //:Delphi.System.«@LStrSetLength»(var aString, aNewLength, aString.CodePage);
+  var f: LStrSetLengthFunction;
+  ^VoidFunction(@f)^ := @:Delphi.System.«@LStrSetLength»;
+  f(var aString, aNewLength, aString.CodePage);
   {$ELSE}
   :Delphi.System.«@LStrSetLength»(var aString, aNewLength, aString.CodePage);
   {$ENDIF}

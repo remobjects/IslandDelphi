@@ -41,6 +41,11 @@ type
       result := WideCompareString(aLeft, aRight) = 0;
     end;
 
+    operator NotEqual(aLeft: InstanceType; aRight: InstanceType): Boolean;
+    begin
+      result := WideCompareString(aLeft, aRight) ≠ 0;
+    end;
+
     operator Greater(aLeft: InstanceType; aRight: InstanceType): Boolean;
     begin
       result := WideCompareString(aLeft, aRight) < 0;
