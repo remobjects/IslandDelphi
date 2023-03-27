@@ -1,6 +1,9 @@
 ﻿namespace RemObjects.Elements.System;
 
 type
+  {$IF LINUX AND DELPHI10_2}
+  Delphi.System.ShortString = public «Delphi.System.@ShortString»;
+  {$ENDIF}
   DelphiShortString = public Delphi.System.ShortString;
   //DelphiOpenString = public Delphi.System.Openstring;
 

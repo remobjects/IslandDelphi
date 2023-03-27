@@ -25,46 +25,50 @@
     <SubMode>Windows</SubMode>
     <DelphiSDK>Delphi 7</DelphiSDK>
     <Architecture>i386</Architecture>
-    <ConditionalDefines>ANSI_STRING;NO_TYPEINFO_APIS;NO_NAMESPACES</ConditionalDefines>
+    <ConditionalDefines>ANSI_STRING;CLASSIC;NO_TYPEINFO_APIS;NO_NAMESPACES</ConditionalDefines>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Target)' == 'Delphi.2005.Windows' ">
     <Mode>Island</Mode>
     <SubMode>Windows</SubMode>
     <DelphiSDK>Delphi 2005</DelphiSDK>
     <Architecture>i386</Architecture>
-    <ConditionalDefines>ANSI_STRING;NO_TYPEINFO_APIS;NO_NAMESPACES</ConditionalDefines>
+    <ConditionalDefines>ANSI_STRING;CLASSIC;NO_TYPEINFO_APIS;NO_NAMESPACES</ConditionalDefines>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Target)' == 'Delphi.2006.Windows' ">
     <Mode>Island</Mode>
     <SubMode>Windows</SubMode>
     <DelphiSDK>Delphi 2006</DelphiSDK>
     <Architecture>i386</Architecture>
-    <ConditionalDefines>ANSI_STRING;NO_TYPEINFO_APIS;NO_NAMESPACES</ConditionalDefines>
+    <ConditionalDefines>ANSI_STRING;CLASSIC;NO_TYPEINFO_APIS;NO_NAMESPACES</ConditionalDefines>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Target)' == 'Delphi.2007.Windows' ">
     <Mode>Island</Mode>
     <SubMode>Windows</SubMode>
     <DelphiSDK>Delphi 2007</DelphiSDK>
     <Architecture>i386</Architecture>
-    <ConditionalDefines>ANSI_STRING</ConditionalDefines>
+    <Enabled>i386</Enabled>
+    <ConditionalDefines>ANSI_STRING;CLASSIC;NO_TYPEINFO_APIS;NO_NAMESPACES</ConditionalDefines>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Target)' == 'Delphi.2009.Windows' ">
     <Mode>Island</Mode>
     <SubMode>Windows</SubMode>
     <DelphiSDK>Delphi 2009</DelphiSDK>
     <Architecture>i386</Architecture>
+    <ConditionalDefines>CLASSIC;NO_TYPEINFO_APIS;NO_NAMESPACES</ConditionalDefines>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Target)' == 'Delphi.2010.Windows' ">
     <Mode>Island</Mode>
     <SubMode>Windows</SubMode>
     <DelphiSDK>Delphi 2010</DelphiSDK>
     <Architecture>i386</Architecture>
+    <ConditionalDefines>CLASSIC;NO_TYPEINFO_APIS;NO_NAMESPACES</ConditionalDefines>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Target)' == 'Delphi.XE.Windows' ">
     <Mode>Island</Mode>
     <SubMode>Windows</SubMode>
     <DelphiSDK>Delphi XE</DelphiSDK>
     <Architecture>i386</Architecture>
+    <ConditionalDefines>CLASSIC;NO_TYPEINFO_APIS;NO_NAMESPACES</ConditionalDefines>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Target)' == 'Delphi.XE2.Windows' ">
     <Mode>Island</Mode>

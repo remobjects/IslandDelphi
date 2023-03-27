@@ -110,57 +110,61 @@ type
       end;
 
       writeLn($"TypeInfo {TypeInfo}");
-      if assigned(TypeInfo) then begin
-        if TypeInfo.Kind ≠ 7 then
-          writeLn($"TypeInfo Kind: {Int32(TypeInfo.Kind)} (should be 7 for class!)");
-        if TypeInfo.Name as DelphiShortString as IslandString ≠ ClassName then
-        writeLn($"TypeInfo Name: {TypeInfo.Name as DelphiShortString as IslandString} (does not match '{ClassName}')");
+      if not defined("LINUX") or not defined("DELPHI10_2") then begin // Delphi 10.2 for Linux has some stuff badly defined, so we wont bother.
+        if assigned(TypeInfo) then begin
+          if TypeInfo.Kind ≠ 7 then
+            writeLn($"TypeInfo Kind: {Int32(TypeInfo.Kind)} (should be 7 for class!)");
+          if TypeInfo.Name as DelphiShortString as IslandString ≠ ClassName then
+          writeLn($"TypeInfo Name: {TypeInfo.Name as DelphiShortString as IslandString} (does not match '{ClassName}')");
 
-        var lTypeData := TypeInfo.TypeData;
-        writeLn($"TypeData {lTypeData}");
-        //writeLn($"lTypeData.UnitNameFld {lTypeData.UnitNameFld}"); // AV
-        writeLn($"UnitName: {lTypeData.UnitName as DelphiShortString as IslandString}"); // hack for E26339: Island/Delphi: explicit cast not called
-        writeLn($"DynUnitName: {lTypeData.DynUnitName as DelphiShortString as IslandString}"); // hack for E26339: Island/Delphi: explicit cast not called
-        writeLn($"IntfUnit: {lTypeData.IntfUnit as DelphiShortString as IslandString}"); // hack for E26339: Island/Delphi: explicit cast not called
-        if ^Void(lTypeData.ClassType) ≠ VMT then
-          writeLn($"TypeData Class Type: {^Void(lTypeData.ClassType)} (does not match {fVMT})");
-        if assigned(lTypeData.ParentInfo) then
-          writeLn($"TypeData Parent Info: {^^Void(lTypeData.ParentInfo)^}");
+          if exists(TypeInfo.TypeData) then begin
+            var lTypeData := TypeInfo.TypeData;
+            writeLn($"TypeData {lTypeData}");
+            //writeLn($"lTypeData.UnitNameFld {lTypeData.UnitNameFld}"); // AV
+            writeLn($"UnitName: {lTypeData.UnitName as DelphiShortString as IslandString}"); // hack for E26339: Island/Delphi: explicit cast not called
+            writeLn($"DynUnitName: {lTypeData.DynUnitName as DelphiShortString as IslandString}"); // hack for E26339: Island/Delphi: explicit cast not called
+            writeLn($"IntfUnit: {lTypeData.IntfUnit as DelphiShortString as IslandString}"); // hack for E26339: Island/Delphi: explicit cast not called
+            if ^Void(lTypeData.ClassType) ≠ VMT then
+              writeLn($"TypeData Class Type: {^Void(lTypeData.ClassType)} (does not match {fVMT})");
+            if assigned(lTypeData.ParentInfo) then
+              writeLn($"TypeData Parent Info: {^^Void(lTypeData.ParentInfo)^}");
 
-        writeLn($"TypeData Property Count: {lTypeData.PropCount} Properties");
-        var lPropertyData := lTypeData.PropData;
-        if assigned(lPropertyData) then begin
-          var lData := ^TPropData2(lPropertyData);
-          writeLn($"lPropertyData: {lPropertyData}");
-          writeLn($"lPropertyData PropteryInfo Count: {lData.PropCount}");
-          var p := ^Void(@lData.PropList);
-          assert(sizeOf(TPropInfo2) = 42);
-          for i := 0 to lData.PropCount-1 do begin
-            var lProperty := PPropInfo2(p);
-            var lName := ^DelphiShortString(p+sizeOf(TPropInfo2))^;
-            writeLn($"Property Name: {lName as DelphiShortString as IslandString}");
-            if assigned(lProperty.PropType) then
-              writeLn($"  PropType: {^^Void(lProperty.PropType)}");
-            writeLn($"  GetProc {lProperty.GetProc}");
-            writeLn($"  SetProc {lProperty.SetProc}");
-            writeLn($"  Index: {lProperty.Index}");
-            writeLn($"  Default {lProperty.Default}");
-            writeLn($"  NameIndex {lProperty.NameIndex}");
-            //inc(p, sizeOf(TPropInfo2)+length(lName)+1); // doesnt call Length
-            //p := p + sizeOf(TPropInfo2)+(lName.Length)+1; // E643 Cannot call Object methods on a static array
-            p := p + sizeOf(TPropInfo2)+ord(lName[0])+1;
+            writeLn($"TypeData Property Count: {lTypeData.PropCount} Properties");
+            var lPropertyData := lTypeData.PropData;
+            if assigned(lPropertyData) then begin
+              var lData := ^TPropData2(lPropertyData);
+              writeLn($"lPropertyData: {lPropertyData}");
+              writeLn($"lPropertyData PropteryInfo Count: {lData.PropCount}");
+              var p := ^Void(@lData.PropList);
+              assert(sizeOf(TPropInfo2) = 42);
+              for i := 0 to lData.PropCount-1 do begin
+                var lProperty := PPropInfo2(p);
+                var lName := ^DelphiShortString(p+sizeOf(TPropInfo2))^;
+                writeLn($"Property Name: {lName as DelphiShortString as IslandString}");
+                if assigned(lProperty.PropType) then
+                  writeLn($"  PropType: {^^Void(lProperty.PropType)}");
+                writeLn($"  GetProc {lProperty.GetProc}");
+                writeLn($"  SetProc {lProperty.SetProc}");
+                writeLn($"  Index: {lProperty.Index}");
+                writeLn($"  Default {lProperty.Default}");
+                writeLn($"  NameIndex {lProperty.NameIndex}");
+                //inc(p, sizeOf(TPropInfo2)+length(lName)+1); // doesnt call Length
+                //p := p + sizeOf(TPropInfo2)+(lName.Length)+1; // E643 Cannot call Object methods on a static array
+                p := p + sizeOf(TPropInfo2)+ord(lName[0])+1;
+              end;
+
+              //var lExData := ^TPropDataEx(lPropertyData);
+              //writeLn($"lPropertyData PropteryInfoEx Count {lExData.PropCount}");
+              //for i := 0 to lExData.PropCount-1 do begin
+                //var lProperty := PPropInfoEx(p);
+                //writeLn($"lProperty.Flags {lProperty.Flags}");
+                //writeLn($"lProperty.AttrData {lProperty.AttrData}");
+                //writeLn($"lProperty.Info {lProperty.Info}");
+
+              //end;
+
+            end;
           end;
-
-          //var lExData := ^TPropDataEx(lPropertyData);
-          //writeLn($"lPropertyData PropteryInfoEx Count {lExData.PropCount}");
-          //for i := 0 to lExData.PropCount-1 do begin
-            //var lProperty := PPropInfoEx(p);
-            //writeLn($"lProperty.Flags {lProperty.Flags}");
-            //writeLn($"lProperty.AttrData {lProperty.AttrData}");
-            //writeLn($"lProperty.Info {lProperty.Info}");
-
-          //end;
-
         end;
       end;
 

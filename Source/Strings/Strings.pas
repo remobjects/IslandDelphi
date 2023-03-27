@@ -63,7 +63,7 @@ end;
 
 method &Copy(const aString: DelphiAnsiString; aIndex, aCount: Integer): DelphiAnsiString; public; inline;
 begin
-  {$IF ANSI_STRING}
+  {$IF CLASSIC}
   {$HINT figure out how to call this, as it's defined badly in .dcu}
   {$ELSE}
   result := :Delphi.System.«@LStrCopy»(aString, aIndex, aCount);
@@ -77,7 +77,7 @@ end;
 
 method &Copy(const aString: DelphiShortString; aIndex, aCount: Integer): DelphiShortString; public; inline;
 begin
-  {$IF ANSI_STRING}
+  {$IF CLASSIC}
   {$HINT figure out how to call this, as it's defined badly in .dcu}
   {$ELSE}
   result := :Delphi.System.«@Copy»(aString, aIndex, aCount);

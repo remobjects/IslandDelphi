@@ -5,15 +5,20 @@ type
   DelphiHelpers = public static class
   public
 
-    {$IF ANSI_STRING}
+    {$IF CLASSIC}
     method CreateInstance(aType: class of TObject): TObject;
     begin
       result :=:Delphi.System.«@ClassCreate»(aType, true);
     end;
+    {$ELSEIF DELPHIXE2}
+    method CreateInstance(aType: ^Void): TObject;
+    begin
+      result :=:Delphi.System.«@ClassCreate»(aType, 1);
+    end;
     {$ELSE}
     method CreateInstance(aType: ^Void): ^Void;
     begin
-      result :=:Delphi.System.«@ClassCreate»(aType, 1);
+      result := :Delphi.System.«@ClassCreate»(aType, 1);
     end;
     {$ENDIF}
 

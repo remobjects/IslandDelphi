@@ -1,6 +1,12 @@
 ﻿namespace RemObjects.Elements.System;
 
 type
+  {$IF LINUX AND DELPHI10_2}
+  Delphi.System.AnsiString = public «Delphi.System.@AnsiString»;
+  Delphi.System.AnsiChar = public «Delphi.System.@AnsiChar»;
+  Delphi.System.PAnsiChar = public ^«Delphi.System.@AnsiChar»;
+  {$ENDIF}
+
   [Packed]
   DelphiAnsiString = public record(sequence of AnsiChar)
   assembly
@@ -285,7 +291,7 @@ type
 
 method SetLength(var aString: DelphiAnsiString; aNewLength: Int32); public; inline;
 begin
-  {$IF ANSI_STRING}
+  {$IF CLASSIC}
   {$HINT figure out how to call this, as it's defined badly in .dcu}
   //:Delphi.System.«@LStrSetLength»(var aString, aNewLength, aString.CodePage);
   {$ELSE}
@@ -297,6 +303,10 @@ method AnsiCompareString(aLeft: DelphiAnsiString; aRight: DelphiAnsiString): Int
 begin
   {$IF ANSI_STRING}
   result := :Delphi.SysUtils.AnsiCompareStr(aLeft, aRight);
+  {$ELSEIF DELPHI2006 OR DELPHI2009 OR DELPHI2010 OR DELPHIXE}
+  result := :Delphi.AnsiStrings.AnsiCompareStr(aLeft, aRight);
+  {$ELSEIF LINUX AND DELPHI10_2}
+  {$HINT figure out what to call}
   {$ELSE}
   result := :Delphi.System.AnsiStrings.AnsiCompareStr(aLeft, aRight);
   {$ENDIF}

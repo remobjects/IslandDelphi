@@ -42,27 +42,27 @@ type
 
     operator Equal(aLeft: InstanceType; aRight: InstanceType): Boolean;
     begin
-      result := :Delphi.System.SysUtils.CompareStr(aLeft, aRight) = 0;
+      result := UnicodeCompareString(aLeft, aRight) = 0;
     end;
 
     operator Greater(aLeft: InstanceType; aRight: InstanceType): Boolean;
     begin
-      result := :Delphi.System.SysUtils.CompareStr(aLeft, aRight) < 0;
+      result := UnicodeCompareString(aLeft, aRight) < 0;
     end;
 
     operator GreaterOrEqual(aLeft: InstanceType; aRight: InstanceType): Boolean;
     begin
-      result := :Delphi.System.SysUtils.CompareStr(aLeft, aRight) ≤ 0;
+      result := UnicodeCompareString(aLeft, aRight) ≤ 0;
     end;
 
     operator Less(aLeft: InstanceType; aRight: InstanceType): Boolean;
     begin
-      result := :Delphi.System.SysUtils.CompareStr(aLeft, aRight) > 0;
+      result := UnicodeCompareString(aLeft, aRight) > 0;
     end;
 
     operator LessOrEqual(aLeft: InstanceType; aRight: InstanceType): Boolean;
     begin
-      result := :Delphi.System.SysUtils.CompareStr(aLeft, aRight) ≥ 0;
+      result := UnicodeCompareString(aLeft, aRight) ≥ 0;
     end;
 
     //
@@ -283,6 +283,17 @@ type
 method SetLength(var aString: DelphiUnicodeString; aNewLength: Int32); public; inline;
 begin
   :Delphi.System.«@UStrSetLength»(var aString, aNewLength);
+end;
+
+method UnicodeCompareString(aLeft: DelphiUnicodeString; aRight: DelphiUnicodeString): Integer; inline;
+begin
+  {$IF EXISTS(Delphi.SysUtils.WideCompareStr)}
+  result := :Delphi.SysUtils.WideCompareStr(aLeft, aRight);
+  {$ELSEIF NO_NAMESPACES}
+  result := :Delphi.SysUtils.CompareStr(aLeft, aRight);
+  {$ELSE}
+  result := :Delphi.System.SysUtils.CompareStr(aLeft, aRight);
+  {$ENDIF}
 end;
 
 {$ENDIF}

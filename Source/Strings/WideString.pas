@@ -264,6 +264,8 @@ method WideCompareString(aLeft: DelphiWideString; aRight: DelphiWideString): Int
 begin
   {$IF ANSI_STRING}
   result := :Delphi.SysUtils.WideCompareStr(aLeft, aRight);
+  {$ELSEIF DELPHI2006 OR DELPHI2009 OR DELPHI2010 OR DELPHIXE}
+  result := :Delphi.SysUtils.CompareStr(aLeft, aRight);
   {$ELSE}
   result := :Delphi.System.SysUtils.CompareStr(aLeft, aRight);
   {$ENDIF}
