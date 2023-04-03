@@ -28,7 +28,7 @@ type
 
     property VMT: ^Void read fVMT;
 
-    property Parent: DelphiObjectInfo := if assigned(ParentAddress) then new DelphiObjectInfo withVMT(^^Void(ParentAddress)^); lazy;
+    property Parent: DelphiObjectInfo := if assigned(ParentAddress) and assigned(^^Void(ParentAddress)^) then new DelphiObjectInfo withVMT(^^Void(ParentAddress)^); lazy;
     property Ancestry: String := if assigned(Parent) then $": {Parent.ClassName}{Parent.Ancestry}" else ""; lazy;
 
     property ParentAddress:         ^Void            read PointerAtOffset(:Delphi.System.vmtParent);
@@ -121,15 +121,16 @@ type
             var lTypeData := TypeInfo.TypeData;
             writeLn($"TypeData {lTypeData}");
             //writeLn($"lTypeData.UnitNameFld {lTypeData.UnitNameFld}"); // AV
-            writeLn($"UnitName: {lTypeData.UnitName as DelphiShortString as IslandString}"); // hack for E26339: Island/Delphi: explicit cast not called
-            writeLn($"DynUnitName: {lTypeData.DynUnitName as DelphiShortString as IslandString}"); // hack for E26339: Island/Delphi: explicit cast not called
-            writeLn($"IntfUnit: {lTypeData.IntfUnit as DelphiShortString as IslandString}"); // hack for E26339: Island/Delphi: explicit cast not called
+
             if ^Void(lTypeData.ClassType) ≠ VMT then
               writeLn($"TypeData Class Type: {^Void(lTypeData.ClassType)} (does not match {fVMT})");
-            if assigned(lTypeData.ParentInfo) then
+            if assigned(lTypeData.ParentInfo) then begin
+              writeLn($"TypeData Parent Info @: {lTypeData.ParentInfo}");
               writeLn($"TypeData Parent Info: {^^Void(lTypeData.ParentInfo)^}");
-
+            end;
             writeLn($"TypeData Property Count: {lTypeData.PropCount} Properties");
+            writeLn($"UnitName: {lTypeData.UnitName as DelphiShortString as IslandString}"); // hack for E26339: Island/Delphi: explicit cast not called
+
             var lPropertyData := lTypeData.PropData;
             if assigned(lPropertyData) then begin
               var lData := ^TPropData2(lPropertyData);
@@ -168,11 +169,12 @@ type
         end;
       end;
 
-      //writeLn($"ParentAddress at {ParentAddress}");
+      writeLn($"ParentAddress at {ParentAddress}");
       if assigned(ParentAddress) then begin
-        //writeLn($"ParentAddress {^^Void(PointerAtOffset(:Delphi.System.vmtParent))^}");
+        writeLn($"ParentAddress {^^Void(PointerAtOffset(:Delphi.System.vmtParent))^}");
         writeLn();
-        Parent.Dump;
+        if assigned(Parent) then
+          Parent.Dump;
       end;
     end;
 
