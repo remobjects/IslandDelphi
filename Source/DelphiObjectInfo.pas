@@ -104,9 +104,29 @@ type
 
       writeLn($"FieldDefinitionTable {FieldDefinitionTable}");
       if assigned(FieldDefinitionTable) then begin
-        writeLn($"{FieldDefinitionTable.Count} fields(s)");
-        //for i := 0 to FieldDefinitionTable.Count-1 do
-          //writeLn($"Class[{i}]: {FieldDefinitionTable^.Selectors[i]}");
+        writeLn($"{FieldDefinitionTable.Count} field(s)");
+        if assigned(FieldDefinitionTable.ClassTab) then begin
+          writeLn($"{FieldDefinitionTable.ClassTab.Count} field type(s)");
+          for i := 0 to FieldDefinitionTable.ClassTab.Count-1 do
+            writeLn($"Class[{i}]: {FieldDefinitionTable.ClassTab.ClassRef[i]} = {new DelphiObjectInfo withVMT(^^Void(FieldDefinitionTable.ClassTab.ClassRef[i])^).ClassName}");
+
+          var p: ^Void := FieldDefinitionTable;
+          inc(p, sizeOf(TVmtFieldTable));
+          for i := 0 to FieldDefinitionTable.Count-1 do begin
+            var lEntry := PVmtFieldEntry(p);
+            writeLn($"Field[{i}]: {lEntry.Name as DelphiShortString as IslandString}: {lEntry.TypeIndex}");
+            inc(p, sizeOf(Cardinal)+sizeOf(Word)+ord(lEntry.Name[0])+1);
+          end;
+          var lExtCount := ^Word(p)^;
+          inc(p, sizeOf(Word));
+          writeLn($"lExtCount {lExtCount}");
+          if lExtCount > 0 then begin
+            //for i := 0 to lExtCount-1 do begin
+              ////...
+              //inc(p, sizeOf(TVmtFieldExEntry));
+            //end;
+          end;
+        end;
       end;
 
       writeLn($"TypeInfo {TypeInfo}");
