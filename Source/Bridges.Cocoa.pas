@@ -16,7 +16,7 @@ type
   //end;
 
   [Delphi]
-  DelphiWrappedCocoaObject = public class(TInterfacedObject, Delphi.System.IComparable)
+  DelphiWrappedCocoaObject = public class(Delphi.System.TInterfacedObject, Delphi.System.IComparable)
   public
     constructor(aValue: CocoaObject);
     begin
