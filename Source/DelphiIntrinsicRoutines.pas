@@ -44,17 +44,32 @@ end;
 
 function AtomicDecrement(var Target: Integer): Integer; inline; public;
 begin
-  result := interlockedDec(var Target);
+  result := interlockedDec(var Target)-1;
+end;
+
+function AtomicDecrement(var Target: Int64): Int64; inline; public;
+begin
+  result := interlockedDec(var Target)-1;
+end;
+
+function AtomicDecrement(var Target: Pointer): Pointer; inline; public;
+begin
+  result := interlockedDec(var Target)-1;
+end;
+
+function AtomicDecrement(var Target: Integer; Decrement: Integer): Integer; inline; public;
+begin
+  result := interlockedDec(var Target)-Decrement;
 end;
 
 function AtomicDecrement(var Target: Int64; Decrement: Int64): Int64; inline; public;
 begin
-  result := interlockedDec(var Target, Decrement);
+  result := interlockedDec(var Target, Decrement)-Decrement;
 end;
 
 function AtomicDecrement(var Target: Pointer; Decrement: NativeInt): Pointer; inline; public;
 begin
-  result := interlockedDec(var Target, Decrement);
+  result := interlockedDec(var Target, Decrement)-Decrement;
 end;
 
 function AtomicExchange(var Target: Integer; Value: Integer): Integer; inline; public;
@@ -79,32 +94,32 @@ end;
 
 function AtomicIncrement(var Target: Integer): Integer; inline; public;
 begin
-  result := interlockedInc(var Target);
+  result := interlockedInc(var Target)+1;
 end;
 
 function AtomicIncrement(var Target: Integer; Increment: Integer): Integer; inline; public;
 begin
-  result := interlockedInc(var Target, Increment);
+  result := interlockedInc(var Target, Increment)+Increment;
 end;
 
 function AtomicIncrement(var Target: Int64): Int64; inline; public;
 begin
-  result := interlockedInc(var Target);
+  result := interlockedInc(var Target)+1;
 end;
 
 function AtomicIncrement(var Target: Int64; Increment: Int64): Int64; inline; public;
 begin
-  result := interlockedInc(var Target, Increment);
+  result := interlockedInc(var Target, Increment)+Increment;
 end;
 
 function AtomicIncrement(var Target: Pointer): Pointer; inline; public;
 begin
-  result := interlockedInc(var Target);
+  result := interlockedInc(var Target)+1;
 end;
 
 function AtomicIncrement(var Target: Pointer; Increment: NativeInt): Pointer; inline; public;
 begin
-  result := interlockedInc(var Target, Increment);
+  result := interlockedInc(var Target, Increment)+Increment;
 end;
 
 // break
