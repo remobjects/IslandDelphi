@@ -318,12 +318,12 @@ end;
 
 procedure VarClear(var V: Variant);
 begin
-  rtl.memset(@V, 0, sizeOf(Variant));
+  memset(@V, 0, sizeOf(Variant));
 end;
 
 procedure VarCopy(var Dest: Variant; Source: Variant);
 begin
-  rtl.memcpy(@Dest, @Source, sizeOf(Variant));
+  memcpy(@Dest, @Source, sizeOf(Variant));
 end;
 
 end.
