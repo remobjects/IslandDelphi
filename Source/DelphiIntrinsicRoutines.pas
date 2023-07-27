@@ -44,32 +44,32 @@ end;
 
 function AtomicDecrement(var Target: Integer): Integer; inline; public;
 begin
-  interlockedDec(var Target);
+  result := interlockedDec(var Target);
 end;
 
 function AtomicDecrement(var Target: Int64; Decrement: Int64): Int64; inline; public;
 begin
-  interlockedDec(var Target, Decrement);
+  result := interlockedDec(var Target, Decrement);
 end;
 
 function AtomicDecrement(var Target: Pointer; Decrement: NativeInt): Pointer; inline; public;
 begin
-  interlockedDec(var Target, Decrement);
+  result := interlockedDec(var Target, Decrement);
 end;
 
 function AtomicExchange(var Target: Integer; Value: Integer): Integer; inline; public;
 begin
-  interlockedExchange(var Target, Value);
+  result := interlockedExchange(var Target, Value);
 end;
 
 function AtomicExchange(var Target: Int64; Value: Int64): Int64; inline; public;
 begin
-  interlockedExchange(var Target, Value);
+  result := interlockedExchange(var Target, Value);
 end;
 
 function AtomicExchange(var Target: Pointer; Value: Pointer): Pointer; inline; public;
 begin
-  interlockedExchange(var Target, Value);
+  result := interlockedExchange(var Target, Value);
 end;
 
 //function AtomicExchange(var Target; Value: NativeInt): NativeInt; public;
@@ -79,32 +79,32 @@ end;
 
 function AtomicIncrement(var Target: Integer): Integer; inline; public;
 begin
-  interlockedInc(var Target);
+  result := interlockedInc(var Target);
 end;
 
 function AtomicIncrement(var Target: Integer; Increment: Integer): Integer; inline; public;
 begin
-  interlockedInc(var Target, Increment);
+  result := interlockedInc(var Target, Increment);
 end;
 
 function AtomicIncrement(var Target: Int64): Int64; inline; public;
 begin
-  interlockedInc(var Target);
+  result := interlockedInc(var Target);
 end;
 
 function AtomicIncrement(var Target: Int64; Increment: Int64): Int64; inline; public;
 begin
-  interlockedInc(var Target, Increment);
+  result := interlockedInc(var Target, Increment);
 end;
 
 function AtomicIncrement(var Target: Pointer): Pointer; inline; public;
 begin
-  interlockedInc(var Target);
+  result := interlockedInc(var Target);
 end;
 
 function AtomicIncrement(var Target: Pointer; Increment: NativeInt): Pointer; inline; public;
 begin
-  interlockedInc(var Target, Increment);
+  result := interlockedInc(var Target, Increment);
 end;
 
 // break
@@ -116,7 +116,7 @@ begin
   result := S1+S2;
 end;
 
-function Concat(S1: string; params S2: sequence of String): String; public;
+function Concat(S1: string; params S2: sequence of string): string; public;
 begin
   var lSB := new StringBuilder;
   lSB.Append(S1);
@@ -213,7 +213,7 @@ end;
 
 function MulDivInt64(AValue, AMul, ADiv: Int64): Int64; public;
 begin
-  MulDivInt64(AValue, AMul, ADiv, out nil);
+  result := MulDivInt64(AValue, AMul, ADiv, out nil);
 end;
 
 function MulDivInt64(AValue, AMul, ADiv: Int64; out Remainder: Int64): Int64; public;
@@ -295,7 +295,7 @@ begin
   result := Hi(X)+(Lo(X) shl 8)
 end;
 
-function Trunc(X: Real): Int64; public;
+  function Trunc(X: Real): Int64; public;
 begin
   result := Int64(RemObjects.Elements.System.Math.Truncate(X));
 end;
