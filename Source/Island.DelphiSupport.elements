@@ -215,6 +215,7 @@
     <Folder Include="Strings" />
     <Compile Include="DelphiObjectInfo.pas" />
     <Compile Include="Guid+Extensions.pas" />
+    <Compile Include="DelphiIntrinsicRoutines.pas" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.targets" />
 </Project>
