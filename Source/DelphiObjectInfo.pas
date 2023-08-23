@@ -114,7 +114,7 @@ type
           inc(p, sizeOf(TVmtFieldTable));
           for i := 0 to FieldDefinitionTable.Count-1 do begin
             var lEntry := PVmtFieldEntry(p);
-            writeLn($"Field[{i}]: {lEntry.Name as DelphiShortString as IslandString}: {lEntry.TypeIndex}");
+            writeLn($"Field[{i}]: {lEntry.Name as DelphiShortString as IslandString}: {lEntry.TypeIndex} at +{lEntry.FieldOffset}");
             inc(p, sizeOf(Cardinal)+sizeOf(Word)+ord(lEntry.Name[0])+1);
           end;
           var lExtCount := ^Word(p)^;
@@ -135,7 +135,7 @@ type
           if TypeInfo.Kind ≠ 7 then
             writeLn($"TypeInfo Kind: {Int32(TypeInfo.Kind)} (should be 7 for class!)");
           if TypeInfo.Name as DelphiShortString as IslandString ≠ ClassName then
-          writeLn($"TypeInfo Name: {TypeInfo.Name as DelphiShortString as IslandString} (does not match '{ClassName}')");
+            writeLn($"TypeInfo Name: {TypeInfo.Name as DelphiShortString as IslandString} (does not match '{ClassName}')");
 
           if exists(TypeInfo.TypeData) then begin
             var lTypeData := TypeInfo.TypeData;
@@ -189,12 +189,72 @@ type
         end;
       end;
 
+      //var lVMT := ^^Void(aInstance)^;
+      //var lInterfaceTable := (^^Void(lVMT+:Delphi.System.vmtIntfTable))^ as Delphi.System.PInterfaceTable;
+      //if not assigned(lInterfaceTable) then
+        //exit;
+
+      //for i := 0 to lInterfaceTable.EntryCount-1 do begin
+        //writeLn($"lInterfaceTable.Entries[i].VTable {lInterfaceTable.Entries[i].VTable}");
+        //writeLn($"lInterfaceTable.Entries[i].IID {lInterfaceTable.Entries[i].IID as Guid}");
+        //writeLn($"lInterfaceTable.Entries[i].ImplGetter {lInterfaceTable.Entries[i].ImplGetter}");
+        //writeLn($"lInterfaceTable.Entries[i].IOffset {lInterfaceTable.Entries[i].IOffset}");
+        //if lGuid = lInterfaceTable.Entries[i].IID as Guid then
+          //getInterface
+          //exit lInterfaceTable.Entries[i].VTable;
+      //end;
+
+
       writeLn($"ParentAddress at {ParentAddress}");
       if assigned(ParentAddress) then begin
         writeLn($"ParentAddress {^^Void(PointerAtOffset(:Delphi.System.vmtParent))^}");
         writeLn();
         if assigned(Parent) then
           Parent.Dump;
+      end;
+    end;
+
+    method DumpFields;
+    begin
+      writeLn($"ClassName {ClassName}{Ancestry}");
+      if assigned(Parent) then
+        writeLn($"InstanceSize {InstanceSize} (+{Integer(InstanceSize)-Integer(Parent.InstanceSize)})")
+      else
+        writeLn($"InstanceSize {InstanceSize}");
+
+      writeLn($"FieldDefinitionTable {FieldDefinitionTable}");
+      if assigned(FieldDefinitionTable) then begin
+        writeLn($"{FieldDefinitionTable.Count} field(s)");
+        writeLn($"FieldDefinitionTable.ClassTab {FieldDefinitionTable.ClassTab}");
+        if assigned(FieldDefinitionTable.ClassTab) then begin
+          writeLn($"{FieldDefinitionTable.ClassTab.Count} field type(s)");
+          for i := 0 to FieldDefinitionTable.ClassTab.Count-1 do
+            writeLn($"Class[{i}]: {FieldDefinitionTable.ClassTab.ClassRef[i]} = {new DelphiObjectInfo withVMT(^^Void(FieldDefinitionTable.ClassTab.ClassRef[i])^).ClassName}");
+
+          var p: ^Void := FieldDefinitionTable;
+          inc(p, sizeOf(TVmtFieldTable));
+          for i := 0 to FieldDefinitionTable.Count-1 do begin
+            var lEntry := PVmtFieldEntry(p);
+            writeLn($"Field[{i}]: {lEntry.Name as DelphiShortString as IslandString}: {lEntry.TypeIndex} at +{lEntry.FieldOffset}");
+            inc(p, sizeOf(Cardinal)+sizeOf(Word)+ord(lEntry.Name[0])+1);
+          end;
+          var lExtCount := ^Word(p)^;
+          inc(p, sizeOf(Word));
+          writeLn($"lExtCount {lExtCount}");
+          if lExtCount > 0 then begin
+            //for i := 0 to lExtCount-1 do begin
+              ////...
+              //inc(p, sizeOf(TVmtFieldExEntry));
+            //end;
+          end;
+        end;
+      end;
+
+      if assigned(ParentAddress) then begin
+        writeLn($"ParentAddress {^^Void(PointerAtOffset(:Delphi.System.vmtParent))^}");
+        writeLn();
+        if assigned(Parent) then
+          Parent.DumpFields;
       end;
     end;
 
