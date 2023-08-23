@@ -275,6 +275,18 @@ begin
   raise new NotImplementedException("RunError is not implemented");
 end;
 
+method SetLength<T>(var aArray: array of T; aNewLength: Int32); public; inline;
+begin
+  if aNewLength < length(aArray) then begin
+    aArray := &Array.SubArray(aArray, 0, aNewLength);
+  end
+  else if aNewLength > length(aArray) then begin
+    var lNewArray := new array  of T(aNewLength);
+    &Array.Copy(aArray, lNewArray, length(aArray));
+    aArray := lNewArray;
+  end;
+end;
+
 // sizeOf
 
 function Slice(var A: Array; Count: Integer): Pointer; public;
@@ -310,7 +322,7 @@ begin
   result := Hi(X)+(Lo(X) shl 8)
 end;
 
-  function Trunc(X: Real): Int64; public;
+function Trunc(X: Real): Int64; public;
 begin
   result := Int64(RemObjects.Elements.System.Math.Truncate(X));
 end;
