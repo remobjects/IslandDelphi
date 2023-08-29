@@ -7,7 +7,6 @@ type
   Delphi.System.PAnsiChar = public ^«Delphi.System.@AnsiChar»;
   {$ENDIF}
 
-  [Packed]
   DelphiAnsiString = public record(sequence of AnsiChar)
   assembly
     fStringData: ^AnsiChar;
