@@ -177,7 +177,12 @@ end;
 // exclude
 // exit
 //procedure Fail; public;
-//procedure FillChar(var X; Count: Integer; Value: Ordinal); public;
+
+procedure FillChar(var X; Count: Integer; Value: Ordinal); public;
+begin
+  memset(@X, Value, Count);
+end;
+
 //procedure Finalize(var V; [ Count: NativeUInt]); public;
 //procedure Finalize(var V; [ Count: NativeUInt]); public;
 
