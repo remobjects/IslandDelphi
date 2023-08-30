@@ -126,12 +126,12 @@ end;
 //...
 // chr
 
-function Concat(S1: string; S2: string): string; inline; public;
+function Concat(S1: String; S2: String): String; inline; public;
 begin
   result := S1+S2;
 end;
 
-function Concat(S1: string; params S2: sequence of string): string; public;
+function Concat(S1: String; params S2: sequence of String): String; public;
 begin
   var lSB := new StringBuilder;
   lSB.Append(S1);
@@ -161,7 +161,7 @@ end;
 //function Copy(S: <string or dynamic array>; Index: Integer; Count: Integer): string;
 // dec
 // default
-procedure Delete(var S: string; &Index: Integer; Count: Integer); public;
+procedure Delete(var S: String; &Index: Integer; Count: Integer); public;
 begin
   if Count > 0 then
     S := (S as IslandString).Remove(&Index, Count); {$HINT this casts. maybe optimize later?}
@@ -178,7 +178,7 @@ end;
 // exit
 //procedure Fail; public;
 
-procedure FillChar(var X; Count: Integer; Value: Ordinal); public;
+procedure FillChar(var X; Count: Integer; Value: Integer); public;
 begin
   memset(@X, Value, Count);
 end;
@@ -211,7 +211,7 @@ end;
 //include
 //procedure Initialize(var V; [ Count: NativeUInt]); public;
 
-procedure Insert(Source: string; var Dest: string; &Index: Integer); public;
+procedure Insert(Source: String; var Dest: String; &Index: Integer); public;
 begin
   Dest := (Dest as IslandString).Insert(&Index, Source); {$HINT this casts. maybe optimize later?}
 end;
@@ -315,7 +315,7 @@ begin
 end;
 
 //procedure Str(const X [: Width [:Decimals]]; var S: String);
-procedure Str(const X: Object; var S: string); public;
+procedure Str(const X: Object; var S: String); public;
 begin
   S := X:ToString;
 end;

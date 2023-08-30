@@ -41,14 +41,6 @@
     <Architecture>i386</Architecture>
     <ConditionalDefines>ANSI_STRING;CLASSIC;NO_TYPEINFO_APIS;NO_NAMESPACES</ConditionalDefines>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Target)' == 'Delphi.2007.Windows' ">
-    <Mode>Island</Mode>
-    <SubMode>Windows</SubMode>
-    <DelphiSDK>Delphi 2007</DelphiSDK>
-    <Architecture>i386</Architecture>
-    <Enabled>i386</Enabled>
-    <ConditionalDefines>ANSI_STRING;CLASSIC;NO_TYPEINFO_APIS;NO_NAMESPACES</ConditionalDefines>
-  </PropertyGroup>
   <PropertyGroup Condition=" '$(Target)' == 'Delphi.2009.Windows' ">
     <Mode>Island</Mode>
     <SubMode>Windows</SubMode>

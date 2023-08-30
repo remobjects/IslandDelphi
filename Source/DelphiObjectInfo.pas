@@ -1,6 +1,7 @@
 ﻿namespace RemObjects.Elements.System;
 
 {$IF NOT NO_TYPEINFO_APIS}
+{$IF DELPHI11}
 
 uses
   Delphi.System,
@@ -112,10 +113,12 @@ type
 
           var p: ^Void := FieldDefinitionTable;
           inc(p, sizeOf(TVmtFieldTable));
-          for i := 0 to FieldDefinitionTable.Count-1 do begin
-            var lEntry := PVmtFieldEntry(p);
-            writeLn($"Field[{i}]: {lEntry.Name as DelphiShortString as IslandString}: {lEntry.TypeIndex} at +{lEntry.FieldOffset}");
-            inc(p, sizeOf(Cardinal)+sizeOf(Word)+ord(lEntry.Name[0])+1);
+          if not defined("LINUX") then begin
+            for i := 0 to FieldDefinitionTable.Count-1 do begin
+              var lEntry := PVmtFieldEntry(p);
+              writeLn($"Field[{i}]: {lEntry.Name as DelphiShortString as IslandString}: {lEntry.TypeIndex} at +{lEntry.FieldOffset}");
+              inc(p, sizeOf(Cardinal)+sizeOf(Word)+ord(lEntry.Name[0])+1);
+            end;
           end;
           var lExtCount := ^Word(p)^;
           inc(p, sizeOf(Word));
@@ -233,10 +236,12 @@ type
 
           var p: ^Void := FieldDefinitionTable;
           inc(p, sizeOf(TVmtFieldTable));
-          for i := 0 to FieldDefinitionTable.Count-1 do begin
-            var lEntry := PVmtFieldEntry(p);
-            writeLn($"Field[{i}]: {lEntry.Name as DelphiShortString as IslandString}: {lEntry.TypeIndex} at +{lEntry.FieldOffset}");
-            inc(p, sizeOf(Cardinal)+sizeOf(Word)+ord(lEntry.Name[0])+1);
+          if not defined("LINUX") then begin
+            for i := 0 to FieldDefinitionTable.Count-1 do begin
+              var lEntry := PVmtFieldEntry(p);
+              writeLn($"Field[{i}]: {lEntry.Name as DelphiShortString as IslandString}: {lEntry.TypeIndex} at +{lEntry.FieldOffset}");
+              inc(p, sizeOf(Cardinal)+sizeOf(Word)+ord(lEntry.Name[0])+1);
+            end;
           end;
           var lExtCount := ^Word(p)^;
           inc(p, sizeOf(Word));
@@ -331,6 +336,7 @@ type
     AttrData: TAttrData
   end;
 
+{$ENDIF}
 {$ENDIF}
 
 end.
