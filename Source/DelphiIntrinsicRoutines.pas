@@ -126,12 +126,12 @@ end;
 //...
 // chr
 
-function Concat(S1: String; S2: String): String; inline; public;
+function Concat(S1: string; S2: string): string; inline; public;
 begin
   result := S1+S2;
 end;
 
-function Concat(S1: String; params S2: sequence of String): String; public;
+function Concat(S1: string; params S2: sequence of string): string; public;
 begin
   var lSB := new StringBuilder;
   lSB.Append(S1);
@@ -143,8 +143,10 @@ end;
 function Concat<T>(S1: array of T; S2: array of T): array of T; public;
 begin
   result := new array of T(length(S1)+length(S2));
-  {$HINT copy}
-  raise new NotImplementedException("Concat is not implemented");
+  for i := 0 to length(S1)-1 do
+    result[i] := S1[i];
+  for i := 0 to length(S2)-1 do
+    result[length(S1)+i] := S2[i];
 end;
 
 function Concat<T>(S1: array of T; params S2: array of array of T): array of T; public;
@@ -153,15 +155,23 @@ begin
   for each s in S2 do
     len := len+length(s);
   result := new array of T(len);
-  {$HINT copy}
-  raise new NotImplementedException("Concat is not implemented");
+
+  for i := 0 to length(S1)-1 do
+    result[i] := S1[i];
+
+  var offset := length(S1);
+  for each s in S2 do begin
+    for i := 0 to length(s)-1 do
+      result[offset+i] := s[i];
+    inc(offset, length(s));
+  end;
 end;
 
 //continue
 //function Copy(S: <string or dynamic array>; Index: Integer; Count: Integer): string;
 // dec
 // default
-procedure Delete(var S: String; &Index: Integer; Count: Integer); public;
+procedure Delete(var S: string; &Index: Integer; Count: Integer); public;
 begin
   if Count > 0 then
     S := (S as IslandString).Remove(&Index, Count); {$HINT this casts. maybe optimize later?}
@@ -211,7 +221,7 @@ end;
 //include
 //procedure Initialize(var V; [ Count: NativeUInt]); public;
 
-procedure Insert(Source: String; var Dest: String; &Index: Integer); public;
+procedure Insert(Source: string; var Dest: string; &Index: Integer); public;
 begin
   Dest := (Dest as IslandString).Insert(&Index, Source); {$HINT this casts. maybe optimize later?}
 end;
@@ -315,7 +325,7 @@ begin
 end;
 
 //procedure Str(const X [: Width [:Decimals]]; var S: String);
-procedure Str(const X: Object; var S: String); public;
+procedure Str(const X: Object; var S: string); public;
 begin
   S := X:ToString;
 end;
