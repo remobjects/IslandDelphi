@@ -21,7 +21,22 @@ type
 
     operator Implicit(aValue: Boolean): DelphiBool16;
     begin
-      result.Value := if aValue then 1 else 0;
+      result.Value := if aValue then -1 else 0;
+    end;
+
+    operator Implicit(aValue: DelphiBool16): Int16;
+    begin
+      result := aValue.Value;
+    end;
+
+    operator Implicit(aValue: Int16): DelphiBool16;
+    begin
+      result.Value := if aValue ≠ 0 then -1 else 0;
+    end;
+
+    operator Implicit(aValue: Int32): DelphiBool16;
+    begin
+      result.Value := if aValue ≠ 0 then -1 else 0;
     end;
 
     [ToString]
@@ -54,7 +69,17 @@ type
 
     operator Implicit(aValue: Boolean): DelphiBool32;
     begin
-      result.Value := if aValue then 1 else 0;
+      result.Value := if aValue then -1 else 0;
+    end;
+
+    operator Implicit(aValue: DelphiBool32): Int32;
+    begin
+      result := aValue.Value;
+    end;
+
+    operator Implicit(aValue: Int32): DelphiBool32;
+    begin
+      result.Value := if aValue ≠ 0 then -1 else 0;
     end;
 
     [ToString]
@@ -87,7 +112,17 @@ type
 
     operator Implicit(aValue: Boolean): DelphiBool64;
     begin
-      result.Value := if aValue then 1 else 0;
+      result.Value := if aValue then -1 else 0;
+    end;
+
+    operator Implicit(aValue: DelphiBool64): Int64;
+    begin
+      result := aValue.Value;
+    end;
+
+    operator Implicit(aValue: Int64): DelphiBool64;
+    begin
+      result.Value := if aValue ≠ 0 then -1 else 0;
     end;
 
     [ToString]
