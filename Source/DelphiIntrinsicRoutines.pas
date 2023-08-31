@@ -190,7 +190,7 @@ end;
 
 procedure FillChar(var X; Count: Integer; Value: Integer); public;
 begin
-  memset(@X, Value, Count);
+  RemObjects.Elements.System.memset(@X, Value, Count);
 end;
 
 //procedure Finalize(var V; [ Count: NativeUInt]); public;
@@ -296,7 +296,7 @@ begin
     aArray := &Array.SubArray(aArray, 0, aNewLength);
   end
   else if aNewLength > length(aArray) then begin
-    var lNewArray := new array  of T(aNewLength);
+    var lNewArray := new array of T(aNewLength);
     &Array.Copy(aArray, lNewArray, length(aArray));
     aArray := lNewArray;
   end;
@@ -359,12 +359,12 @@ end;
 
 procedure VarClear(var V: Variant); public;
 begin
-  memset(@V, 0, sizeOf(Variant));
+  RemObjects.Elements.System.memset(@V, 0, sizeOf(Variant));
 end;
 
 procedure VarCopy(var Dest: Variant; Source: Variant); public;
 begin
-  memcpy(@Dest, @Source, sizeOf(Variant));
+  RemObjects.Elements.System.memcpy(@Dest, ^Void(@Source), sizeOf(Variant));
 end;
 
 end.
