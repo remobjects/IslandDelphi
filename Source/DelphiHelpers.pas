@@ -67,7 +67,9 @@ type
     begin
       if not assigned(aObject) then
         exit nil;
-      exit "[Cannot evaluate TObject yet, E26753. We're workign on it]";
+      {$IF ARM64}
+      exit "[Cannot evaluate TObject on arm64 yet, E26753. We're workign on it]";
+      {$ENDIF}
       var s := (aObject.ToString as IslandString).ToCharArray(true);
       result := @s[0];
     end;
