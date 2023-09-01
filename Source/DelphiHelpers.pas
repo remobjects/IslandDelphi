@@ -58,6 +58,7 @@ type
 
   end;
 
+  [Internal]
   DelphiDebuggerHelpers = public static class
   public
 
@@ -66,30 +67,31 @@ type
     begin
       if not assigned(aObject) then
         exit nil;
+      exit "[Cannot evaluate TObject yet, E26753. We're workign on it]";
       var s := (aObject.ToString as IslandString).ToCharArray(true);
       result := @s[0];
     end;
 
   end;
 
-  TObject_Extension = public extension class(TObject)
-  public
+  //TObject_Extension = public extension class(TObject)
+  //public
 
-    {$IF NOT EXISTS(Delphi.System.TObject.ToString)}
-    method ToString: DelphiString;
-    begin
-      result := $"{^Void(self)}";
-    end;
-    {$ENDIF}
+    //{$IF NOT EXISTS(Delphi.System.TObject.ToString)}
+    //method ToString: DelphiString;
+    //begin
+      //result := $"{^Void(self)}";
+    //end;
+    //{$ENDIF}
 
-    {$IF NOT EXISTS(Delphi.System.TObject.GetHashCode)}
-    method GetHashCode: IntPtr;
-    begin
-      result := IntPtr(^Void(self));
-    end;
-    {$ENDIF}
+    //{$IF NOT EXISTS(Delphi.System.TObject.GetHashCode)}
+    //method GetHashCode: IntPtr;
+    //begin
+      //result := IntPtr(^Void(self));
+    //end;
+    //{$ENDIF}
 
-  end;
+  //end;
 
   [Internal]
   DelphiExceptionHandler = public static class
