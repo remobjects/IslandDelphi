@@ -15,5 +15,6 @@ The code for this library is open source and available under a liberal license. 
 * [RemObjects Elements Docs](http://docs.elementscompiler.com/)
 * [Island RTL](https://github.com/remobjects/IslandRTL)
 * [Island RTL](http://docs.elementscompiler.com/API/IslandRTL/) on docs.elementscompiler.com
+* [Island Delphi Support](http://docs.elementscompiler.com/API/IslandDelphiSupport/) on docs.elementscompiler.com
 * [Delphi SDK Support](https://docs.elementscompiler.com/Oxygene/Delphi/DelphiSDKs) on docs.elementscompiler.com
 * [Platforms](https://docs.elementscompiler.com/Platforms/) on docs.elementscompiler.com
