@@ -110,6 +110,7 @@ type
       result := new IslandWrappedDelphiObject(aValue);
     end;
 
+    {$IF NOT NO_TOSTRING}
     method ToString: IslandString; override;
     begin
       result := Value.ToString as IslandString;
@@ -119,6 +120,7 @@ type
     begin
       result := Value.GetHashCode;
     end;
+    {$ENDIF}
 
     method &Equals(aOther: IslandObject): Boolean; override;
     begin

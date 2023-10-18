@@ -70,8 +70,12 @@ type
       {$IF ARM64}
       exit "[Cannot evaluate TObject on arm64 yet, E26753. We're workign on it]";
       {$ENDIF}
+      {$IF NO_TOSTRING}
+      exit "[Cannot evaluate TObject Delphi 2006 and below]";
+      {$ELSE}
       var s := (aObject.ToString as IslandString).ToCharArray(true);
       result := @s[0];
+      {$ENDIF}
     end;
 
   end;

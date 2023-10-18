@@ -197,6 +197,7 @@ type
 
     // DelphiObject
 
+    {$IF NOT NO_TOSTRING}
     operator &Add(aLeft: DelphiObject; aRight: InstanceType): InstanceType;
     begin
       result := (aLeft.ToString as DelphiAnsiString) + aRight; {$HINT Review, this is lossy}
@@ -206,6 +207,7 @@ type
     begin
       result := aLeft + (aRight.ToString as DelphiAnsiString); {$HINT Review, this is lossy}
     end;
+    {$ENDIF}
 
     // IslandObject
 

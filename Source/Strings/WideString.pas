@@ -141,6 +141,7 @@ type
 
     // DelphiObject
 
+    {$IF NOT NO_TOSTRING}
     operator &Add(aLeft: DelphiObject; aRight: InstanceType): InstanceType;
     begin
       var lLeft := aLeft.ToString;
@@ -156,6 +157,7 @@ type
       memcpy(result.fStringData,              aLeft.fStringData,  aLeft.Length*sizeOf(Char));
       memcpy(result.fStringData+aLeft.Length, lRight.fStringData, lRight.Length*sizeOf(Char));
     end;
+    {$ENDIF}
 
     // IslandObject
 
