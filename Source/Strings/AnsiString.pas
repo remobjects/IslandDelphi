@@ -298,9 +298,11 @@ type
 method SetLength(var aString: DelphiAnsiString; aNewLength: Int32); public; inline;
 begin
   {$IF CLASSIC}
-  var f: LStrSetLengthFunction;
-  ^VoidFunction(@f)^ := @:Delphi.System.«@LStrSetLength»;
-  f(var aString, aNewLength, aString.CodePage);
+  //var f: LStrSetLengthFunction;
+  //^VoidFunction(@f)^ := @:Delphi.System.«@LStrSetLength»;
+  //f(var aString, aNewLength, aString.CodePage);
+  { workaround for E26822 }
+  :Delphi.StrHlpr.AnsiSetLength(var aString, aNewLength);
   {$ELSE}
   :Delphi.System.«@LStrSetLength»(var aString, aNewLength, aString.CodePage);
   {$ENDIF}

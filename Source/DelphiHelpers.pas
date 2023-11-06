@@ -6,9 +6,16 @@ type
   public
 
     {$IF CLASSIC}
-    method CreateInstance(aType: class of TObject): TObject;
+    { workarond for E26821 }
+    {method CreateInstance(aType: class of TObject): TObject;
     begin
       result :=:Delphi.System.«@ClassCreate»(aType, true);
+    end;}
+    method CreateInstance(aType: ^Void): TObject;
+    begin
+      var lClass: class of :Delphi.System.TObject;
+      lClass := :Delphi.System.TClass(aType);
+      result :=:Delphi.System.«@ClassCreate»(lClass, true);
     end;
     {$ELSEIF DELPHIXE2}
     method CreateInstance(aType: ^Void): TObject;
