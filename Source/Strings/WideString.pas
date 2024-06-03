@@ -35,32 +35,32 @@ type
     // Comparison Operators
     //
 
-    operator Equal(aLeft: InstanceType; aRight: InstanceType): Boolean;
+    operator Equal(aLeft: DelphiWideString; aRight: DelphiWideString): Boolean;
     begin
       result := WideCompareString(aLeft, aRight) = 0;
     end;
 
-    operator NotEqual(aLeft: InstanceType; aRight: InstanceType): Boolean;
+    operator NotEqual(aLeft: DelphiWideString; aRight: DelphiWideString): Boolean;
     begin
       result := WideCompareString(aLeft, aRight) ≠ 0;
     end;
 
-    operator Greater(aLeft: InstanceType; aRight: InstanceType): Boolean;
+    operator Greater(aLeft: DelphiWideString; aRight: DelphiWideString): Boolean;
     begin
       result := WideCompareString(aLeft, aRight) < 0;
     end;
 
-    operator GreaterOrEqual(aLeft: InstanceType; aRight: InstanceType): Boolean;
+    operator GreaterOrEqual(aLeft: DelphiWideString; aRight: DelphiWideString): Boolean;
     begin
       result := WideCompareString(aLeft, aRight) ≤ 0;
     end;
 
-    operator Less(aLeft: InstanceType; aRight: InstanceType): Boolean;
+    operator Less(aLeft: DelphiWideString; aRight: DelphiWideString): Boolean;
     begin
       result := WideCompareString(aLeft, aRight) > 0;
     end;
 
-    operator LessOrEqual(aLeft: InstanceType; aRight: InstanceType): Boolean;
+    operator LessOrEqual(aLeft: DelphiWideString; aRight: DelphiWideString): Boolean;
     begin
       result := WideCompareString(aLeft, aRight) ≥ 0;
     end;
@@ -69,27 +69,27 @@ type
     // Cast Operators
     //
 
-    operator Implicit(aString: InstanceType): IslandString;
+    operator Implicit(aString: DelphiWideString): IslandString;
     begin
       result := IslandString:FromPChar(aString.fStringData, aString.Length);
     end;
 
-    operator Implicit(aString: InstanceType): IslandObject;
+    operator Implicit(aString: DelphiWideString): IslandObject;
     begin
       result := IslandString:FromPChar(aString.fStringData, aString.Length);
     end;
 
-    operator Explicit(aString: IslandString): InstanceType;
+    operator Explicit(aString: IslandString): DelphiWideString;
     begin
       result := DelphiStringHelpers.DelphiWideStringWithChars(aString.FirstChar, aString.Length);
     end;
 
-    operator Implicit(aChar: Char): InstanceType;
+    operator Implicit(aChar: Char): DelphiWideString;
     begin
       result := DelphiStringHelpers.DelphiWideStringWithChars(@aChar, 1);
     end;
 
-    operator Implicit(aChar: AnsiChar): InstanceType;
+    operator Implicit(aChar: AnsiChar): DelphiWideString;
     begin
       var lChar := Char(aChar);
       result := DelphiStringHelpers.DelphiWideStringWithChars(@lChar, 1);
@@ -97,18 +97,18 @@ type
 
     // PChar
 
-    operator Implicit(aString: ^Char): InstanceType; {$HINT seems risky for non-nil?}
+    operator Implicit(aString: ^Char): DelphiWideString; {$HINT seems risky for non-nil?}
     begin
       if assigned(aString) then
         result := DelphiStringHelpers.DelphiWideStringWithChars(aString, PCharLen(aString));
     end;
 
-    operator Explicit(aString: InstanceType): ^Char;
+    operator Explicit(aString: DelphiWideString): ^Char;
     begin
       result := aString.fStringData;
     end;
 
-    operator Explicit(aString: InstanceType): ^Void;
+    operator Explicit(aString: DelphiWideString): ^Void;
     begin
       result := aString.fStringData;
     end;
@@ -116,12 +116,12 @@ type
     // NSString
 
     {$IF DARWIN}
-    operator Explicit(aString: InstanceType): CocoaString;
+    operator Explicit(aString: DelphiWideString): CocoaString;
     begin
       result := new CocoaString withBytes(aString.fStringData) length(DelphiStringHelpers.DelphiStringLength(aString.fStringData)) encoding(Foundation.NSStringEncoding.UTF16LittleEndianStringEncoding);
     end;
 
-    operator Explicit(aString: CocoaString): InstanceType;
+    operator Explicit(aString: CocoaString): DelphiWideString;
     begin
       var lLength := aString.length;
       var lBytes := new Char[lLength];
@@ -132,7 +132,7 @@ type
 
     // Concat
 
-    operator &Add(aLeft: InstanceType; aRight: InstanceType): InstanceType;
+    operator &Add(aLeft: DelphiWideString; aRight: DelphiWideString): DelphiWideString;
     begin
       result := DelphiStringHelpers.EmptyDelphiWideStringWithCapacity(aLeft.Length+aRight.Length);
       memcpy(result.fStringData,              aLeft.fStringData,  aLeft.Length*sizeOf(Char));
@@ -142,7 +142,7 @@ type
     // DelphiObject
 
     {$IF NOT NO_TOSTRING}
-    operator &Add(aLeft: DelphiObject; aRight: InstanceType): InstanceType;
+    operator &Add(aLeft: DelphiObject; aRight: DelphiWideString): DelphiWideString;
     begin
       var lLeft := aLeft.ToString;
       result := DelphiStringHelpers.EmptyDelphiWideStringWithCapacity(lLeft.Length+aRight.Length);
@@ -150,7 +150,7 @@ type
       memcpy(result.fStringData+lLeft.Length, aRight.fStringData, aRight.Length*sizeOf(Char));
     end;
 
-    operator &Add(aLeft: InstanceType; aRight: DelphiObject): InstanceType;
+    operator &Add(aLeft: DelphiWideString; aRight: DelphiObject): DelphiWideString;
     begin
       var lRight := aRight.ToString;
       result := DelphiStringHelpers.EmptyDelphiWideStringWithCapacity(aLeft.Length+lRight.Length);
@@ -161,7 +161,7 @@ type
 
     // IslandObject
 
-    operator &Add(aLeft: IslandObject; aRight: InstanceType): InstanceType;
+    operator &Add(aLeft: IslandObject; aRight: DelphiWideString): DelphiWideString;
     begin
       var lLeft := aLeft.ToString;
       result := DelphiStringHelpers.EmptyDelphiWideStringWithCapacity(lLeft.Length+aRight.Length);
@@ -169,7 +169,7 @@ type
       memcpy(result.fStringData+lLeft.Length, aRight.fStringData, aRight.Length*sizeOf(Char));
     end;
 
-    operator &Add(aLeft: InstanceType; aRight: IslandObject): InstanceType;
+    operator &Add(aLeft: DelphiWideString; aRight: IslandObject): DelphiWideString;
     begin
       var lRight := aRight.ToString;
       result := DelphiStringHelpers.EmptyDelphiWideStringWithCapacity(aLeft.Length+lRight.Length);
@@ -180,7 +180,7 @@ type
     // CocoaObject
 
     {$IF DARWIN}
-    operator &Add(aLeft: CocoaObject; aRight: InstanceType): InstanceType;
+    operator &Add(aLeft: CocoaObject; aRight: DelphiWideString): DelphiWideString;
     begin
       var lLeft := aLeft.description;
       var lLength := lLeft.length;
@@ -191,7 +191,7 @@ type
       memcpy(result.fStringData+lLength, aRight.fStringData, aRight.Length*sizeOf(Char));
     end;
 
-    operator &Add(aLeft: InstanceType; aRight: CocoaObject): InstanceType;
+    operator &Add(aLeft: DelphiWideString; aRight: CocoaObject): DelphiWideString;
     begin
       var lRight := aRight.description;
       var lLength := lRight.length;

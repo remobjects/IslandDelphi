@@ -44,32 +44,32 @@ type
     // Comparison Operators
     //
 
-    operator Equal(aLeft: InstanceType; aRight: InstanceType): Boolean;
+    operator Equal(aLeft: DelphiAnsiString; aRight: DelphiAnsiString): Boolean;
     begin
       result := AnsiCompareString(aLeft, aRight) = 0;
     end;
 
-    operator NotEqual(aLeft: InstanceType; aRight: InstanceType): Boolean;
+    operator NotEqual(aLeft: DelphiAnsiString; aRight: DelphiAnsiString): Boolean;
     begin
       result := AnsiCompareString(aLeft, aRight) ≠ 0;
     end;
 
-    operator Greater(aLeft: InstanceType; aRight: InstanceType): Boolean;
+    operator Greater(aLeft: DelphiAnsiString; aRight: DelphiAnsiString): Boolean;
     begin
       result := AnsiCompareString(aLeft, aRight) < 0;
     end;
 
-    operator GreaterOrEqual(aLeft: InstanceType; aRight: InstanceType): Boolean;
+    operator GreaterOrEqual(aLeft: DelphiAnsiString; aRight: DelphiAnsiString): Boolean;
     begin
       result := AnsiCompareString(aLeft, aRight) ≤ 0;
     end;
 
-    operator Less(aLeft: InstanceType; aRight: InstanceType): Boolean;
+    operator Less(aLeft: DelphiAnsiString; aRight: DelphiAnsiString): Boolean;
     begin
       result := AnsiCompareString(aLeft, aRight) > 0;
     end;
 
-    operator LessOrEqual(aLeft: InstanceType; aRight: InstanceType): Boolean;
+    operator LessOrEqual(aLeft: DelphiAnsiString; aRight: DelphiAnsiString): Boolean;
     begin
       result := AnsiCompareString(aLeft, aRight) ≥ 0;
     end;
@@ -78,47 +78,47 @@ type
     // Cast Operators
     //
 
-    operator Implicit(aString: InstanceType): IslandString;
+    operator Implicit(aString: DelphiAnsiString): IslandString;
     begin
       result := IslandString:FromPAnsiChar(aString.fStringData, aString.Length); {$HINT Should use code page?}
     end;
 
-    operator Implicit(aString: InstanceType): IslandObject;
+    operator Implicit(aString: DelphiAnsiString): IslandObject;
     begin
       result := IslandString:FromPAnsiChar(aString.fStringData, aString.Length); {$HINT Should use code page?}
     end;
 
-    operator Explicit(aString: IslandString): InstanceType;
+    operator Explicit(aString: IslandString): DelphiAnsiString;
     begin
       var lChars := aString.ToAnsiChars(); {$HINT Review, this is lossy}
       result := DelphiStringHelpers.DelphiAnsiStringWithChars(@lChars[0], aString.Length);
     end;
 
-    operator Implicit(aChar: Char): InstanceType;
+    operator Implicit(aChar: Char): DelphiAnsiString;
     begin
       var lChars := String(aChar).ToAnsiChars(); {$HINT Review, this is lossy}
       result := DelphiStringHelpers.DelphiAnsiStringWithChars(@lChars[0], 1);
     end;
 
-    operator Implicit(aChar: AnsiChar): InstanceType;
+    operator Implicit(aChar: AnsiChar): DelphiAnsiString;
     begin
       result := DelphiStringHelpers.DelphiAnsiStringWithChars(@aChar, 1);
     end;
 
     // PChar
 
-    operator Implicit(aString: ^AnsiChar): InstanceType;
+    operator Implicit(aString: ^AnsiChar): DelphiAnsiString;
     begin
       if assigned(aString) then
         result := DelphiStringHelpers.DelphiAnsiStringWithChars(aString, PAnsiCharLen(aString));
     end;
 
-    operator Explicit(aString: InstanceType): ^AnsiChar;
+    operator Explicit(aString: DelphiAnsiString): ^AnsiChar;
     begin
       result := aString.fStringData;
     end;
 
-    operator Explicit(aString: InstanceType): ^Void;
+    operator Explicit(aString: DelphiAnsiString): ^Void;
     begin
       result := aString.fStringData;
     end;
@@ -126,12 +126,12 @@ type
     // UnicodeString
 
     {$IF NOT ANSI_STRING}
-    operator Explicit(aString: InstanceType): DelphiUnicodeString;
+    operator Explicit(aString: DelphiAnsiString): DelphiUnicodeString;
     begin
       result := IslandString:FromPAnsiChar(aString.fStringData, aString.Length) as DelphiUnicodeString; {$HINT Can be Optimized}
     end;
 
-    operator Explicit(aString: DelphiUnicodeString): InstanceType;
+    operator Explicit(aString: DelphiUnicodeString): DelphiAnsiString;
     begin
       var lChars := (aString as IslandString).ToAnsiChars(); {$HINT Can be Optimized}{$HINT Review, this is lossy}
       result := DelphiStringHelpers.DelphiAnsiStringWithChars(@lChars[0], aString.Length);
@@ -140,12 +140,12 @@ type
 
     // WideString
 
-    operator Explicit(aString: InstanceType): DelphiWideString;
+    operator Explicit(aString: DelphiAnsiString): DelphiWideString;
     begin
       result := IslandString:FromPAnsiChar(aString.fStringData, aString.Length) as DelphiWideString; {$HINT Can be Optimized}
     end;
 
-    operator Explicit(aString: DelphiWideString): InstanceType;
+    operator Explicit(aString: DelphiWideString): DelphiAnsiString;
     begin
       var lChars := (aString as IslandString).ToAnsiChars(); {$HINT Can be Optimized}{$HINT Review, this is lossy}
       result := DelphiStringHelpers.DelphiAnsiStringWithChars(@lChars[0], aString.Length);
@@ -153,13 +153,13 @@ type
 
      // ShortString
 
-    operator Implicit(aString: DelphiShortString): InstanceType;
+    operator Implicit(aString: DelphiShortString): DelphiAnsiString;
     begin
       if aString[0] > #0 then
         result := DelphiStringHelpers.DelphiAnsiStringWithChars(@aString[1], ord(aString[0]));
     end;
 
-    operator Explicit(aString: InstanceType): DelphiShortString;
+    operator Explicit(aString: DelphiAnsiString): DelphiShortString;
     begin
       if aString.Length > 255 then
         raise new InvalidCastException("Cannot represent string longer than 255 characters as DelphiShortString");
@@ -169,17 +169,17 @@ type
     // NSString
 
     {$IF DARWIN}
-    operator Implicit(aString: InstanceType): CocoaString;
+    operator Implicit(aString: DelphiAnsiString): CocoaString;
     begin
       result := new CocoaString withBytes(aString.fStringData) length(DelphiStringHelpers.DelphiStringLength(aString.fStringData)) encoding(Foundation.NSStringEncoding.UTF16LittleEndianStringEncoding);
     end;
 
-    //operator Explicit(aString: CocoaString): InstanceType;
+    //operator Explicit(aString: CocoaString): DelphiAnsiString;
     //begin
       // {$HINT Review, this is lossy}
     //end;
 
-    operator Implicit(aString: InstanceType): CocoaObject;
+    operator Implicit(aString: DelphiAnsiString): CocoaObject;
     begin
       result := aString as CocoaString;
     end;
@@ -187,7 +187,7 @@ type
 
     // Concat
 
-    operator &Add(aLeft: InstanceType; aRight: InstanceType): InstanceType;
+    operator &Add(aLeft: DelphiAnsiString; aRight: DelphiAnsiString): DelphiAnsiString;
     begin
       result := DelphiStringHelpers.EmptyDelphiAnsiStringWithCapacity(aLeft.Length+aRight.Length);
       memcpy(result.fStringData,              aLeft.fStringData,  aLeft.Length*sizeOf(AnsiChar));
@@ -198,12 +198,12 @@ type
     // DelphiObject
 
     {$IF NOT NO_TOSTRING}
-    operator &Add(aLeft: DelphiObject; aRight: InstanceType): InstanceType;
+    operator &Add(aLeft: DelphiObject; aRight: DelphiAnsiString): DelphiAnsiString;
     begin
       result := (aLeft.ToString as DelphiAnsiString) + aRight; {$HINT Review, this is lossy}
     end;
 
-    operator &Add(aLeft: InstanceType; aRight: DelphiObject): InstanceType;
+    operator &Add(aLeft: DelphiAnsiString; aRight: DelphiObject): DelphiAnsiString;
     begin
       result := aLeft + (aRight.ToString as DelphiAnsiString); {$HINT Review, this is lossy}
     end;
@@ -211,12 +211,12 @@ type
 
     // IslandObject
 
-    operator &Add(aLeft: IslandObject; aRight: InstanceType): InstanceType;
+    operator &Add(aLeft: IslandObject; aRight: DelphiAnsiString): DelphiAnsiString;
     begin
       result := (aLeft.ToString as DelphiAnsiString) + aRight; {$HINT Review, this is lossy}
     end;
 
-    operator &Add(aLeft: InstanceType; aRight: IslandObject): InstanceType;
+    operator &Add(aLeft: DelphiAnsiString; aRight: IslandObject): DelphiAnsiString;
     begin
       result := aLeft + (aRight.ToString as DelphiAnsiString); {$HINT Review, this is lossy}
     end;
@@ -224,12 +224,12 @@ type
     // CocoaObject
 
     {$IF DARWIN}
-    operator &Add(aLeft: CocoaObject; aRight: InstanceType): InstanceType;
+    operator &Add(aLeft: CocoaObject; aRight: DelphiAnsiString): DelphiAnsiString;
     begin
       result := (aLeft.description as DelphiAnsiString) + aRight; {$HINT Review, this is lossy}
     end;
 
-    operator &Add(aLeft: InstanceType; aRight: CocoaObject): InstanceType;
+    operator &Add(aLeft: DelphiAnsiString; aRight: CocoaObject): DelphiAnsiString;
     begin
       result := aLeft + (aRight.description as DelphiAnsiString); {$HINT Review, this is lossy}
     end;
