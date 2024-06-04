@@ -39,7 +39,7 @@ end;
 
 method SetString(var aString: DelphiShortString; aBuffer: :Delphi.System.PAnsiChar; aLength: Integer); public;
 begin
-  :Delphi.System.«@SetString»(var aString, aBuffer, aLength);
+  :Delphi.System.«@SetString»(@aString, aBuffer, aLength);
 end;
 
 method SetString(var aString: IslandString; aBuffer: ^RemObjects.Elements.System.Char; aLength: Integer); public;
