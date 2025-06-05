@@ -182,22 +182,22 @@
     <Architecture>x86_64;arm64</Architecture>
   </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(Target)' == 'Delphi.12.3.Windows' ">
+  <PropertyGroup Condition=" '$(Target)' == 'Delphi.12.Windows' ">
     <Mode>Island</Mode>
     <SubMode>Windows</SubMode>
-    <DelphiSDK>Delphi 12.3</DelphiSDK>
+    <DelphiSDK>Delphi 12</DelphiSDK>
     <Architecture>x86_64;i386</Architecture>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Target)' == 'Delphi.12.3.Linux' ">
+  <PropertyGroup Condition=" '$(Target)' == 'Delphi.12.Linux' ">
     <Mode>Island</Mode>
     <SubMode>Linux</SubMode>
-    <DelphiSDK>Delphi 12.3</DelphiSDK>
+    <DelphiSDK>Delphi 12</DelphiSDK>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Target)' == 'Delphi.12.3.macOS' ">
+  <PropertyGroup Condition=" '$(Target)' == 'Delphi.12.macOS' ">
     <Mode>Island</Mode>
     <SubMode>Darwin</SubMode>
     <SDK>macOS</SDK>
-    <DelphiSDK>Delphi 12.3</DelphiSDK>
+    <DelphiSDK>Delphi 12</DelphiSDK>
     <Architecture>x86_64;arm64</Architecture>
   </PropertyGroup>
 
