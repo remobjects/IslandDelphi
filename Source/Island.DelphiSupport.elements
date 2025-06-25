@@ -179,6 +179,7 @@
     <SubMode>Darwin</SubMode>
     <SDK>macOS</SDK>
     <DelphiSDK>Delphi 11</DelphiSDK>
+    <MinimumSDKVersion>11.0</MinimumSDKVersion>
     <Architecture>x86_64;arm64</Architecture>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Target)' == 'Delphi.12.Windows' ">
@@ -196,6 +197,7 @@
     <Mode>Island</Mode>
     <SubMode>Darwin</SubMode>
     <SDK>macOS</SDK>
+    <MinimumSDKVersion>11.0</MinimumSDKVersion>
     <DelphiSDK>Delphi 12</DelphiSDK>
     <Architecture>x86_64;arm64</Architecture>
   </PropertyGroup>
@@ -214,6 +216,7 @@
     <Mode>Island</Mode>
     <SubMode>Darwin</SubMode>
     <SDK>macOS</SDK>
+    <MinimumSDKVersion>11.0</MinimumSDKVersion>
     <DelphiSDK>Delphi 13</DelphiSDK>
     <Architecture>x86_64;arm64</Architecture>
   </PropertyGroup>
@@ -225,7 +228,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bridges.Delphi.pas" />
-    <Compile Include="Floats.pas" />
+    <Compile Include="Strings\Floats.pas" />
     <Compile Include="Strings\Strings.pas" />
     <Compile Include="Variant.pas" />
     <Compile Include="Attributes.pas" />
