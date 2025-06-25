@@ -228,7 +228,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bridges.Delphi.pas" />
-    <Compile Include="Strings\Floats.pas" />
     <Compile Include="Strings\Strings.pas" />
     <Compile Include="Variant.pas" />
     <Compile Include="Attributes.pas" />
@@ -247,6 +246,7 @@
     <Compile Include="DelphiObjectInfo.pas" />
     <Compile Include="Guid+Extensions.pas" />
     <Compile Include="DelphiIntrinsicRoutines.pas" />
+    <Compile Include="Floats.pas" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.targets" />
 </Project>
