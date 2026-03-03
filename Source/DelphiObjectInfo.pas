@@ -284,8 +284,8 @@ type
   [Internal]
   Delphi.System.PDynaMethodTable = public ^Delphi.System.TDynaMethodTable;
 
-  [Internal]
-  Delphi.System.TDynaMethodTable = public packed record
+  [Internal, Packed]
+  Delphi.System.TDynaMethodTable = public record
   public
     var Count: UInt16;
     var Selectors: array[0..0] of Int16;
@@ -293,13 +293,15 @@ type
 
   // Method RTTI. Type is private in System.pas
 
-  TMethData2 = assembly packed record
+  [Packed]
+  TMethData2 = assembly record
     MethCount: Word;
     MethList: /*array[0..0] of */ TMethRec; // Not really an array
   end;
 
   PMethRec = ^TMethRec;
-  TMethRec = assembly packed record
+  [Packed]
+  TMethRec = assembly record
     RecSize: Word;
     MethAddr: Pointer;
     //Name: TSymbolName; // Is sized dynamically
@@ -307,13 +309,15 @@ type
 
   // Property RTTI. Types redeclared to handle dynamic length for "Name"
 
-  TPropData2 = assembly packed record
+  [Packed]
+  TPropData2 = assembly record
     PropCount: Word;
     PropList: /*array[0..0] of */ TPropInfo; // Not really an array
   end;
 
   PPropInfo2 = ^TPropInfo2;
-  TPropInfo2 = assembly packed record
+  [Packed]
+  TPropInfo2 = assembly record
     PropType: PPTypeInfo;
     GetProc: Pointer;
     SetProc: Pointer;
@@ -324,13 +328,15 @@ type
     //Name: TSymbolName; // Is sized dynamically
   end;
 
-  TPropDataEx2 = packed record
+  [Packed]
+  TPropDataEx2 = record
     PropCount: Word;
     PropList: /*array[0..0] of */ TPropInfoEx; // Not really an array
   end;
 
   PPropInfoEx2 = ^TPropInfoEx2;
-  TPropInfoEx2 = packed record
+  [Packed]
+  TPropInfoEx2 = record
     Flags: Byte;
     Info: PPropInfo;
     AttrData: TAttrData
