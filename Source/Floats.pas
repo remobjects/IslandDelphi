@@ -59,16 +59,20 @@ type
     property Bytes[aIndex: Integer]: Byte read fBytes[aIndex];
     property Words[aIndex: Integer]: Word read fBytes[aIndex/2] + (fBytes[aIndex/2+1] shl 8);
 
-    // E26718: Internal error: Unknown element 101
-    //method ToString: String; override;
-    //begin
-      //:Delphi.System.SysUtils.TExtendedHelper.ToString(self);
-    //end;
+    method ToString: String; override;
+    begin
+      result := #"<DelphiExtended80 {(Fraction / 2.0**52) * (2.0**(Exponent-1023))} (Exponent: {Exponent}, Fraction: {Fraction})>";
+    end;
 
-    // wrong for !EXTENDEDHAS10BYTES
-    //property Exponent: UInt64 read{$IFDEF EXTENDEDHAS10BYTES}Words[4] and $7FFF{$ELSE}(Words[3] shr 4) and $7FF{$ENDIF};
-    //property Fraction: UInt64 read {$IFDEF EXTENDEDHAS10BYTES}^UInt64(@Self)^{$ELSE}^UInt64(@Self)^ and $000FFFFFFFFFFFFF{$ENDIF};
-    //property Sign: Boolean read {$IFDEF EXTENDEDHAS10BYTES}fBytes[9] >= $80{$ELSE}fBytes[7] >= $80{$ENDIF};
+    {$IFDEF EXTENDEDHAS10BYTES}
+    property Exponent: UInt64 read Words[4] and $7FFF;
+    property Fraction: UInt64 read ^UInt64(@Self)^;
+    property Sign: Boolean read fBytes[9] >= $80;
+    {$ELSE}
+    property Exponent: UInt64 read (Words[3] shr 4) and $7FF;
+    property Fraction: UInt64 read ^UInt64(@Self)^ and $000FFFFFFFFFFFFF;
+    property Sign: Boolean read fBytes[7] >= $80;
+    {$ENDIF}
 
     //operator Explicit(aValue: DelphiExtended80): Double;
     //begin
