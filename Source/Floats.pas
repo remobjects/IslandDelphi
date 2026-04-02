@@ -171,9 +171,14 @@ type
       result := (aValue as Double) as DelphiExtended80;
     end;
 
+    operator Implicit(aValue: Delphi.System.TDateTime): DelphiExtended80;
+    begin
+      result := (aValue as Double) as DelphiExtended80;
+    end;
+
     //
 
-    operator Explicit(aValue: DelphiExtended80): Double;
+    operator Implicit(aValue: DelphiExtended80): Double;
     begin
       var lSign: Boolean;
       var lExponent: Integer;
@@ -228,9 +233,14 @@ type
       result := lValue;
     end;
 
-    operator Explicit(aValue: DelphiExtended80): Single;
+    operator Implicit(aValue: DelphiExtended80): Single;
     begin
       result := (aValue as Double) as Single;
+    end;
+
+    operator Implicit(aValue: DelphiExtended80): Delphi.System.TDateTime;
+    begin
+      result := (aValue as Double) as Delphi.System.TDateTime;
     end;
 
   private
