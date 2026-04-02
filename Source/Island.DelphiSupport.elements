@@ -10,6 +10,7 @@
     <MergeArchitectures>False</MergeArchitectures>
     <OutputPathPrefix>$(DelphiSDK)</OutputPathPrefix>
     <KnownConditionalDefines>DELPHI_DEBUG_STRING_ARC</KnownConditionalDefines>
+    <CrossPlatform>True</CrossPlatform>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <OutputPath>.\Bin\Debug</OutputPath>
@@ -211,6 +212,7 @@
     <Mode>Island</Mode>
     <SubMode>Linux</SubMode>
     <DelphiSDK>Delphi 13</DelphiSDK>
+    <Architecture>x86_64</Architecture>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Target)' == 'Delphi.13.macOS' ">
     <Mode>Island</Mode>
