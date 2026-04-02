@@ -74,6 +74,164 @@ type
     property Sign: Boolean read fBytes[7] >= $80;
     {$ENDIF}
 
+    operator Implicit(aValue: UInt64): DelphiExtended80;
+    begin
+      {$IFDEF EXTENDEDHAS10BYTES}
+      result := default(DelphiExtended80);
+
+      if aValue = 0 then
+        exit;
+
+      var lBitCount := 0;
+      var lTemp := aValue;
+      while lTemp <> 0 do begin
+        inc(lBitCount);
+        lTemp := lTemp shr 1;
+      end;
+
+      var lExponent := 16382 + lBitCount;
+      var lFraction := aValue shl (64 - lBitCount);
+
+      memcpy(@result.fBytes[0], @lFraction, 8);
+      result.fBytes[8] := Byte((lExponent shr 8) and $7F);
+      result.fBytes[9] := Byte(lExponent and $FF);
+      {$ELSE}
+      result := aValue as Delphi.System.Extended;
+      {$ENDIF}
+    end;
+
+    operator Implicit(aValue: Int64): DelphiExtended80;
+    begin
+      {$IFDEF EXTENDEDHAS10BYTES}
+      var lSign: Boolean := aValue < 0;
+      var lAbsValue: UInt64 := if lSign then UInt64(-aValue) else UInt64(aValue);
+      var lExponent: Integer := 16383;
+      var lFraction: UInt64 := 0;
+
+      if lAbsValue <> 0 then begin
+        var lBitCount: Integer := 0;
+        var lTemp: UInt64 := lAbsValue;
+        while lTemp <> 0 do begin
+          inc(lBitCount);
+          lTemp := lTemp shr 1;
+        end;
+
+        lExponent := 16382 + lBitCount;
+        if lBitCount > 1 then
+          lFraction := lAbsValue shl (64 - lBitCount)
+        else
+          lFraction := lAbsValue shl 63;
+      end;
+
+      result := default(DelphiExtended80);
+      result.fBytes[0] := Byte(lFraction and $FF);
+      result.fBytes[1] := Byte((lFraction shr 8) and $FF);
+      result.fBytes[2] := Byte((lFraction shr 16) and $FF);
+      result.fBytes[3] := Byte((lFraction shr 24) and $FF);
+      result.fBytes[4] := Byte((lFraction shr 32) and $FF);
+      result.fBytes[5] := Byte((lFraction shr 40) and $FF);
+      result.fBytes[6] := Byte((lFraction shr 48) and $FF);
+      result.fBytes[7] := Byte((lFraction shr 56) and $FF);
+      result.fBytes[8] := Byte((lExponent shr 8) and $7F);
+      result.fBytes[9] := Byte(lExponent and $FF);
+      if lSign then
+        result.fBytes[8] := result.fBytes[8] or $80;
+      {$ELSE}
+      var lValue: Double := aValue;
+      memcpy(@result, @lValue, SizeOf(result));
+      {$ENDIF}
+    end;
+
+    operator Implicit(aValue: Double): DelphiExtended80;
+    begin
+      {$IFDEF EXTENDEDHAS10BYTES}
+      var lBits: UInt64 := ^UInt64(@aValue)^;
+      var lSign: Boolean := (lBits and $8000000000000000) <> 0;
+      var lExponent: Integer := Integer((lBits shr 52) and $7FF);
+      var lMantissa: UInt64 := lBits and $000FFFFFFFFFFFFF;
+
+      result := default(DelphiExtended80);
+
+      if lExponent = 0 then begin
+        if lMantissa = 0 then begin
+          // zero
+          if lSign then
+            result.fBytes[9] := $80;
+          exit;
+        end
+        else begin
+          // subnormal double -> normalize
+          while (lMantissa and $0010000000000000) = 0 do begin
+            lMantissa := lMantissa shl 1;
+            dec(lExponent);
+          end;
+          inc(lExponent);
+        end;
+      end
+      else if lExponent = $7FF then begin
+        // Inf/NaN
+        result.fBytes[8] := $7F;
+        result.fBytes[9] := $FF;
+        if lSign then
+          result.fBytes[8] := result.fBytes[8] or $80;
+        lMantissa := lMantissa shl 11;
+        memcpy(@result.fBytes[0], @lMantissa, 8);
+        exit;
+      end;
+
+      lExponent := lExponent - 1023 + 16383;
+      lMantissa := lMantissa or $0010000000000000; // hidden bit
+
+      // shift double mantissa into 64-bit extended fraction
+      lMantissa := lMantissa shl 11;
+
+      memcpy(@result.fBytes[0], @lMantissa, 8);
+      result.fBytes[8] := Byte((lExponent shr 8) and $7F);
+      result.fBytes[9] := Byte(lExponent and $FF);
+      if lSign then
+        result.fBytes[8] := result.fBytes[8] or $80;
+      {$ELSE}
+      memcpy(@result, @aValue, SizeOf(result));
+      {$ENDIF}
+    end;
+
+    // smaller types
+
+    operator Implicit(aValue: Int32): DelphiExtended80;
+    begin
+      result := aValue as Int64;
+    end;
+
+    operator Implicit(aValue: UInt32): DelphiExtended80;
+    begin
+      result := aValue as UInt64;
+    end;
+
+    operator Implicit(aValue: Int16): DelphiExtended80;
+    begin
+      result := aValue as Int64;
+    end;
+
+    operator Implicit(aValue: UInt16): DelphiExtended80;
+    begin
+      result := aValue as UInt64;
+    end;
+
+    operator Implicit(aValue: Byte): DelphiExtended80;
+    begin
+      result := aValue as UInt64;
+    end;
+
+    operator Implicit(aValue: SByte): DelphiExtended80;
+    begin
+      result := aValue as Int64;
+    end;
+
+    operator Implicit(aValue: Single): DelphiExtended80;
+    begin
+      result := (aValue as Double) as DelphiExtended80;
+    end;
+
     //operator Explicit(aValue: DelphiExtended80): Double;
     //begin
       //{$IF EXTENDEDHAS10BYTES}
