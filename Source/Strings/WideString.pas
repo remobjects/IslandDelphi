@@ -139,6 +139,22 @@ type
       memcpy(result.fStringData+aLeft.Length, aRight.fStringData, aRight.Length*sizeOf(Char));
     end;
 
+    // Char
+
+    operator &Add(aLeft: DelphiWideString; aRight: WideChar): DelphiWideString;
+    begin
+      result := DelphiStringHelpers.EmptyDelphiWideStringWithCapacity(length(aLeft)+1);
+      if length(aLeft) > 0 then memcpy(result.fStringData, aLeft.fStringData,  length(aLeft)*sizeOf(Char));
+      (result.fStringData+length(aLeft))^ := aRight;
+    end;
+
+    operator &Add(aLeft: WideChar; aRight: DelphiWideString): DelphiWideString;
+    begin
+      result := DelphiStringHelpers.EmptyDelphiWideStringWithCapacity(length(aRight)+1);
+      (result.fStringData)^ := aLeft;
+      if length(aRight) > 0 then memcpy(result.fStringData+1, aRight.fStringData, length(aRight)*sizeOf(Char));
+    end;
+
     // DelphiObject
 
     {$IF NOT NO_TOSTRING}

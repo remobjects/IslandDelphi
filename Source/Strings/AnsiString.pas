@@ -195,6 +195,22 @@ type
       //result := :Delphi.System.Concat(aLeft, aRight);
     end;
 
+    // Char
+
+    operator &Add(aLeft: InstanceType; aRight: AnsiChar): InstanceType;
+    begin
+      result := DelphiStringHelpers.EmptyDelphiAnsiStringWithCapacity(length(aLeft)+1);
+      if length(aLeft) > 0 then memcpy(result.fStringData, aLeft.fStringData,  length(aLeft)*sizeOf(Char));
+      (result.fStringData+length(aLeft))^ := aRight;
+    end;
+
+    operator &Add(aLeft: AnsiChar; aRight: InstanceType): InstanceType;
+    begin
+      result := DelphiStringHelpers.EmptyDelphiAnsiStringWithCapacity(length(aRight)+1);
+      (result.fStringData)^ := aLeft;
+      if length(aRight) > 0 then memcpy(result.fStringData+1, aRight.fStringData, length(aRight)*sizeOf(Char));
+    end;
+
     // DelphiObject
 
     {$IF NOT NO_TOSTRING}

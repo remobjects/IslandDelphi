@@ -160,6 +160,24 @@ type
       memcpy(result.fStringData+aLeft.Length, aRight.fStringData, aRight.Length*sizeOf(Char));
     end;
 
+    // Char
+
+    operator &Add(aLeft: InstanceType; aRight: WideChar): InstanceType;
+    begin
+      result := DelphiStringHelpers.EmptyDelphiUnicodeStringWithCapacity(length(aLeft)+1);
+      if length(aLeft) > 0 then memcpy(result.fStringData, aLeft.fStringData,  length(aLeft)*sizeOf(Char));
+      (result.fStringData+length(aLeft))^ := aRight;
+    end;
+
+    operator &Add(aLeft: WideChar; aRight: InstanceType): InstanceType;
+    begin
+      result := DelphiStringHelpers.EmptyDelphiUnicodeStringWithCapacity(length(aRight)+1);
+      (result.fStringData)^ := aLeft;
+      if length(aRight) > 0 then memcpy(result.fStringData+1, aRight.fStringData, length(aRight)*sizeOf(Char));
+    end;
+
+    // DelphiWideString
+
     operator &Add(aLeft: InstanceType; aRight: DelphiWideString): InstanceType;
     begin
       result := DelphiStringHelpers.EmptyDelphiUnicodeStringWithCapacity(aLeft.Length+aRight.Length);
