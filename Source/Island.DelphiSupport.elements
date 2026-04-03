@@ -10,7 +10,6 @@
     <MergeArchitectures>False</MergeArchitectures>
     <OutputPathPrefix>$(DelphiSDK)</OutputPathPrefix>
     <KnownConditionalDefines>DELPHI_DEBUG_STRING_ARC</KnownConditionalDefines>
-    <CrossPlatform>True</CrossPlatform>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <OutputPath>.\Bin\Debug</OutputPath>
@@ -206,7 +205,7 @@
     <Mode>Island</Mode>
     <SubMode>Windows</SubMode>
     <DelphiSDK>Delphi 13</DelphiSDK>
-    <Architecture>x86_64;i386</Architecture>
+    <Architecture>arm64;x86_64;i386</Architecture>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Target)' == 'Delphi.13.Linux' ">
     <Mode>Island</Mode>
