@@ -248,6 +248,7 @@
     <Compile Include="Guid+Extensions.pas" />
     <Compile Include="DelphiIntrinsicRoutines.pas" />
     <Compile Include="Floats.pas" />
+    <Compile Include="Arrays.pas" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.targets" />
 </Project>

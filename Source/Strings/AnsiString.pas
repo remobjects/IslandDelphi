@@ -192,23 +192,36 @@ type
       result := DelphiStringHelpers.EmptyDelphiAnsiStringWithCapacity(aLeft.Length+aRight.Length);
       memcpy(result.fStringData,              aLeft.fStringData,  aLeft.Length*sizeOf(AnsiChar));
       memcpy(result.fStringData+aLeft.Length, aRight.fStringData, aRight.Length*sizeOf(AnsiChar));
-      //result := :Delphi.System.Concat(aLeft, aRight);
+    end;
+
+    operator &Add(aLeft: DelphiAnsiString; aRight: DelphiShortString): DelphiAnsiString;
+    begin
+      result := DelphiStringHelpers.EmptyDelphiAnsiStringWithCapacity(aLeft.Length+aRight.Length);
+      memcpy(result.fStringData,              aLeft.fStringData,  aLeft.Length*sizeOf(AnsiChar));
+      memcpy(result.fStringData+aLeft.Length, @aRight[1], aRight.Length*sizeOf(AnsiChar));
+    end;
+
+    operator &Add(aLeft: DelphiShortString; aRight: DelphiAnsiString): DelphiAnsiString;
+    begin
+      result := DelphiStringHelpers.EmptyDelphiAnsiStringWithCapacity(aLeft.Length+aRight.Length);
+      memcpy(result.fStringData,              @aLeft[1],  aLeft.Length*sizeOf(AnsiChar));
+      memcpy(result.fStringData+aLeft.Length, aRight.fStringData, aRight.Length*sizeOf(AnsiChar));
     end;
 
     // Char
 
     operator &Add(aLeft: InstanceType; aRight: AnsiChar): InstanceType;
     begin
-      result := DelphiStringHelpers.EmptyDelphiAnsiStringWithCapacity(length(aLeft)+1);
-      if length(aLeft) > 0 then memcpy(result.fStringData, aLeft.fStringData,  length(aLeft)*sizeOf(Char));
+      result := DelphiStringHelpers.EmptyDelphiAnsiStringWithCapacity(aLeft.Length+1);
+      if length(aLeft) > 0 then memcpy(result.fStringData, aLeft.fStringData, aLeft.Length*sizeOf(Char));
       (result.fStringData+length(aLeft))^ := aRight;
     end;
 
     operator &Add(aLeft: AnsiChar; aRight: InstanceType): InstanceType;
     begin
-      result := DelphiStringHelpers.EmptyDelphiAnsiStringWithCapacity(length(aRight)+1);
+      result := DelphiStringHelpers.EmptyDelphiAnsiStringWithCapacity(aRight.Length+1);
       (result.fStringData)^ := aLeft;
-      if length(aRight) > 0 then memcpy(result.fStringData+1, aRight.fStringData, length(aRight)*sizeOf(Char));
+      if length(aRight) > 0 then memcpy(result.fStringData+1, aRight.fStringData, aRight.Length*sizeOf(Char));
     end;
 
     // DelphiObject

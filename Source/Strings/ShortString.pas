@@ -24,6 +24,31 @@ type
       end; default;
 
     //
+    // Concat Operators
+    //
+
+    operator &Add(aLeft: DelphiShortString; aRight: DelphiShortString): DelphiAnsiString;
+    begin
+      result := DelphiStringHelpers.EmptyDelphiAnsiStringWithCapacity(aLeft.Length+aRight.Length);
+      memcpy(result.fStringData,              @aLeft[1],  aLeft.Length*sizeOf(AnsiChar));
+      memcpy(result.fStringData+aLeft.Length, @aRight[1], aRight.Length*sizeOf(AnsiChar));
+    end;
+
+    operator &Add(aLeft: DelphiShortString; aRight: AnsiChar): DelphiAnsiString;
+    begin
+      result := DelphiStringHelpers.EmptyDelphiAnsiStringWithCapacity(aLeft.Length+1);
+      memcpy(result.fStringData,              @aLeft[1],  aLeft.Length*sizeOf(AnsiChar));
+      (result.fStringData+length(aLeft))^ := aRight;
+    end;
+
+    operator &Add(aLeft: AnsiChar; aRight: DelphiShortString): DelphiAnsiString;
+    begin
+      result := DelphiStringHelpers.EmptyDelphiAnsiStringWithCapacity(aRight.Length+1);
+      (result.fStringData)^ := aLeft;
+      memcpy(result.fStringData+1, @aRight[1], aRight.Length*sizeOf(AnsiChar));
+    end;
+
+    //
     // Comparison Operators
     //
 
