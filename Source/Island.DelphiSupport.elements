@@ -205,7 +205,7 @@
     <Mode>Island</Mode>
     <SubMode>Windows</SubMode>
     <DelphiSDK>Delphi 13</DelphiSDK>
-    <Architecture>arm64;x86_64;i386</Architecture>
+    <Architecture>x86_64;i386</Architecture>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Target)' == 'Delphi.13.Linux' ">
     <Mode>Island</Mode>
@@ -245,7 +245,7 @@
     <Compile Include="Strings\ShortString.pas" />
     <Folder Include="Strings" />
     <Compile Include="DelphiObjectInfo.pas" />
-    <Compile Include="Guid+Extensions.pas" />
+    <Compile Include="Extensions.pas" />
     <Compile Include="DelphiIntrinsicRoutines.pas" />
     <Compile Include="Floats.pas" />
     <Compile Include="Arrays.pas" />
