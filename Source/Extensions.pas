@@ -30,9 +30,9 @@ type
 
     operator Implicit(aBlock: block): Delphi.System.SysUtils.TProc;
     begin
-      result := new interface TProc(Invoke := () -> aBlock);
+      result := new interface Delphi.System.SysUtils.TProc(Invoke := () -> aBlock);
     end;
 
-  end
+  end;
 
 end.
