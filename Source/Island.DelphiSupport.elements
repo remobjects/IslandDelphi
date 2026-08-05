@@ -8,6 +8,7 @@
     <NoDelphi>True</NoDelphi>
     <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
     <MergeArchitectures>False</MergeArchitectures>
+    <IgnoreUnsupportedArchitectures>True</IgnoreUnsupportedArchitectures>
     <OutputPathPrefix>$(DelphiSDK)</OutputPathPrefix>
     <KnownConditionalDefines>DELPHI_DEBUG_STRING_ARC</KnownConditionalDefines>
   </PropertyGroup>
