@@ -15,34 +15,49 @@ begin
   result := RemObjects.Elements.System.Math.Abs(X);
 end;
 
-{$DELPHICOMPATIBILITY ON}
-//function Addr(var X): Pointer; inline; public;
-//begin
-  //result := @X;
-//end;
-{$DELPHICOMPATIBILITY OFF}
+{$DELPHI ON}
+function Addr(var X): Pointer; inline; public;
+begin
+  result := @X;
+end;
+{$DELPHI DEFAULT}
 
 // assert
 // assigned
 
-function AtomicCmpExchange(var Target: Integer; NewValue: Integer; Comparand: Integer; out Succeeded: Boolean): Integer; inline; public;
+// Delphi uses (Target, NewValue, Comparand); interlockedCompareExchange takes the compare value first.
+function AtomicCmpExchange(var Target: Integer; NewValue: Integer; Comparand: Integer): Integer; inline; public;
 begin
   result := interlockedCompareExchange(var Target, Comparand, NewValue)
+end;
+
+function AtomicCmpExchange(var Target: Int64; NewValue: Int64; Comparand: Int64): Int64; inline; public;
+begin
+  result := interlockedCompareExchange(var Target, Comparand, NewValue)
+end;
+
+function AtomicCmpExchange(var Target: Pointer; NewValue: Pointer; Comparand: Pointer): Pointer; inline; public;
+begin
+  result := interlockedCompareExchange(var Target, Comparand, NewValue)
+end;
+
+function AtomicCmpExchange(var Target: Integer; NewValue: Integer; Comparand: Integer; out Succeeded: Boolean): Integer; inline; public;
+begin
+  result := AtomicCmpExchange(var Target, NewValue, Comparand);
+  Succeeded := result = Comparand
 end;
 
 function AtomicCmpExchange(var Target: Int64; NewValue: Int64; Comparand: Int64; out Succeeded: Boolean): Int64; inline; public;
 begin
-  result := interlockedCompareExchange(var Target, Comparand, NewValue)
+  result := AtomicCmpExchange(var Target, NewValue, Comparand);
+  Succeeded := result = Comparand
 end;
 
 function AtomicCmpExchange(var Target: Pointer; NewValue: Pointer; Comparand: Pointer; out Succeeded: Boolean): Pointer; inline; public;
 begin
-  result := interlockedCompareExchange(var Target, Comparand, NewValue)
+  result := AtomicCmpExchange(var Target, NewValue, Comparand);
+  Succeeded := result = Comparand
 end;
-
-//function AtomicCmpExchange(var Target; NewValue: Integer; Comparand: Integer; out Succeeded: Boolean): Integer; public;
-//function AtomicCmpExchange(var Target; NewValue: NativeInt; Comparand: NativeInt; out Succeeded: Boolean): Int64; public;
-//function AtomicCmpExchange(var Target; NewValue: Pointer>; Comparand: Pointer; out Succeeded: Boolean): Pointer; public;
 
 function AtomicDecrement(var Target: Integer): Integer; inline; public;
 begin
@@ -190,12 +205,12 @@ end;
 // exit
 //procedure Fail; public;
 
-{$DELPHICOMPATIBILITY ON}
-//procedure FillChar(var X; Count: Integer; Value: Integer); public;
-//begin
-  //RemObjects.Elements.System.memset(@X, Value, Count);
-//end;
-{$DELPHICOMPATIBILITY OFF}
+{$DELPHI ON}
+procedure FillChar(var X; Count: Integer; Value: Integer); public;
+begin
+  RemObjects.Elements.System.memset(@X, Value, Count);
+end;
+{$DELPHI DEFAULT}
 
 //procedure Finalize(var V; [ Count: NativeUInt]); public;
 //procedure Finalize(var V; [ Count: NativeUInt]); public;
