@@ -54,6 +54,42 @@ type
       TObject(aInstance).GetInterface(lGuid, out result);
     end;
 
+    method RetainInterface(aInstance: ^Void): ^Void;
+    begin
+      if not assigned(aInstance) then
+        exit nil;
+
+      // A GUID-less interface can only be found from its known class slot.
+      // Give the resulting temporary an owned reference before COMRC moves it.
+      ^:Delphi.System.IInterface(@aInstance)^._AddRef;
+      exit aInstance;
+    end;
+
+    method GetInterfaceInterface(aInstance: ^Void; aGuid: ^Void): ^Void;
+    begin
+      if not assigned(aInstance) or not assigned(aGuid) then
+        exit nil;
+
+      // An interface value points at its vtable slot, not at the object VMT.
+      // QueryInterface converts it to another owned Delphi interface value.
+      var lGuid: :Delphi.System.TGUID;
+      memcpy(@lGuid, aGuid, 16);
+      var lOutput: ^Void := nil;
+      if ^:Delphi.System.IInterface(@aInstance)^.QueryInterface(lGuid, out ^^Void(@lOutput)^) = 0 then
+        result := lOutput;
+    end;
+
+    method GetInterfaceClass(aInstance: ^Void; aType: ^Void): ^Void;
+    begin
+      if not assigned(aInstance) or not assigned(aType) then
+        exit nil;
+
+      // Delphi's RTL recovers the object from an interface pointer, including
+      // interfaces stored at different offsets in the same object.
+      result := :Delphi.System.«@SafeIntfAsClass»(
+        ^:Delphi.System.IInterface(@aInstance)^, :Delphi.System.TClass(aType));
+    end;
+
     //
 
     method ConvertStringArrayToDelphiStringArray(aArray: array of IslandString): array of DelphiString;
@@ -61,6 +97,25 @@ type
       result := new DelphiString[length(aArray)];
       for i := 0 to length(aArray)-1 do
         result[i] := aArray[i] as DelphiString;
+    end;
+
+    method NormalizeIncomingUnicodeStringInPlace(var aValue: DelphiUnicodeString);
+    begin
+      // Win32 Delphi UnicodeString results are returned through a hidden caller-owned
+      // out slot. Treat that slot as the final value and avoid an extra copy/clear
+      // dance here, which can corrupt Island-defined Delphi overrides.
+    end;
+
+    method NormalizeIncomingAnsiStringInPlace(var aValue: DelphiAnsiString);
+    begin
+      // Win32 Delphi AnsiString results use the same hidden caller-owned out slot
+      // model as UnicodeString. Leave the returned slot intact.
+    end;
+
+    method NormalizeIncomingWideStringInPlace(var aValue: DelphiWideString);
+    begin
+      // Win32 Delphi WideString results are also returned through a hidden
+      // caller-owned out slot, so do not rewrite the slot after the call.
     end;
 
   end;

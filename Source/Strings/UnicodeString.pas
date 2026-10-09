@@ -295,8 +295,6 @@ type
 
     finalizer;
     begin
-      if defined("DELPHI_DEBUG_STRING_ARC") then
-        writeLn($"DelphiUnicodeString: Finalizer {IntPtr(self.fStringData)} '{self}' {self.ReferenceCount} => {self.ReferenceCount-1}");
       DelphiStringHelpers.ReleaseDelphiUnicodeString(var self);
     end;
 
