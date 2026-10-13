@@ -12,7 +12,10 @@ type
   {$HIDE H7}
   [Packed]
   DelphiLongStringRecord = assembly record
-    Padding: UInt32; {why?}
+    // Delphi pads the long-string header to 16 bytes only on 64-bit targets.
+    {$IF CPU64}
+    Padding: UInt32;
+    {$ENDIF}
     CodePage: UInt16;
     ElementSize: UInt16;
     ReferenceCount: Int32;
