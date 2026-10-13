@@ -160,6 +160,22 @@ type
       result := "(Wrapped) "+typeOf(InnerException).Name+': '+Message;
     end;
 
+    {$IF WINDOWS AND ARM64EC}
+    method AcquireInnerException; assembly;
+    begin
+      :Delphi.System.AcquireExceptionObject;
+      fOwnsInnerException := true;
+    end;
+
+    finalizer;
+    begin
+      if fOwnsInnerException then
+        InnerException.Free;
+    end;
+
+    var fOwnsInnerException: Boolean; private;
+    {$ENDIF}
+
     property InnerException: DelphiException read private write; reintroduce;
 
   end;

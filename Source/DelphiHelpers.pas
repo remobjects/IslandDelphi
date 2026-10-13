@@ -109,6 +109,10 @@ type
   [Internal]
   DelphiExceptionHandler = public static class
   public
+    {$IF WINDOWS AND ARM64EC}
+    // Retain the registration initializer when linking this static library.
+    [RemObjects.Elements.System.Used]
+    {$ENDIF}
     [RemObjects.Elements.System.GlobalConstructor(0)]
     class method Initialize;
     begin
@@ -116,17 +120,29 @@ type
 
     class constructor;
     begin
+      {$IF WINDOWS AND ARM64EC}
+      var lHandler := new ForeignExceptionImplementation($454D4254444C5048, @Handler, @FreeRec);
+      lHandler.Acquire := @Acquire;
+      ForeignExceptionImplementation.Register(lHandler);
+      {$ELSE}
       ForeignExceptionImplementation.Register(new ForeignExceptionImplementation(
       {$IFDEF WINDOWS}
       $EEDFADE
       {$ELSE}
       $454D4254444C5048
       {$ENDIF}, @Handler, @FreeRec));
+      {$ENDIF}
     end;
 
     method Handler(aData: ^Void): Exception;
     begin
-      {$IFDEF WINDOWS}
+      {$IF WINDOWS AND ARM64EC}
+      // Delphi's Windows LLVM raise frame places ExceptObject 72 bytes before
+      // its embedded _Unwind_Exception. Borrow it during the handler search;
+      // Acquire transfers ownership only after the foreign frames are unwound.
+      var lObj := InternalCalls.Cast<DelphiException>(^^Void(NativeInt(aData) - 72)^);
+      exit new IslandWrappedDelphiException(lObj);
+      {$ELSEIF WINDOWS}
       var aRec := ^rtl.EXCEPTION_RECORD(aData);
       var b := InternalCalls.Cast<DelphiException>(^Void(aRec^.ExceptionInformation[1]));
       exit new IslandWrappedDelphiException(b);
@@ -137,9 +153,19 @@ type
       {$ENDIF}
     end;
 
+    {$IF WINDOWS AND ARM64EC}
+    method Acquire(aData: ^Void; aException: Exception);
+    begin
+      IslandWrappedDelphiException(aException).AcquireInnerException;
+    end;
+    {$ENDIF}
+
     method FreeRec(aData: ^Void);
     begin
-      {$IFDEF WINDOWS}
+      {$IF WINDOWS AND ARM64EC}
+      // Release the TLS raise-frame slot after Acquire has retained the object.
+      :Delphi.System.«@DoneExcept»(var ^:Delphi.System.«@Unwind_Exception»(aData)^);
+      {$ELSEIF WINDOWS}
       // Nothing to do
       {$ELSE}
       // Nothing to do; delphi cleans this up
