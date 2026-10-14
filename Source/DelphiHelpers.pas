@@ -144,7 +144,7 @@ type
       exit new IslandWrappedDelphiException(lObj);
       {$ELSEIF WINDOWS}
       var aRec := ^rtl.EXCEPTION_RECORD(aData);
-      var b := InternalCalls.Cast<DelphiException>(^Void(aRec^.ExceptionInformation[1]));
+      var b := ^DelphiException(@aRec^.ExceptionInformation[1])^;
       exit new IslandWrappedDelphiException(b);
       {$ELSE}
       var lObj := ^DelphiException(@^CocoaExceptionRecord(aData)^.Object)^;
