@@ -100,7 +100,7 @@ type
     operator Implicit(aString: ^Char): DelphiWideString; {$HINT seems risky for non-nil?}
     begin
       if assigned(aString) then
-        result := DelphiStringHelpers.DelphiWideStringWithChars(aString, PCharLen(aString));
+        result := DelphiStringHelpers.DelphiWideStringWithChars(aString, DelphiUnicodeCharLen(aString));
     end;
 
     operator Explicit(aString: DelphiWideString): ^Char;

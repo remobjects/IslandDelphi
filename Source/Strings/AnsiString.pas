@@ -110,7 +110,7 @@ type
     operator Implicit(aString: ^AnsiChar): DelphiAnsiString;
     begin
       if assigned(aString) then
-        result := DelphiStringHelpers.DelphiAnsiStringWithChars(aString, PAnsiCharLen(aString));
+        result := DelphiStringHelpers.DelphiAnsiStringWithChars(aString, DelphiAnsiCharLen(aString));
     end;
 
     operator Explicit(aString: DelphiAnsiString): ^AnsiChar;
@@ -350,7 +350,7 @@ begin
   {$ENDIF}
 end;
 
-method PAnsiCharLen(aChars: ^AnsiChar): Integer;
+method DelphiAnsiCharLen(aChars: ^AnsiChar): Integer;
 begin
   if not assigned(aChars) then
     exit 0;

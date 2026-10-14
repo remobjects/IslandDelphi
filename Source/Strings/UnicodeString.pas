@@ -104,7 +104,7 @@ type
     operator Implicit(aString: ^Char): InstanceType;
     begin
       if assigned(aString) then
-        result := DelphiStringHelpers.DelphiUnicodeStringWithChars(aString, PCharLen(aString));
+        result := DelphiStringHelpers.DelphiUnicodeStringWithChars(aString, DelphiUnicodeCharLen(aString));
     end;
 
     operator Explicit(aString: InstanceType): ^Char;
@@ -320,7 +320,7 @@ end;
 
 {$ENDIF}
 
-method PCharLen(aChars: ^Char): Integer;
+method DelphiUnicodeCharLen(aChars: ^Char): Integer;
 begin
   if not assigned(aChars) then
     exit 0;

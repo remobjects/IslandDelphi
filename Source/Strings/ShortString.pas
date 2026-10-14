@@ -139,7 +139,7 @@ type
     begin
       if not assigned(aString) then
         exit;
-      var lLength := PAnsiCharLen(aString);
+      var lLength := DelphiAnsiCharLen(aString);
       if lLength > 255 then
         raise new InvalidCastException("Cannot represent string longer than 255 characters as DelphiShortString");
       if lLength > 0 then
