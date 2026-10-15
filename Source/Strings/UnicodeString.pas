@@ -3,6 +3,7 @@
 {$IF NOT ANSI_STRING}
 
 type
+  [DelphiStringAttribute]
   DelphiUnicodeString = public record(sequence of Char)
   assembly
     fStringData: ^Char;

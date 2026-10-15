@@ -1,6 +1,7 @@
 ﻿namespace RemObjects.Elements.System;
 
 type
+  [DelphiStringAttribute]
   DelphiWideString = public record(sequence of Char)
   assembly
     fStringData: ^Char;
