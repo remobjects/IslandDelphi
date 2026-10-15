@@ -68,8 +68,8 @@ type
 
     method DelphiWideStringWithChars(aChars: ^Char; aLength: UInt32): DelphiWideString;
     begin
-      {$IF DARWIN}
-      // Darwin WideString uses the Unicode long-string header and refcount.
+      {$IF DARWIN OR LINUX}
+      // Darwin/Linux WideString use the Unicode long-string header and refcount.
       var lString := DelphiUnicodeStringWithChars(aChars, aLength);
       result := new DelphiWideString(lString.fStringData);
       lString.fStringData := nil;
@@ -128,7 +128,7 @@ type
 
     method EmptyDelphiWideStringWithCapacity(aLength: UInt32): DelphiWideString;
     begin
-      {$IF DARWIN}
+      {$IF DARWIN OR LINUX}
       var lString := EmptyDelphiUnicodeStringWithCapacity(aLength);
       result := new DelphiWideString(lString.fStringData);
       lString.fStringData := nil;
@@ -194,7 +194,7 @@ type
 
     method CopyDelphiWideString(aString: ^Void): ^Void;
     begin
-      {$IF DARWIN}
+      {$IF DARWIN OR LINUX}
       result := CopyDelphiLongString(aString);
       {$ELSE}
       if not assigned(aString) then
@@ -342,7 +342,7 @@ type
 
     method FreeDelphiWideString(var aString: ^Void);
     begin
-      {$IF DARWIN}
+      {$IF DARWIN OR LINUX}
       ReleaseDelphiLongString(var aString);
       aString := nil;
       {$ELSE}
