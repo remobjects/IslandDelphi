@@ -73,6 +73,8 @@ type
       var lString := DelphiUnicodeStringWithChars(aChars, aLength);
       result := new DelphiWideString(lString.fStringData);
       lString.fStringData := nil;
+      {$ELSEIF WINDOWS}
+      result := new DelphiWideString(rtl.SysAllocStringLen(aChars, aLength));
       {$ELSE}
       if aLength = 0 then
         exit new DelphiWideString;
@@ -132,6 +134,8 @@ type
       var lString := EmptyDelphiUnicodeStringWithCapacity(aLength);
       result := new DelphiWideString(lString.fStringData);
       lString.fStringData := nil;
+      {$ELSEIF WINDOWS}
+      result := new DelphiWideString(rtl.SysAllocStringLen(nil, aLength));
       {$ELSE}
       if aLength = 0 then
         exit new DelphiWideString;
@@ -144,6 +148,16 @@ type
     end;
 
     //
+
+    // Windows WideString is a BSTR: its prefix stores bytes, not characters.
+    method DelphiWideStringLength(aString: ^Void): Integer;
+    begin
+      {$IF WINDOWS}
+      result := rtl.SysStringLen(^Char(aString));
+      {$ELSE}
+      result := DelphiStringLength(aString);
+      {$ENDIF}
+    end;
 
     method DelphiStringLength(aString: ^Void): Integer;
     begin
@@ -196,6 +210,9 @@ type
     begin
       {$IF DARWIN OR LINUX}
       result := CopyDelphiLongString(aString);
+      {$ELSEIF WINDOWS}
+      if not assigned(aString) then exit nil;
+      result := rtl.SysAllocStringLen(^Char(aString), rtl.SysStringLen(^Char(aString)));
       {$ELSE}
       if not assigned(aString) then
         exit nil;
@@ -347,6 +364,9 @@ type
     begin
       {$IF DARWIN OR LINUX}
       ReleaseDelphiLongString(var aString);
+      aString := nil;
+      {$ELSEIF WINDOWS}
+      rtl.SysFreeString(^Char(aString));
       aString := nil;
       {$ELSE}
       if not assigned(aString) then
