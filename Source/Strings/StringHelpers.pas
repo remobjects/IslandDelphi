@@ -68,6 +68,12 @@ type
 
     method DelphiWideStringWithChars(aChars: ^Char; aLength: UInt32): DelphiWideString;
     begin
+      {$IF DARWIN}
+      // Darwin WideString uses the Unicode long-string header and refcount.
+      var lString := DelphiUnicodeStringWithChars(aChars, aLength);
+      result := new DelphiWideString(lString.fStringData);
+      lString.fStringData := nil;
+      {$ELSE}
       if aLength = 0 then
         exit new DelphiWideString;
       var lSize := aLength*sizeOf(Char);
@@ -76,6 +82,7 @@ type
       ^UInt32(lResult)^ := aLength;
       ^Char(lResult+sizeOf(UInt32)+lSize)^ := #0;
       result := new DelphiWideString(lResult+sizeOf(DelphiWideStringRecord));
+      {$ENDIF}
     end;
 
     method DelphiShortStringWithChars(aChars: ^AnsiChar; aLength: UInt32): DelphiShortString;
@@ -121,6 +128,11 @@ type
 
     method EmptyDelphiWideStringWithCapacity(aLength: UInt32): DelphiWideString;
     begin
+      {$IF DARWIN}
+      var lString := EmptyDelphiUnicodeStringWithCapacity(aLength);
+      result := new DelphiWideString(lString.fStringData);
+      lString.fStringData := nil;
+      {$ELSE}
       if aLength = 0 then
         exit new DelphiWideString;
       var lSize := aLength*sizeOf(Char);
@@ -128,6 +140,7 @@ type
       ^UInt32(lResult)^ := aLength;
       ^Char(lResult+sizeOf(UInt32)+lSize)^ := #0;
       result := new DelphiWideString(lResult+sizeOf(DelphiWideStringRecord));
+      {$ENDIF}
     end;
 
     //
@@ -181,6 +194,9 @@ type
 
     method CopyDelphiWideString(aString: ^Void): ^Void;
     begin
+      {$IF DARWIN}
+      result := CopyDelphiLongString(aString);
+      {$ELSE}
       if not assigned(aString) then
         exit nil;
       var lOriginal: ^DelphiWideStringRecord := aString-sizeOf(DelphiWideStringRecord);
@@ -190,6 +206,7 @@ type
       memcpy(lResult+sizeOf(DelphiWideStringRecord), aString, lSize);
       ^Char(lResult+sizeOf(DelphiWideStringRecord)+lSize)^ := #0;
       result := lResult+sizeOf(DelphiWideStringRecord);
+      {$ENDIF}
     end;
 
     //
@@ -261,6 +278,8 @@ type
       var lOriginal: ^DelphiLongStringRecord := aString-sizeOf(DelphiLongStringRecord);
       if lOriginal.ReferenceCount = -1 then
         exit -1;
+      // interlockedInc/interlockedDec lower to atomicrmw and return the previous value,
+      // so adjust by the delta here to report the resulting Delphi refcount.
       result := interlockedInc(var lOriginal.ReferenceCount, aBy)+aBy;
     end;
 
@@ -289,23 +308,23 @@ type
     method ReleaseDelphiUnicodeString(var aString: DelphiUnicodeString): Integer; inline;
     begin
       result := ReleaseDelphiLongString(var aString.fStringData);
-      if result = 0 then
-        aString.fStringData := nil;
     end;
     {$ENDIF}
 
     method ReleaseDelphiAnsiString(var aString: DelphiAnsiString): Integer; inline;
     begin
       result := ReleaseDelphiLongString(var aString.fStringData);
-      if result = 0 then
-        aString.fStringData := nil;
     end;
 
     method ReleaseDelphiLongString(var aString: ^Void): Integer;
     begin
-      result := AdjustLongStringReferenceCount(aString, -1);
+      var lString := aString;
+      // Release this slot even when another owner or an immortal string remains.
+      // Repeated finalization of the cleared slot must not release that owner.
+      aString := nil;
+      result := AdjustLongStringReferenceCount(lString, -1);
       if result = 0 then
-        FreeDelphiLongString(var aString);
+        FreeDelphiLongString(var lString);
     end;
 
     //
@@ -323,6 +342,10 @@ type
 
     method FreeDelphiWideString(var aString: ^Void);
     begin
+      {$IF DARWIN}
+      ReleaseDelphiLongString(var aString);
+      aString := nil;
+      {$ELSE}
       if not assigned(aString) then
         exit;
       var lOriginal := aString-sizeOf(DelphiWideStringRecord);
@@ -330,6 +353,7 @@ type
       if defined("DELPHI_DEBUG_STRING_ARC") then
         writeLn($"| was freed {IntPtr(aString)}");
       aString := nil;
+      {$ENDIF}
     end;
 
   end;

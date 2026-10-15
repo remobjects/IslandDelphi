@@ -63,6 +63,25 @@ type
         result[i] := aArray[i] as DelphiString;
     end;
 
+    method NormalizeIncomingUnicodeStringInPlace(var aValue: DelphiUnicodeString);
+    begin
+      // Win32 Delphi UnicodeString results are returned through a hidden caller-owned
+      // out slot. Treat that slot as the final value and avoid an extra copy/clear
+      // dance here, which can corrupt Island-defined Delphi overrides.
+    end;
+
+    method NormalizeIncomingAnsiStringInPlace(var aValue: DelphiAnsiString);
+    begin
+      // Win32 Delphi AnsiString results use the same hidden caller-owned out slot
+      // model as UnicodeString. Leave the returned slot intact.
+    end;
+
+    method NormalizeIncomingWideStringInPlace(var aValue: DelphiWideString);
+    begin
+      // Win32 Delphi WideString results are also returned through a hidden
+      // caller-owned out slot, so do not rewrite the slot after the call.
+    end;
+
   end;
 
   [Internal]
