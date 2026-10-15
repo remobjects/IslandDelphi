@@ -311,23 +311,23 @@ type
     method ReleaseDelphiUnicodeString(var aString: DelphiUnicodeString): Integer; inline;
     begin
       result := ReleaseDelphiLongString(var aString.fStringData);
-      if result = 0 then
-        aString.fStringData := nil;
     end;
     {$ENDIF}
 
     method ReleaseDelphiAnsiString(var aString: DelphiAnsiString): Integer; inline;
     begin
       result := ReleaseDelphiLongString(var aString.fStringData);
-      if result = 0 then
-        aString.fStringData := nil;
     end;
 
     method ReleaseDelphiLongString(var aString: ^Void): Integer;
     begin
-      result := AdjustLongStringReferenceCount(aString, -1);
+      var lString := aString;
+      // Release this slot even when another owner or an immortal string remains.
+      // Repeated finalization of the cleared slot must not release that owner.
+      aString := nil;
+      result := AdjustLongStringReferenceCount(lString, -1);
       if result = 0 then
-        FreeDelphiLongString(var aString);
+        FreeDelphiLongString(var lString);
     end;
 
     //

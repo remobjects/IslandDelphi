@@ -7,6 +7,9 @@
   //[assembly:DefaultTypeOverride("String", "Delphi", typeOf(RemObjects.Elements.System.DelphiUnicodeString))]
   //{$ENDIF}
 
+//type
+  //String = public type RemObjects.Elements.System.DelphiString; // this helps "String" being corrected to lowercase "string".
+
 //
 // SetString
 //

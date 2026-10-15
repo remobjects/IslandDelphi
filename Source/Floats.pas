@@ -57,7 +57,7 @@ type
   public
 
     property Bytes[aIndex: Integer]: Byte read fBytes[aIndex];
-    property Words[aIndex: Integer]: Word read fBytes[aIndex/2] + (fBytes[aIndex/2+1] shl 8);
+    property Words[aIndex: Integer]: Word read fBytes[aIndex*2] + (fBytes[aIndex*2+1] shl 8);
 
     method ToString: String; override;
     begin
@@ -227,7 +227,8 @@ type
         lExponent := lExponent - 16383;
       end;
 
-      var lValue := (lMantissa / 2.0**63) * (2.0**lExponent);
+      // Integer powers preserve exact binary scaling; floating pow introduces rounding.
+      var lValue := (lMantissa / 9223372036854775808.0) * Math.Pow(2.0, lExponent);
       if lSign then
         lValue := -lValue;
       result := lValue;
@@ -250,10 +251,11 @@ type
       result := default(DelphiExtended80);
       memcpy(@result.fBytes[0], @aMantissa, 8);
       {$IFDEF EXTENDEDHAS10BYTES}
-      result.fBytes[8] := Byte((aExponent shr 8) and $7F);
-      result.fBytes[9] := Byte(aExponent and $FF);
+      // The x87 exponent/sign word follows the significand in little-endian order.
+      result.fBytes[8] := Byte(aExponent and $FF);
+      result.fBytes[9] := Byte((aExponent shr 8) and $7F);
       if aSign then
-        result.fBytes[8] := result.fBytes[8] or $80;
+        result.fBytes[9] := result.fBytes[9] or $80;
       {$ELSE}
       result.fBytes[8] := byte((aExponent shr 8) and $7F);
       result.fBytes[9] := byte(aExponent and $FF);

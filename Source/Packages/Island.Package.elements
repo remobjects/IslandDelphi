@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build" ToolsVersion="4.0">
+  <PropertyGroup>
+    <ProjectGuid>{0CBEE1E3-D8D5-4382-A154-959AB0C3B775}</ProjectGuid>
+    <IslandRTLSource Condition="'$(IslandRTLSource)' == ''">..\..\..\IslandRTL\Source</IslandRTLSource>
+    <OutputType>Library</OutputType>
+    <BinaryName>Delphi.Island</BinaryName>
+    <RootNamespace>RemObjects.Elements.System</RootNamespace>
+    <Mode>Island</Mode>
+    <SubMode>Windows</SubMode>
+    <Architecture>x86_64</Architecture>
+    <DelphiSDK>Delphi 13</DelphiSDK>
+    <DelphiPackageName>Delphi.Island.bpl</DelphiPackageName>
+    <DelphiPackageRuntime>True</DelphiPackageRuntime>
+    <DelphiPackageVersion>13.2</DelphiPackageVersion>
+    <DelphiRequiredPackages>rtl=rtl370.bpl</DelphiRequiredPackages>
+    <NoIsland>True</NoIsland>
+    <NoDelphi>True</NoDelphi>
+    <AllowGlobals>True</AllowGlobals>
+    <DefaultGlobalsToPublic>True</DefaultGlobalsToPublic>
+    <ExportAllTypes>True</ExportAllTypes>
+    <CreateFXFile>True</CreateFXFile>
+    <ConditionalDefines>ISLAND_PACKAGE_RUNTIME;WINDOWS</ConditionalDefines>
+    <OutputPath>..\Bin\Packages\$(DelphiSDK)</OutputPath>
+    <LinkerOptions>/entry:__elements_package_entry</LinkerOptions>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(IslandRTLSource)\BoehmGC.pas" />
+    <Compile Include="$(IslandRTLSource)\HString.pas" />
+    <Compile Include="$(IslandRTLSource)\Registry.pas" />
+    <Compile Include="$(IslandRTLSource)\WindowsHelpers.pas" />
+    <Compile Include="$(IslandRTLSource)\WindowsArm64EC.pas" />
+    <Compile Include="$(IslandRTLSource)\Windows_FFI_x64.pas" />
+    <Compile Include="$(IslandRTLSource)\Windows_FFI_x86.pas" />
+    <Compile Include="$(IslandRTLSource)\OleVariant.pas" />
+    <Compile Include="$(IslandRTLSource)\ComSupport.pas" />
+    <Compile Include="$(IslandRTLSource)\WinRTHelpers.pas" />
+    <Compile Include="$(IslandRTLSource)\Windows_FFI_arm64.pas" />
+    <Compile Include="$(IslandRTLSource)\Attributes.pas" />
+    <Compile Include="$(IslandRTLSource)\BaseFile.pas" />
+    <Compile Include="$(IslandRTLSource)\BitConverter.pas" />
+    <Compile Include="$(IslandRTLSource)\Convert.pas" />
+    <Compile Include="$(IslandRTLSource)\EqualityComparer.pas" />
+    <Compile Include="$(IslandRTLSource)\Exceptions.pas" />
+    <Compile Include="$(IslandRTLSource)\FileUtils.pas" />
+    <Compile Include="$(IslandRTLSource)\GCHandle.pas" />
+    <Compile Include="$(IslandRTLSource)\Guid.pas" />
+    <Compile Include="$(IslandRTLSource)\HashSet.pas" />
+    <Compile Include="$(IslandRTLSource)\Locale.ICU.pas" />
+    <Compile Include="$(IslandRTLSource)\Locale.pas" />
+    <Compile Include="$(IslandRTLSource)\Nullable.pas" />
+    <Compile Include="$(IslandRTLSource)\ObjectPool.pas" />
+    <Compile Include="$(IslandRTLSource)\Parallel.pas" />
+    <Compile Include="$(IslandRTLSource)\Queue.pas" />
+    <Compile Include="$(IslandRTLSource)\Random.pas" />
+    <Compile Include="$(IslandRTLSource)\Stack.pas" />
+    <Compile Include="$(IslandRTLSource)\Task.pas" />
+    <Compile Include="$(IslandRTLSource)\TextConvert.pas" />
+    <Compile Include="$(IslandRTLSource)\Timer.pas" />
+    <Compile Include="$(IslandRTLSource)\TimeZone.pas" />
+    <Compile Include="$(IslandRTLSource)\UTF8String.pas" />
+    <Compile Include="$(IslandRTLSource)\Utilities.pas" />
+    <Compile Include="$(IslandRTLSource)\Environment.pas" />
+    <Compile Include="$(IslandRTLSource)\StringBuilder.pas" />
+    <Compile Include="$(IslandRTLSource)\DateTime.pas" />
+    <Compile Include="$(IslandRTLSource)\File.pas" />
+    <Compile Include="$(IslandRTLSource)\Folder.pas" />
+    <Compile Include="$(IslandRTLSource)\Path.pas" />
+    <Compile Include="$(IslandRTLSource)\MemoryStream.pas" />
+    <Compile Include="$(IslandRTLSource)\Stream.pas" />
+    <Compile Include="$(IslandRTLSource)\FileStream.pas" />
+    <Compile Include="$(IslandRTLSource)\Tuples.pas" />
+    <Compile Include="$(IslandRTLSource)\Dictionary.pas" />
+    <Compile Include="$(IslandRTLSource)\KeyValuePair.pas" />
+    <Compile Include="$(IslandRTLSource)\List.pas" />
+    <Compile Include="$(IslandRTLSource)\LifetimeStrategy.pas" />
+    <Compile Include="$(IslandRTLSource)\Delegates.pas" />
+    <Compile Include="$(IslandRTLSource)\Floats.pas" />
+    <Compile Include="$(IslandRTLSource)\Integers.pas" />
+    <Compile Include="$(IslandRTLSource)\Math.pas" />
+    <Compile Include="$(IslandRTLSource)\Math.LLVMVectorLib.pas" />
+    <Compile Include="$(IslandRTLSource)\Math.PurePascal.pas" />
+    <Compile Include="$(IslandRTLSource)\Object.pas" />
+    <Compile Include="$(IslandRTLSource)\String.pas" />
+    <Compile Include="$(IslandRTLSource)\Reflection\Reflection.pas" />
+    <Compile Include="$(IslandRTLSource)\Types.pas" />
+    <Compile Include="$(IslandRTLSource)\Array.pas" />
+    <Compile Include="$(IslandRTLSource)\Thread.pas" />
+    <Compile Include="$(IslandRTLSource)\Console.pas" />
+    <Compile Include="$(IslandRTLSource)\Monitor.pas" />
+    <Compile Include="$(IslandRTLSource)\Sequence.pas" />
+    <Compile Include="$(IslandRTLSource)\Linq.pas" />
+    <Compile Include="$(IslandRTLSource)\Dynamic.pas" />
+    <Compile Include="$(IslandRTLSource)\Span.pas" />
+    <Compile Include="$(IslandRTLSource)\Set.pas" />
+    <Compile Include="$(IslandRTLSource)\Encoding.pas" />
+    <Compile Include="$(IslandRTLSource)\GenericNullable.pas" />
+    <Compile Include="$(IslandRTLSource)\Serializable.pas" />
+    <Compile Include="$(IslandRTLSource)\Bridges.pas" />
+    <Compile Include="$(IslandRTLSource)\Bridges.Cocoa.pas" />
+    <Compile Include="$(IslandRTLSource)\String.Bridge.Darwin.pas" />
+    <Compile Include="$(IslandRTLSource)\Process.pas" />
+    <Compile Include="$(IslandRTLSource)\Socket.pas" />
+    <Compile Include="$(IslandRTLSource)\MicroTasks.cs" />
+    <Compile Include="$(IslandRTLSource)\Interfaces.pas" />
+    <Compile Include="$(IslandRTLSource)\OleString.pas" />
+    <Compile Include="$(IslandRTLSource)\NSException.pas" />
+    <Compile Include="$(IslandRTLSource)\Darwin.pas" />
+    <Compile Include="$(IslandRTLSource)\Darwin.Macros.pas" />
+    <Compile Include="$(IslandRTLSource)\Darwin.Macros.Foundation.pas" />
+    <Compile Include="$(IslandRTLSource)\CocoaGC.pas" />
+    <Compile Include="$(IslandRTLSource)\Currency.pas" />
+    <Compile Include="$(IslandRTLSource)\VersionHelpers.pas" />
+    <Compile Include="$(IslandRTLSource)\StopWatch.pas" />
+    <Compile Include="$(IslandRTLSource)\DB.pas" />
+    <Compile Include="$(IslandRTLSource)\NullStream.pas" />
+    <Compile Include="$(IslandRTLSource)\Range.pas" />
+    <Compile Include="$(IslandRTLSource)\Resources.pas" />
+    <Compile Include="$(IslandRTLSource)\Memory.cs" />
+    <Compile Include="$(IslandRTLSource)\DateParser.pas" />
+    <Compile Include="$(IslandRTLSource)\DateFormatter.pas" />
+    <Compile Include="$(IslandRTLSource)\List.Extensions.pas" />
+    <Compile Include="$(IslandRTLSource)\Reflection\Type.pas" />
+    <Compile Include="$(IslandRTLSource)\TimeSpan.pas" />
+    <Compile Include="$(IslandRTLSource)\Bridges.Swift.pas" />
+    <Compile Include="$(IslandRTLSource)\Bridges.Cocoa+Swift.pas" />
+    <Compile Include="..\Bridges.Delphi.pas" />
+    <Compile Include="..\Strings\Strings.pas" />
+    <Compile Include="..\Variant.pas" />
+    <Compile Include="..\Attributes.pas" />
+    <Compile Include="..\File.pas" />
+    <Compile Include="..\Booleans.pas" />
+    <Compile Include="..\DelphiHelpers.pas" />
+    <Compile Include="..\Test.pas" />
+    <Compile Include="..\Bridges.Cocoa.pas" />
+    <Compile Include="..\MemoryHelpers.pas" />
+    <Compile Include="..\Strings\StringHelpers.pas" />
+    <Compile Include="..\Strings\UnicodeString.pas" />
+    <Compile Include="..\Strings\AnsiString.pas" />
+    <Compile Include="..\Strings\WideString.pas" />
+    <Compile Include="..\Strings\ShortString.pas" />
+    <Compile Include="..\DelphiObjectInfo.pas" />
+    <Compile Include="..\Extensions.pas" />
+    <Compile Include="..\DelphiIntrinsicRoutines.pas" />
+    <Compile Include="..\Floats.pas" />
+    <Compile Include="..\Arrays.pas" />
+    <Compile Include="RuntimePackageModule.pas" />
+    <Compile Include="IslandPackageRuntime.pas" />
+    <Reference Include="gc" />
+    <Reference Include="IslandMath" />
+    <Reference Include="rtl" />
+    <Reference Include="winrt" />
+    <Reference Include="Delphi.rtl" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\RemObjects Software\Elements\RemObjects.Elements.Island.Windows.targets" />
+</Project>
