@@ -232,10 +232,13 @@ type
       if not assigned(aString) then
         exit false;
       var lOriginal: ^DelphiLongStringRecord := aString-sizeOf(DelphiLongStringRecord);
-      if lOriginal.ReferenceCount < 2 then
+      // Constant strings have reference count -1 and may live in read-only memory.
+      // Only a uniquely owned heap string can be modified without copying.
+      if lOriginal.ReferenceCount = 1 then
         exit false;
       aString := CopyDelphiLongString(aString);
-      interlockedDec(var lOriginal.ReferenceCount);
+      if lOriginal.ReferenceCount > 0 then
+        interlockedDec(var lOriginal.ReferenceCount);
       result := true;
     end;
 
