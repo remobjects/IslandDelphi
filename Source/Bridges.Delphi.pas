@@ -145,8 +145,15 @@ type
 
   end;
 
-  IslandWrappedDelphiException = public class(IslandException)
+  IslandWrappedDelphiException = public class(IslandException
+    {$IF WINDOWS AND X86_64 AND NOT ARM64EC AND EXISTS(IForeignException)}, IForeignException{$ENDIF})
   public
+    {$IF WINDOWS AND X86_64 AND NOT ARM64EC AND EXISTS(IForeignException)}
+    method RaiseNative(aRaiseAddress: ^Void);
+    begin
+      :Delphi.System.«@RaiseAtExcept»(InnerException, aRaiseAddress);
+    end;
+    {$ENDIF}
 
     constructor (aException: DelphiException);
     begin
