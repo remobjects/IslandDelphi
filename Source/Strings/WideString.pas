@@ -1,6 +1,9 @@
 ﻿namespace RemObjects.Elements.System;
 
 type
+  {$IF WINDOWS}
+  [DelphiBStrAttribute]
+  {$ENDIF}
   [DelphiStringAttribute]
   DelphiWideString = public record(sequence of Char)
   assembly
@@ -8,9 +11,14 @@ type
 
   public
 
-    property Count: Integer read DelphiStringHelpers.DelphiStringLength(fStringData);
-    property Length: Integer read DelphiStringHelpers.DelphiStringLength(fStringData);
+    property Count: Integer read DelphiStringHelpers.DelphiWideStringLength(fStringData);
+    property Length: Integer read DelphiStringHelpers.DelphiWideStringLength(fStringData);
+    {$IF WINDOWS}
+    // BSTR values own independent allocations and have no reference-count field.
+    property ReferenceCount: Integer read if assigned(fStringData) then 1 else 0;
+    {$ELSE}
     property ReferenceCount: Integer read DelphiStringHelpers.DelphiStringReferenceCount(fStringData);
+    {$ENDIF}
 
     property Chars[aIndex: Integer]: Char
       read begin
@@ -28,7 +36,7 @@ type
     [&Sequence]
     method GetSequence: sequence of Char; iterator;
     begin
-      for i := 0 to DelphiStringHelpers.DelphiStringLength(fStringData)-1 do
+      for i := 0 to DelphiStringHelpers.DelphiWideStringLength(fStringData)-1 do
         yield (fStringData+i)^;
     end;
 
@@ -78,6 +86,12 @@ type
     operator Implicit(aString: DelphiWideString): IslandObject;
     begin
       result := IslandString:FromPChar(aString.fStringData, aString.Length);
+    end;
+
+    // Preserve the explicit conversion entry point for existing consumers.
+    operator Implicit(aString: IslandString): DelphiWideString;
+    begin
+      result := DelphiWideString(aString);
     end;
 
     operator Explicit(aString: IslandString): DelphiWideString;
