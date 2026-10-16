@@ -151,7 +151,18 @@ type
     {$IF WINDOWS AND X86_64 AND NOT ARM64EC AND EXISTS(IForeignException)}
     method RaiseNative(aRaiseAddress: ^Void);
     begin
+      {$IF EXISTS(IForeignException.TakeNativeOwnership)}
+      if not assigned(InnerException) then
+        raise new IslandException('The native exception has already been transferred.');
+      var lException := InnerException;
+      // Delphi owns destruction after the raise. Retained wrappers must not keep
+      // a usable pointer to an object that its eventual native handler will free.
+      fOwnsInnerException := false;
+      InnerException := nil;
+      :Delphi.System.«@RaiseAtExcept»(lException, aRaiseAddress);
+      {$ELSE}
       :Delphi.System.«@RaiseAtExcept»(InnerException, aRaiseAddress);
+      {$ENDIF}
     end;
     {$ENDIF}
 
@@ -167,13 +178,24 @@ type
       result := "(Wrapped) "+typeOf(InnerException).Name+': '+Message;
     end;
 
+    {$IF WINDOWS AND X86_64 AND NOT ARM64EC AND EXISTS(IForeignException.TakeNativeOwnership)}
+    method TakeNativeOwnership;
+    begin
+      // Win64 SEH has no Delphi catch frame here; the selected Island catch
+      // takes the object directly. No ownership is taken during handler search.
+      fOwnsInnerException := true;
+    end;
+    {$ENDIF}
+
     {$IF WINDOWS AND ARM64EC}
     method AcquireInnerException; assembly;
     begin
       :Delphi.System.AcquireExceptionObject;
       fOwnsInnerException := true;
     end;
+    {$ENDIF}
 
+    {$IF WINDOWS AND (ARM64EC OR (X86_64 AND EXISTS(IForeignException.TakeNativeOwnership)))}
     finalizer;
     begin
       if fOwnsInnerException then
