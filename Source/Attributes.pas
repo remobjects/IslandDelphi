@@ -8,4 +8,11 @@ type
     constructor; empty;
   end;
 
+  // BSTR storage has a byte-count prefix and COM allocation/copy ownership.
+  [AttributeUsage(AttributeTargets.Struct)]
+  DelphiBStrAttribute = public class(Attribute)
+  public
+    constructor; empty;
+  end;
+
 end.

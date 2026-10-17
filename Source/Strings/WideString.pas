@@ -1,6 +1,9 @@
 ﻿namespace RemObjects.Elements.System;
 
 type
+  {$IF WINDOWS}
+  [DelphiBStrAttribute]
+  {$ENDIF}
   [DelphiStringAttribute]
   DelphiWideString = public record(sequence of Char)
   assembly
@@ -86,6 +89,12 @@ type
     operator Implicit(aString: DelphiWideString): IslandObject;
     begin
       result := IslandString:FromPChar(aString.fStringData, aString.Length);
+    end;
+
+    // Preserve the explicit conversion entry point for existing consumers.
+    operator Implicit(aString: IslandString): DelphiWideString;
+    begin
+      result := DelphiWideString(aString);
     end;
 
     operator Explicit(aString: IslandString): DelphiWideString;

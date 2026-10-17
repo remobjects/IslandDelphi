@@ -89,6 +89,12 @@ type
       result := IslandString:FromPAnsiChar(aString.fStringData, aString.Length); {$HINT Should use code page?}
     end;
 
+    // Preserve the explicit conversion entry point for existing consumers.
+    operator Implicit(aString: IslandString): DelphiAnsiString;
+    begin
+      result := DelphiAnsiString(aString);
+    end;
+
     operator Explicit(aString: IslandString): DelphiAnsiString;
     begin
       var lChars := aString.ToAnsiChars(); {$HINT Review, this is lossy}

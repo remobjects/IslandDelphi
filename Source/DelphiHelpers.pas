@@ -25,7 +25,14 @@ type
     {$ELSE}
     method CreateInstance(aType: ^Void): ^Void;
     begin
+      {$IF WINDOWS AND CPU32}
+      // Win32 @ClassCreate requires a caller-owned exception frame and cannot
+      // be called as an ordinary function. NewInstance performs allocation and
+      // initialization through the public virtual class entry instead.
+      result := ^Void(:Delphi.System.TClass(aType).NewInstance);
+      {$ELSE}
       result := :Delphi.System.«@ClassCreate»(aType, 1);
+      {$ENDIF}
     end;
     {$ENDIF}
 
