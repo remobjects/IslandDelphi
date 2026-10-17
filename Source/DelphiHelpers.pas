@@ -164,7 +164,7 @@ type
   [Internal]
   DelphiExceptionHandler = public static class
   public
-    {$IF WINDOWS AND ARM64EC}
+    {$IF WINDOWS}
     // Retain the registration initializer when linking this static library.
     [RemObjects.Elements.System.Used]
     {$ENDIF}
