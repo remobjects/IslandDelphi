@@ -17,13 +17,13 @@ type
     property Chars[aIndex: Integer]: Char
       read begin
         CheckIndex(aIndex);
-        result := (fStringData+aIndex-1)^;
+        result := fStringData[aIndex-1];
       end
       write begin
         CheckIndex(aIndex);
-        if (fStringData+aIndex-1)^ ≠ value then begin
+        if fStringData[aIndex-1] ≠ value then begin
           DelphiStringHelpers.CopyOnWriteDelphiUnicodeString(var self);
-          (fStringData+aIndex-1)^ := value;
+          fStringData[aIndex-1] := value;
         end;
       end; default;
 
@@ -260,10 +260,18 @@ type
 
   private
 
-    method CheckIndex(aIndex: Integer);
+    // Expose bounds to the caller so length-bounded loops can eliminate the
+    // checks. Keep exception formatting outside the normal character path.
+    method CheckIndex(aIndex: Integer); inline;
     begin
       if (aIndex < 1) or (aIndex > Length) then
-        raise new IndexOutOfRangeException($"Index {aIndex} is out of valid bounds (1..{Length}).");
+        RaiseIndexError(aIndex, Length);
+    end;
+
+    [NoReturn, DisableInlining]
+    class method RaiseIndexError(aIndex, aLength: Integer);
+    begin
+      raise new IndexOutOfRangeException($"Index {aIndex} is out of valid bounds (1..{aLength}).");
     end;
 
   public
@@ -296,8 +304,6 @@ type
 
     finalizer;
     begin
-      if defined("DELPHI_DEBUG_STRING_ARC") then
-        writeLn($"DelphiUnicodeString: Finalizer {IntPtr(self.fStringData)} '{self}' {self.ReferenceCount} => {self.ReferenceCount-1}");
       DelphiStringHelpers.ReleaseDelphiUnicodeString(var self);
     end;
 

@@ -13,22 +13,25 @@ type
 
     property Count: Integer read DelphiStringHelpers.DelphiWideStringLength(fStringData);
     property Length: Integer read DelphiStringHelpers.DelphiWideStringLength(fStringData);
-    {$IF WINDOWS}
-    // BSTR values own independent allocations and have no reference-count field.
-    property ReferenceCount: Integer read if assigned(fStringData) then 1 else 0;
-    {$ELSE}
-    property ReferenceCount: Integer read DelphiStringHelpers.DelphiStringReferenceCount(fStringData);
-    {$ENDIF}
+    property ReferenceCount: Integer read DelphiStringHelpers.DelphiWideStringReferenceCount(fStringData);
 
     property Chars[aIndex: Integer]: Char
       read begin
         CheckIndex(aIndex);
-        result := (fStringData+aIndex)^;
+        result := (fStringData+aIndex-1)^;
       end
       write begin
         CheckIndex(aIndex);
-        if (fStringData+aIndex-1)^ ≠ value then
+        if (fStringData+aIndex-1)^ ≠ value then begin
+          {$IF NOT WINDOWS}
+          // POSIX WideString assignments share UTF-16 data, unlike BSTR.
+          // A character write must leave other copies and literals intact.
+          var lData: ^Void := fStringData;
+          DelphiStringHelpers.CopyOnWriteDelphiString(var lData);
+          fStringData := lData;
+          {$ENDIF}
           (fStringData+aIndex-1)^ := value;
+        end;
       end; default;
 
     property Chars[aIndex: &Index]: Char read Chars[aIndex.GetOffset(Length)] write Chars[aIndex.GetOffset(Length)];
@@ -133,7 +136,7 @@ type
     {$IF DARWIN}
     operator Explicit(aString: DelphiWideString): CocoaString;
     begin
-      result := new CocoaString withBytes(aString.fStringData) length(DelphiStringHelpers.DelphiStringLength(aString.fStringData)) encoding(Foundation.NSStringEncoding.UTF16LittleEndianStringEncoding);
+      result := new CocoaString withBytes(aString.fStringData) length(DelphiStringHelpers.DelphiWideStringLength(aString.fStringData)) encoding(Foundation.NSStringEncoding.UTF16LittleEndianStringEncoding);
     end;
 
     operator Explicit(aString: CocoaString): DelphiWideString;
@@ -304,7 +307,11 @@ begin
   {$ELSEIF DELPHI2006 OR DELPHI2009 OR DELPHI2010 OR DELPHIXE}
   result := :Delphi.SysUtils.CompareStr(aLeft, aRight);
   {$ELSE}
+  {$IF WINDOWS}
+  result := :Delphi.System.SysUtils.WideCompareStr(aLeft, aRight);
+  {$ELSE}
   result := :Delphi.System.SysUtils.CompareStr(aLeft, aRight);
+  {$ENDIF}
   {$ENDIF}
 end;
 

@@ -61,6 +61,42 @@ type
       TObject(aInstance).GetInterface(lGuid, out result);
     end;
 
+    method RetainInterface(aInstance: ^Void): ^Void;
+    begin
+      if not assigned(aInstance) then
+        exit nil;
+
+      // A GUID-less interface can only be found from its known class slot.
+      // Give the resulting temporary an owned reference before COMRC moves it.
+      ^:Delphi.System.IInterface(@aInstance)^._AddRef;
+      exit aInstance;
+    end;
+
+    method GetInterfaceInterface(aInstance: ^Void; aGuid: ^Void): ^Void;
+    begin
+      if not assigned(aInstance) or not assigned(aGuid) then
+        exit nil;
+
+      // An interface value points at its vtable slot, not at the object VMT.
+      // QueryInterface converts it to another owned Delphi interface value.
+      var lGuid: :Delphi.System.TGUID;
+      memcpy(@lGuid, aGuid, 16);
+      var lOutput: ^Void := nil;
+      if ^:Delphi.System.IInterface(@aInstance)^.QueryInterface(lGuid, out ^^Void(@lOutput)^) = 0 then
+        result := lOutput;
+    end;
+
+    method GetInterfaceClass(aInstance: ^Void; aType: ^Void): ^Void;
+    begin
+      if not assigned(aInstance) or not assigned(aType) then
+        exit nil;
+
+      // Delphi's RTL recovers the object from an interface pointer, including
+      // interfaces stored at different offsets in the same object.
+      result := :Delphi.System.«@SafeIntfAsClass»(
+        ^:Delphi.System.IInterface(@aInstance)^, :Delphi.System.TClass(aType));
+    end;
+
     //
 
     method ConvertStringArrayToDelphiStringArray(aArray: array of IslandString): array of DelphiString;
@@ -135,7 +171,7 @@ type
   [Internal]
   DelphiExceptionHandler = public static class
   public
-    {$IF WINDOWS AND ARM64EC}
+    {$IF WINDOWS}
     // Retain the registration initializer when linking this static library.
     [RemObjects.Elements.System.Used]
     {$ENDIF}

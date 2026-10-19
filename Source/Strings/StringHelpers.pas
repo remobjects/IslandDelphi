@@ -12,7 +12,8 @@ type
   {$HIDE H7}
   [Packed]
   DelphiLongStringRecord = assembly record
-    // Delphi pads the long-string header to 16 bytes only on 64-bit targets.
+    // Delphi System.StrRec has a 12-byte header on 32-bit targets; the
+    // CPU64BITS padding makes it 16 bytes on 64-bit targets.
     {$IF CPU64}
     Padding: UInt32;
     {$ENDIF}
@@ -22,32 +23,34 @@ type
     Length: UInt32;
   end;
 
-  [Packed]
-  DelphiWideStringRecord = assembly record { really same as DelphiLongStringRecord}
-    Padding: UInt32;
-    Padding_CodePage: UInt16;
-    Padding_ElementSize: UInt16;
-    Padding_ReferenceCount: Int32;
-    Length: UInt32;
-  end;
-
   DelphiStringHelpers = assembly static class
   public
+
+    // Share this allocator: POSIX WideString uses UnicodeString storage.
+    // Delphi 12/13 System._NewWideString calls _NewUnicodeString there,
+    // so both need the full UTF-16 header and a two-byte zero terminator.
+    method AllocateDelphiUnicodeCharacters(aLength: UInt32): ^Char;
+    begin
+      if aLength = 0 then
+        exit nil;
+      var lSize := aLength*sizeOf(Char);
+      var lResult := DelphiMemoryHelpers.GetMem(lSize+sizeOf(DelphiLongStringRecord)+sizeOf(Char));
+      ^DelphiLongStringRecord(lResult).CodePage := 1200;
+      ^DelphiLongStringRecord(lResult).ElementSize := sizeOf(Char);
+      ^DelphiLongStringRecord(lResult).ReferenceCount := 1;
+      ^DelphiLongStringRecord(lResult).Length := aLength;
+      ^Char(lResult+sizeOf(DelphiLongStringRecord)+lSize)^ := #0;
+      result := lResult+sizeOf(DelphiLongStringRecord);
+    end;
 
     {$IF NOT ANSI_STRING}
     method DelphiUnicodeStringWithChars(aChars: ^Char; aLength: UInt32): DelphiUnicodeString;
     begin
       if aLength = 0 then
         exit new DelphiUnicodeString;
-      var lSize := aLength*sizeOf(Char);
-      var lResult := DelphiMemoryHelpers.GetMem(lSize+sizeOf(DelphiLongStringRecord)+sizeOf(Char));
-      ^DelphiLongStringRecord(lResult).CodePage := 0/*:Delphi.System.DefaultUnicodeCodePage*/;
-      ^DelphiLongStringRecord(lResult).ElementSize := sizeOf(Char);
-      ^DelphiLongStringRecord(lResult).ReferenceCount := 1;
-      ^DelphiLongStringRecord(lResult).Length := aLength;
-      memcpy(lResult+sizeOf(DelphiLongStringRecord), aChars, lSize);
-      ^Char(lResult+sizeOf(DelphiLongStringRecord)+lSize)^ := #0;
-      result := new DelphiUnicodeString(lResult+sizeOf(DelphiLongStringRecord));
+      var lResult := AllocateDelphiUnicodeCharacters(aLength);
+      memcpy(lResult, aChars, aLength*sizeOf(Char));
+      result := new DelphiUnicodeString(lResult);
     end;
     {$ENDIF}
 
@@ -68,22 +71,14 @@ type
 
     method DelphiWideStringWithChars(aChars: ^Char; aLength: UInt32): DelphiWideString;
     begin
-      {$IF DARWIN OR LINUX}
-      // Darwin/Linux WideString use the Unicode long-string header and refcount.
-      var lString := DelphiUnicodeStringWithChars(aChars, aLength);
-      result := new DelphiWideString(lString.fStringData);
-      lString.fStringData := nil;
-      {$ELSEIF WINDOWS}
-      result := new DelphiWideString(rtl.SysAllocStringLen(aChars, aLength));
-      {$ELSE}
       if aLength = 0 then
         exit new DelphiWideString;
-      var lSize := aLength*sizeOf(Char);
-      var lResult := DelphiMemoryHelpers.GetMem(lSize+sizeOf(UInt32)+sizeOf(Char));
-      memcpy(lResult+sizeOf(UInt32), aChars, lSize);
-      ^UInt32(lResult)^ := aLength;
-      ^Char(lResult+sizeOf(UInt32)+lSize)^ := #0;
-      result := new DelphiWideString(lResult+sizeOf(DelphiWideStringRecord));
+      {$IF WINDOWS}
+      exit new DelphiWideString(rtl.SysAllocStringLen(aChars, aLength));
+      {$ELSE}
+      var lResult := AllocateDelphiUnicodeCharacters(aLength);
+      memcpy(lResult, aChars, aLength*sizeOf(Char));
+      result := new DelphiWideString(lResult);
       {$ENDIF}
     end;
 
@@ -101,16 +96,7 @@ type
     {$IF NOT ANSI_STRING}
     method EmptyDelphiUnicodeStringWithCapacity(aLength: UInt32): DelphiUnicodeString;
     begin
-      if aLength = 0 then
-        exit new DelphiUnicodeString;
-      var lSize := aLength*sizeOf(Char);
-      var lResult := DelphiMemoryHelpers.GetMem(lSize+sizeOf(DelphiLongStringRecord)+sizeOf(Char));
-      ^DelphiLongStringRecord(lResult).CodePage := 0/*:Delphi.System.DefaultUnicodeCodePage*/;
-      ^DelphiLongStringRecord(lResult).ElementSize := sizeOf(Char);
-      ^DelphiLongStringRecord(lResult).ReferenceCount := 1;
-      ^DelphiLongStringRecord(lResult).Length := aLength;
-      ^AnsiChar(lResult+sizeOf(DelphiLongStringRecord)+lSize)^ := #0;
-      result := new DelphiUnicodeString(lResult+sizeOf(DelphiLongStringRecord));
+      result := new DelphiUnicodeString(AllocateDelphiUnicodeCharacters(aLength));
     end;
     {$ENDIF}
 
@@ -130,39 +116,42 @@ type
 
     method EmptyDelphiWideStringWithCapacity(aLength: UInt32): DelphiWideString;
     begin
-      {$IF DARWIN OR LINUX}
-      var lString := EmptyDelphiUnicodeStringWithCapacity(aLength);
-      result := new DelphiWideString(lString.fStringData);
-      lString.fStringData := nil;
-      {$ELSEIF WINDOWS}
-      result := new DelphiWideString(rtl.SysAllocStringLen(nil, aLength));
-      {$ELSE}
       if aLength = 0 then
         exit new DelphiWideString;
-      var lSize := aLength*sizeOf(Char);
-      var lResult := DelphiMemoryHelpers.GetMem(lSize+sizeOf(UInt32)+sizeOf(Char));
-      ^UInt32(lResult)^ := aLength;
-      ^Char(lResult+sizeOf(UInt32)+lSize)^ := #0;
-      result := new DelphiWideString(lResult+sizeOf(DelphiWideStringRecord));
+      {$IF WINDOWS}
+      exit new DelphiWideString(rtl.SysAllocStringLen(nil, aLength));
+      {$ELSE}
+      result := new DelphiWideString(AllocateDelphiUnicodeCharacters(aLength));
       {$ENDIF}
     end;
 
     //
 
-    // Windows WideString is a BSTR: its prefix stores bytes, not characters.
-    method DelphiWideStringLength(aString: ^Void): Integer;
-    begin
-      {$IF WINDOWS}
-      result := rtl.SysStringLen(^Char(aString));
-      {$ELSE}
-      result := DelphiStringLength(aString);
-      {$ENDIF}
-    end;
-
     method DelphiStringLength(aString: ^Void): Integer;
     begin
       if assigned(aString) then
         result := ^UInt32(aString-sizeOf(UInt32))^;
+    end;
+
+    method DelphiWideStringLength(aString: ^Void): Integer;
+    begin
+      if assigned(aString) then begin
+        {$IF WINDOWS}
+        result := rtl.SysStringLen(^Char(aString));
+        {$ELSE}
+        result := DelphiStringLength(aString);
+        {$ENDIF}
+      end;
+    end;
+
+    method DelphiWideStringReferenceCount(aString: ^Void): Integer;
+    begin
+      {$IF WINDOWS}
+      // BSTR values are copied rather than reference counted.
+      result := if assigned(aString) then 1 else 0;
+      {$ELSE}
+      result := DelphiStringReferenceCount(aString);
+      {$ENDIF}
     end;
 
     method DelphiStringLength(aString: DelphiShortString): Integer;
@@ -208,21 +197,15 @@ type
 
     method CopyDelphiWideString(aString: ^Void): ^Void;
     begin
-      {$IF DARWIN OR LINUX}
-      result := CopyDelphiLongString(aString);
-      {$ELSEIF WINDOWS}
-      if not assigned(aString) then exit nil;
-      result := rtl.SysAllocStringLen(^Char(aString), rtl.SysStringLen(^Char(aString)));
-      {$ELSE}
       if not assigned(aString) then
         exit nil;
-      var lOriginal: ^DelphiWideStringRecord := aString-sizeOf(DelphiWideStringRecord);
-      var lSize := lOriginal.Length*sizeOf(WideChar);
-      var lResult := DelphiMemoryHelpers.GetMem(lOriginal.Length*sizeOf(Char) + sizeOf(DelphiWideStringRecord) + sizeOf(Char));
-      ^DelphiWideStringRecord(lResult).Length := lOriginal.Length;
-      memcpy(lResult+sizeOf(DelphiWideStringRecord), aString, lSize);
-      ^Char(lResult+sizeOf(DelphiWideStringRecord)+lSize)^ := #0;
-      result := lResult+sizeOf(DelphiWideStringRecord);
+      {$IF WINDOWS}
+      exit rtl.SysAllocStringLen(^Char(aString), rtl.SysStringLen(^Char(aString)));
+      {$ELSE}
+      // Delphi System._WStrAddRef uses _UStrAddRef on POSIX: retain the
+      // shared UTF-16 data; a later write must first make it unique.
+      RetainDelphiLongString(aString);
+      result := aString;
       {$ENDIF}
     end;
 
@@ -249,10 +232,10 @@ type
       if not assigned(aString) then
         exit false;
       var lOriginal: ^DelphiLongStringRecord := aString-sizeOf(DelphiLongStringRecord);
-      // Constant strings have reference count -1 and may live in read-only memory.
-      // Only a uniquely owned heap string can be modified without copying.
       if lOriginal.ReferenceCount = 1 then
         exit false;
+      // Literal headers have refcount -1 and point at read-only data.
+      // Copy them on write too, but never change their constant refcount.
       aString := CopyDelphiLongString(aString);
       if lOriginal.ReferenceCount > 0 then
         interlockedDec(var lOriginal.ReferenceCount);
@@ -362,21 +345,18 @@ type
 
     method FreeDelphiWideString(var aString: ^Void);
     begin
-      {$IF DARWIN OR LINUX}
-      ReleaseDelphiLongString(var aString);
-      aString := nil;
-      {$ELSEIF WINDOWS}
-      rtl.SysFreeString(^Char(aString));
-      aString := nil;
-      {$ELSE}
       if not assigned(aString) then
         exit;
-      var lOriginal := aString-sizeOf(DelphiWideStringRecord);
-      DelphiMemoryHelpers.FreeMem(lOriginal);
+      {$IF WINDOWS}
+      rtl.SysFreeString(^Char(aString));
+      {$ELSE}
+      // Delphi System._WStrClr uses _UStrClr on POSIX. Other values may
+      // still share this data, so only free the last owned reference.
+      ReleaseDelphiLongString(var aString);
+      {$ENDIF}
       if defined("DELPHI_DEBUG_STRING_ARC") then
         writeLn($"| was freed {IntPtr(aString)}");
       aString := nil;
-      {$ENDIF}
     end;
 
   end;
