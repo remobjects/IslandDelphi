@@ -1,6 +1,15 @@
 ﻿namespace RemObjects.Elements.System;
 
 type
+  // Pass raw ABI addresses; the helper explicitly transfers the owned result.
+  {$IF WINDOWS}
+  [CallingConvention(CallingConvention.Register)]
+  DelphiInterfaceGetter = procedure(aInstance: UIntPtr; aValue: UIntPtr);
+  {$ELSE}
+  [CallingConvention(CallingConvention.Register)]
+  DelphiInterfaceGetter = function(aInstance: UIntPtr): :Delphi.System.IInterface;
+  {$ENDIF}
+
   [Internal]
   DelphiHelpers = public static class
   public
@@ -61,12 +70,62 @@ type
       TObject(aInstance).GetInterface(lGuid, out result);
     end;
 
+    method IsInstanceInterfaceType(aInstance: ^Void; aTypeInfo: ^Void): ^Void;
+    begin
+      if not assigned(aInstance) or not assigned(aTypeInfo) then
+        exit nil;
+
+      {$IF NOT NO_TYPEINFO_APIS}
+      // Delphi's interface table ends with one PPTypeInfo per entry. Unlike
+      // an empty GUID, this identifies a particular GUID-less interface.
+      var lVMT := ^^Void(aInstance)^;
+      while assigned(lVMT) do begin
+        var lTable := :Delphi.System.PInterfaceTable(^^Void(lVMT + :Delphi.System.vmtIntfTable)^);
+        if assigned(lTable) then begin
+          var lTypes := ^^^Void(@lTable^.Entries[lTable^.EntryCount]);
+          for i := 0 to lTable^.EntryCount - 1 do begin
+            if not assigned(lTypes[i]) or (lTypes[i]^ <> aTypeInfo) then
+              continue;
+            var lEntry := @lTable^.Entries[i];
+            if lEntry^.IOffset <> 0 then
+              exit RetainInterface(aInstance + lEntry^.IOffset);
+
+            // An implements property can store the interface in a field or
+            // return it from a static/virtual getter. GetInterface's GUID
+            // lookup cannot select this entry when more than one has no GUID.
+            var lToken := UIntPtr(lEntry^.ImplGetter);
+            var lMask := UIntPtr($FF) shl ((sizeOf(^Void) - 1) * 8);
+            if (lToken and lMask) = lMask then
+              exit RetainInterface(^^Void(aInstance + (lToken and not lMask))^);
+            var lGetter := ^Void(lToken);
+            if (lToken and lMask) = (UIntPtr($FE) shl ((sizeOf(^Void) - 1) * 8)) then
+              lGetter := ^^Void(^^Void(aInstance)^ + Int16(lToken))^;
+            var lValue: :Delphi.System.IInterface;
+            {$IF WINDOWS}
+            DelphiInterfaceGetter(lGetter)(UIntPtr(aInstance), UIntPtr(@lValue));
+            {$ELSE}
+            lValue := DelphiInterfaceGetter(lGetter)(UIntPtr(aInstance));
+            {$ENDIF}
+            // Move the getter's owned result out without another retain.
+            result := ^Void(lValue);
+            ^^Void(@lValue)^ := nil;
+            exit;
+          end;
+        end;
+        var lParent := ^^Void(lVMT + :Delphi.System.vmtParent)^;
+        if not assigned(lParent) then
+          exit nil;
+        lVMT := ^^Void(lParent)^;
+      end;
+      {$ENDIF}
+    end;
+
     method RetainInterface(aInstance: ^Void): ^Void;
     begin
       if not assigned(aInstance) then
         exit nil;
 
-      // A GUID-less interface can only be found from its known class slot.
+      // A direct slot lookup returns a borrowed interface pointer.
       // Give the resulting temporary an owned reference before COMRC moves it.
       ^:Delphi.System.IInterface(@aInstance)^._AddRef;
       exit aInstance;
