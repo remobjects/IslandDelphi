@@ -279,10 +279,14 @@ end;
 
 //ord
 
-function Pi: Extended; public;
+function Pi: Extended; inline; public;
 begin
-  //result := RemObjects.Elements.System.Math.PI;
-  raise new NotImplementedException("Pi is not implemented");
+  {$IFDEF I386}
+  // Delphi widens its Double-rounded Pi value to Win32 Extended.
+  result := 3.1415926535897932384626433832795 as RemObjects.Elements.System.DelphiExtended80;
+  {$ELSE}
+  result := 3.1415926535897932384626433832795;
+  {$ENDIF}
 end;
 
 // pred
@@ -328,19 +332,23 @@ begin
   raise new NotImplementedException("Slice is not implemented");
 end;
 
-function Sqr(X: Real): Extended; public;
+function Sqr(X: Real): Extended; inline; public;
 begin
-  raise new NotImplementedException("Sqr is not implemented");
+  {$IFDEF I386}
+  result := (X*X) as RemObjects.Elements.System.DelphiExtended80;
+  {$ELSE}
+  result := X*X;
+  {$ENDIF}
 end;
 
-function Sqr(X: Int64): Int64; public;
+function Sqr(X: Int64): Int64; inline; public;
 begin
-  raise new NotImplementedException("Sqr is not implemented");
+  result := X*X;
 end;
 
-function Sqr(X: Integer): Integer; public;
+function Sqr(X: Integer): Integer; inline; public;
 begin
-  raise new NotImplementedException("Sqr is not implemented");
+  result := X*X;
 end;
 
 //procedure Str(const X [: Width [:Decimals]]; var S: String);
