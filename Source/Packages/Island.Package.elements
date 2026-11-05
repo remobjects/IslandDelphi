@@ -2,10 +2,9 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build" ToolsVersion="4.0">
   <PropertyGroup>
     <ProjectGuid>{0CBEE1E3-D8D5-4382-A154-959AB0C3B775}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <OutputType>Package</OutputType>
     <BinaryName>Delphi.Island</BinaryName>
     <RootNamespace>RemObjects.Elements.System</RootNamespace>
-    <DelphiPackageName>Delphi.Island.bpl</DelphiPackageName>
     <DelphiPackageRuntime>True</DelphiPackageRuntime>
     <NoIsland>False</NoIsland>
     <NoDelphi>True</NoDelphi>
