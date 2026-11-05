@@ -14,14 +14,76 @@
     <CreateFXFile>True</CreateFXFile>
     <OutputPath>..\Bin\Packages\$(DelphiSDK)</OutputPath>
   </PropertyGroup>
-  <!-- Add targets only after their package writer and native acceptance are supported. -->
+  <!-- Explicit targets follow the compiler profiles. SDK import separately gates runtime builds on native acceptance. -->
   <PropertyGroup Condition="'$(Target)' == 'Delphi.13.Windows'">
     <Mode>Island</Mode>
     <SubMode>Windows</SubMode>
-    <Architecture>x86_64</Architecture>
     <DelphiSDK>Delphi 13</DelphiSDK>
     <DelphiPackageVersion>13.2</DelphiPackageVersion>
     <DelphiRequiredPackages>rtl=rtl370.bpl</DelphiRequiredPackages>
+    <ConditionalDefines>ISLAND_PACKAGE_RUNTIME;WINDOWS</ConditionalDefines>
+    <LinkerOptions>/entry:__elements_package_entry</LinkerOptions>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Target)' == 'Delphi.12.Windows'">
+    <Mode>Island</Mode>
+    <SubMode>Windows</SubMode>
+    <DelphiSDK>Delphi 12</DelphiSDK>
+    <DelphiPackageVersion>12</DelphiPackageVersion>
+    <DelphiRequiredPackages>rtl=rtl290.bpl</DelphiRequiredPackages>
+    <ConditionalDefines>ISLAND_PACKAGE_RUNTIME;WINDOWS</ConditionalDefines>
+    <LinkerOptions>/entry:__elements_package_entry</LinkerOptions>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Target)' == 'Delphi.11.Windows'">
+    <Mode>Island</Mode>
+    <SubMode>Windows</SubMode>
+    <DelphiSDK>Delphi 11</DelphiSDK>
+    <DelphiPackageVersion>11</DelphiPackageVersion>
+    <DelphiRequiredPackages>rtl=rtl280.bpl</DelphiRequiredPackages>
+    <ConditionalDefines>ISLAND_PACKAGE_RUNTIME;WINDOWS</ConditionalDefines>
+    <LinkerOptions>/entry:__elements_package_entry</LinkerOptions>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Target)' == 'Delphi.10.4.Windows'">
+    <Mode>Island</Mode>
+    <SubMode>Windows</SubMode>
+    <DelphiSDK>Delphi 10.4</DelphiSDK>
+    <DelphiPackageVersion>10.4</DelphiPackageVersion>
+    <DelphiRequiredPackages>rtl=rtl270.bpl</DelphiRequiredPackages>
+    <ConditionalDefines>ISLAND_PACKAGE_RUNTIME;WINDOWS</ConditionalDefines>
+    <LinkerOptions>/entry:__elements_package_entry</LinkerOptions>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Target)' == 'Delphi.10.3.Windows'">
+    <Mode>Island</Mode>
+    <SubMode>Windows</SubMode>
+    <DelphiSDK>Delphi 10.3</DelphiSDK>
+    <DelphiPackageVersion>10.3</DelphiPackageVersion>
+    <DelphiRequiredPackages>rtl=rtl260.bpl</DelphiRequiredPackages>
+    <ConditionalDefines>ISLAND_PACKAGE_RUNTIME;WINDOWS</ConditionalDefines>
+    <LinkerOptions>/entry:__elements_package_entry</LinkerOptions>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Target)' == 'Delphi.10.2.Windows'">
+    <Mode>Island</Mode>
+    <SubMode>Windows</SubMode>
+    <DelphiSDK>Delphi 10.2</DelphiSDK>
+    <DelphiPackageVersion>10.2</DelphiPackageVersion>
+    <DelphiRequiredPackages>rtl=rtl250.bpl</DelphiRequiredPackages>
+    <ConditionalDefines>ISLAND_PACKAGE_RUNTIME;WINDOWS</ConditionalDefines>
+    <LinkerOptions>/entry:__elements_package_entry</LinkerOptions>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Target)' == 'Delphi.10.1.Windows'">
+    <Mode>Island</Mode>
+    <SubMode>Windows</SubMode>
+    <DelphiSDK>Delphi 10.1</DelphiSDK>
+    <DelphiPackageVersion>10.1</DelphiPackageVersion>
+    <DelphiRequiredPackages>rtl=rtl240.bpl</DelphiRequiredPackages>
+    <ConditionalDefines>ISLAND_PACKAGE_RUNTIME;WINDOWS</ConditionalDefines>
+    <LinkerOptions>/entry:__elements_package_entry</LinkerOptions>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Target)' == 'Delphi.10.0.Windows'">
+    <Mode>Island</Mode>
+    <SubMode>Windows</SubMode>
+    <DelphiSDK>Delphi 10.0</DelphiSDK>
+    <DelphiPackageVersion>10.0</DelphiPackageVersion>
+    <DelphiRequiredPackages>rtl=rtl230.bpl</DelphiRequiredPackages>
     <ConditionalDefines>ISLAND_PACKAGE_RUNTIME;WINDOWS</ConditionalDefines>
     <LinkerOptions>/entry:__elements_package_entry</LinkerOptions>
   </PropertyGroup>
