@@ -13,6 +13,9 @@ type
 
     class var fInitialized: Boolean;
     class var fAttached: Boolean;
+
+    [SymbolName('GC_set_markers_count')]
+    class method SetPackageMarkers(aCount: Cardinal); external;
   public
     [DllExport('__elements_package_entry'), CallingConvention(CallingConvention.Stdcall)]
     class method Entry(aModule: rtl.HMODULE; aReason: rtl.DWORD; aReserved: ^Void): Boolean;
@@ -27,7 +30,7 @@ type
         fModule.TypeInfo := @fInfo.TypeInfo;
         :Delphi.System.RegisterModule(@fModule);
         fAttached := true;
-        RemObjects.Elements.System.ExternalCalls.fModuleHandle := aModule;
+        RemObjects.Elements.System.ExternalCalls.ModuleHandle := aModule;
       end else if (aReason = rtl.DLL_PROCESS_DETACH) and fAttached then begin
         // Delphi calls Finalize before FreeLibrary. Detach also covers plain
         // FreeLibrary and a failed InitializePackage.
@@ -61,6 +64,9 @@ type
         inc(fReferences);
         exit;
       end;
+      // Packages can unload. Configure the shipped collector before any Island
+      // constructor can initialize it; detached parallel markers cannot be joined.
+      SetPackageMarkers(1);
       RemObjects.Elements.System.InitCtors;
       BoehmGC.Load;
       fInitialized := true;

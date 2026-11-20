@@ -1,6 +1,12 @@
 ﻿namespace RemObjects.Elements.System;
 
 type
+  {$IF WINDOWS AND I386}
+  // Classic Delphi RaiseExcept takes the exception object in EAX.
+  [CallingConvention(CallingConvention.Register)]
+  DelphiNativeRaise = procedure(aException: Delphi.System.TObject);
+  {$ENDIF}
+
   TObject = public Delphi.System.TObject;
 
   DelphiObject = public Delphi.System.TObject;
@@ -146,9 +152,9 @@ type
   end;
 
   IslandWrappedDelphiException = public class(IslandException
-    {$IF WINDOWS AND X86_64 AND NOT ARM64EC AND EXISTS(IForeignException)}, IForeignException{$ENDIF})
+    {$IF WINDOWS AND (X86_64 OR I386 OR ARM64EC) AND EXISTS(IForeignException)}, IForeignException{$ENDIF})
   public
-    {$IF WINDOWS AND X86_64 AND NOT ARM64EC AND EXISTS(IForeignException)}
+    {$IF WINDOWS AND (X86_64 OR I386 OR ARM64EC) AND EXISTS(IForeignException)}
     method RaiseNative(aRaiseAddress: ^Void);
     begin
       {$IF EXISTS(IForeignException.TakeNativeOwnership)}
@@ -159,9 +165,19 @@ type
       // a usable pointer to an object that its eventual native handler will free.
       fOwnsInnerException := false;
       InnerException := nil;
+      {$IF I386}
+      var lRaise := DelphiNativeRaise(^Void(@:Delphi.System.«@RaiseExcept»));
+      lRaise(lException);
+      {$ELSE}
       :Delphi.System.«@RaiseAtExcept»(lException, aRaiseAddress);
+      {$ENDIF}
+      {$ELSE}
+      {$IF I386}
+      var lRaise := DelphiNativeRaise(^Void(@:Delphi.System.«@RaiseExcept»));
+      lRaise(InnerException);
       {$ELSE}
       :Delphi.System.«@RaiseAtExcept»(InnerException, aRaiseAddress);
+      {$ENDIF}
       {$ENDIF}
     end;
     {$ENDIF}
@@ -178,10 +194,10 @@ type
       result := "(Wrapped) "+typeOf(InnerException).Name+': '+Message;
     end;
 
-    {$IF WINDOWS AND X86_64 AND NOT ARM64EC AND EXISTS(IForeignException.TakeNativeOwnership)}
+    {$IF WINDOWS AND (X86_64 OR I386 OR ARM64EC) AND EXISTS(IForeignException.TakeNativeOwnership)}
     method TakeNativeOwnership;
     begin
-      // Win64 SEH has no Delphi catch frame here; the selected Island catch
+      // Windows SEH has no Delphi catch frame here; the selected Island catch
       // takes the object directly. No ownership is taken during handler search.
       fOwnsInnerException := true;
     end;
@@ -195,7 +211,7 @@ type
     end;
     {$ENDIF}
 
-    {$IF WINDOWS AND (ARM64EC OR (X86_64 AND EXISTS(IForeignException.TakeNativeOwnership)))}
+    {$IF WINDOWS AND (ARM64EC OR ((X86_64 OR I386) AND EXISTS(IForeignException.TakeNativeOwnership)))}
     finalizer;
     begin
       if fOwnsInnerException then

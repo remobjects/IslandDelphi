@@ -1,5 +1,8 @@
 ﻿namespace RemObjects.Elements.System;
 
+// The size of the storage differs by platform, the layout does not: the 80 bit x87 value is in the first ten bytes (significand in bytes 0..7
+// with an explicit integer bit, sign and exponent in bytes 8..9) and, where the storage is 16 bytes, the other six are padding. (The code once
+// took the 16 byte platforms for another layout, so that an Extended that Delphi for Linux64 returns in ST(0) was read as garbage.)
 {$IF (DARWIN AND i386) OR (LINUX AND X86_64)} // DARWIN AND i386 won't happen for us, but FTR
   {$DEFINE EXTENDEDHAS16BYTES}
 {$ELSE}
@@ -66,15 +69,9 @@ type
       result := #"<DelphiExtended80 {(self as Double)}>";
     end;
 
-    {$IFDEF EXTENDEDHAS10BYTES}
     property Exponent: UInt64 read Words[4] and $7FFF;
     property Fraction: UInt64 read ^UInt64(@Self)^;
     property Sign: Boolean read fBytes[9] >= $80;
-    {$ELSE}
-    property Exponent: UInt64 read (Words[3] shr 4) and $7FF;
-    property Fraction: UInt64 read ^UInt64(@Self)^ and $000FFFFFFFFFFFFF;
-    property Sign: Boolean read fBytes[7] >= $80;
-    {$ENDIF}
 
     operator Implicit(aValue: UInt64): DelphiExtended80;
     begin
@@ -103,11 +100,7 @@ type
 
       if (lExponent = 0) and (lMantissa = 0) then begin
         if lSign then begin
-          {$IFDEF EXTENDEDHAS10BYTES}
           result.fBytes[9] := $80;
-          {$ELSE}
-          result.fBytes[7] := $80;
-          {$ENDIF}
         end;
         exit;
       end;
@@ -184,15 +177,9 @@ type
       var lExponent: Integer;
       var lMantissa: UInt64;
 
-      {$IFDEF EXTENDEDHAS10BYTES}
       lSign := (aValue.fBytes[9] and $80) <> 0;
       lExponent := Integer(aValue.Words[4] and $7FFF);
       lMantissa := ^UInt64(@aValue.fBytes[0])^;
-      {$ELSE}
-      lSign := (aValue.fBytes[7] and $80) <> 0;
-      lExponent := Integer((aValue.Words[3] shr 4) and $7FF);
-      lMantissa := ^UInt64(@aValue.fBytes[0])^;
-      {$ENDIF}
 
       if (lExponent = 0) and (lMantissa = 0) then begin
         if lSign then
@@ -250,18 +237,11 @@ type
     begin
       result := default(DelphiExtended80);
       memcpy(@result.fBytes[0], @aMantissa, 8);
-      {$IFDEF EXTENDEDHAS10BYTES}
       // The x87 exponent/sign word follows the significand in little-endian order.
       result.fBytes[8] := Byte(aExponent and $FF);
       result.fBytes[9] := Byte((aExponent shr 8) and $7F);
       if aSign then
         result.fBytes[9] := result.fBytes[9] or $80;
-      {$ELSE}
-      result.fBytes[8] := byte((aExponent shr 8) and $7F);
-      result.fBytes[9] := byte(aExponent and $FF);
-      if aSign then
-        result.fBytes[7] := result.fBytes[7] or $80;
-      {$ENDIF}
     end;
 
     class method InternalFromUInt64(aValue: UInt64; aSign: Boolean): DelphiExtended80;
@@ -269,11 +249,7 @@ type
       result := default(DelphiExtended80);
       if aValue = 0 then begin
         if aSign then begin
-          {$IFDEF EXTENDEDHAS10BYTES}
           result.fBytes[9] := $80;
-          {$ELSE}
-          result.fBytes[7] := $80;
-          {$ENDIF}
         end;
         exit;
       end;
